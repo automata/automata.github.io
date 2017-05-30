@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title> FREAKCODING MANIFESTO v0.3 </title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <script src="popcorn.min.js"></script>
+    <script src="vivace.js"></script>
+    <script src="vivace_exec.js"></script>
+<!--
+    <script src="/channel/bcsocket.js"></script>
+    <script src="/share/share.js"></script>
+    <script src="/share/textarea.js"></script>
+-->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #000;
+      }
+
+      #code {
+      width: 100%;
+      height: 100%;
+      color: transparent;
+      background-color: transparent;
+      position: absolute; left: 0px; top: 0px;
+      padding: 24px;
+      padding-top: 42px;
+      padding-bottom: 42px;
+      line-height: 1.1em;
+      font-family: monospace;
+      font-size: 18px;
+      font-weight: bold;
+      visibility: visible;
+      z-index: 1000;
+      /* transition between transparent and semi-transparent black on hover */
+      transition: color  1500ms;
+      -webkit-transition: color  1500ms;
+      -o-transition: color  500ms;
+      -moz-transition: color ox-shadow 500ms;
+      -ms-transition: color  500ms;
+      outline: none;
+      border: none;
+      }
+
+      #code:hover {
+      color: #00ff00;
+      text-shadow: #000 2px 2px 5px;
+
+      /*background-color:rgba(0,0,0,.1);*/
+      }
+
+      #banner {
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+      padding: 24px;
+      font-family: monospace;
+      font-size: 18px;
+      font-weight: bold;
+      color: transparent;
+      text-shadow: #555 0px 0px 2px;
+      background-color: transparent;
+      z-index: 1001;
+      transition: color  1500ms;
+      -webkit-transition: color  1500ms;
+      -o-transition: color  500ms;
+      -moz-transition: color ox-shadow 500ms;
+      -ms-transition: color  500ms;
+      }
+
+      #banner:hover {
+      color: #000;
+      }
+
+      video {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        document.getElementById(voiceName).style.zIndex="800";
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+   <textarea id="code" spellcheck="false">
+//   _____                       __                    .___.__                
+// _/ ____\______   ____ _____  |  | __ ____  ____   __| _/|__| ____    ____  
+// \   __\\_  __ \_/ __ \\__  \ |  |/ // ___\/  _ \ / __ | |  |/    \  / ___\ 
+//  |  |   |  | \/\  ___/ / __ \|    <\  \__(  <_> ) /_/ | |  |   |  \/ /_/  >
+//  |__|   |__|    \___  >____  /__|_ \\___  >____/\____ | |__|___|  /\___  / 
+//                     \/     \/     \/    \/           \/         \//_____/  
+//                                                         manifesto v.0.3.2~
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!  ANTES DE LER ===>>> APERTE CTRL+X NO SEU GOOGLE CHROME
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+// EDITE OS VALORES ABAIXO... e vá apertando CTRL + X...
+
+vv.pos = [10, 10, 12, 12, 14, 12, 14] // mude para valores 345 352 etc...
+vv.pos = {1, 1/2}  //{1/2} tambem eh legal
+
+a.pos = [30,21,18]
+a.gdur = [.1]
+a.pos = {1}
+
+// a, b: beat
+// c, d: bob & brow
+// v, vvv: monsters
+// vv: novela
+
+// FREAKCODING!
+  
+// FREAKCODING é um subgenero de livecoding, isto é, manipulação de musicas e
+// vídeos em tempo real a partir da escrita de códigos de computador
+// apresentada por integrantes do labMacambira.sf.net. Nesta performance os
+// artistas/freakcoders utilizam 1/14 e sons inusitados.
+//                  ______
+//                 /     /\
+//                /     /##\
+//               /     /####\
+//              /     /######\
+//             /     /########\
+//            /     /##########\
+//           /     /#####/\#####\
+//          /     /#####/++\#####\
+//         /     /#####/++++\#####\
+//        /     /#####/\+++++\#####\
+//       /     /#####/  \+++++\#####\
+//      /     /#####/    \+++++\#####\
+//     /     /#####/      \+++++\#####\
+//    /     /#####/        \+++++\#####\
+//   /     /#####/__________\+++++\#####\
+//  /                        \+++++\#####\
+// /__________________________\+++++\####/
+// \+++++++++++++++++++++++++++++++++\##/
+//  \+++++++++++++++++++++++++++++++++\/
+//   ``````````````````````````````````
+
+  
+// //////////////// FREAKCODING MANIFESTO ! //////////////////////////
+
+
+// FREAKCODING é um viés alternativo (não necessariamente uma solução) para o
+// problema da criação / interpretação / improvisação / educação musical e visual.
+
+// class FreakCoding(LiveCoding):
+//
+//       def __init__(self):
+//           self.freak = True
+//
+//           problemas = ['criacao', 'interpretacao', 'educacao']
+//           for p in problemas:
+//              self.resolve_um_tanto(p)
+
+
+
+
+//** O escriba, em seu estado platônico incongruente e desinformado, 
+// vê, dentro de sua caverna musical pessoal, as sombras das idéias sonoras e 
+// redige a partitura de acordo com o que "sente", e não o que "são"/"não-são" **/
+
+//     Em seu estado platônico incongruente e desinformado,
+//     reproduz aquela sombra que lhe foi dita como era, e não observa a sombra
+//     (e nem portanto a luz real que nem o compositor viu)
+
+
+//     O(s) improvisador(es) eruditos, em sua caverna coletiva, criam sombras,
+//     geradas por suas próprias experiências pessoais e daquilo que lhe ensinaram
+//     como correta improvisação que ofuscam a luz pessoal de cada um
+
+// class Escriba(Ser):
+//
+//      def __init__(self):
+//         if self in CAVERNA_COLETIVA:
+//            self.cria_sombra(self.experiencias + self.improvisacao_aprendida)
+
+//       def cria_sombra(self):
+//          for each in MUNDO:
+//             self.ofusca(each)
+
+
+//     O educador, em sua caverna social, acredita que a única maneira de criar
+//     experiências sonoras é através de ferramentas específicas ditadas
+//     sócio-culturalmente. Um instrumento musical, fonte de energia sonora, pode
+//     ser a combinação de materiais orgânicos (madeira, pele, pêlos de animais) e
+//     inorgânicos (minerais e metais) manipuláveis manualmente.  Ora, um
+//     computador é feito de materiais inorgânicos (e quem sabe no futuro,
+//     orgânicos) e são manipuláveis manualmente, além de serem potênciais fontes
+//     sonoras.
+
+
+//     O "freakcoder" é aquele sujeito que, dentro de sua caverna pessoal e social,
+//     percebe que É dentro da caverna e busca Ser e Não-ser dentro e fora da
+//     caverna: busca maneiras de evoluir artisticamente. Busca não ser guiado pois
+//     não quer ser pau mandado.
+
+// class FreakCoder(LiveCoder):
+
+//      def __init__(self):
+//         if self in CAVERNA_PESSOAL and self in CAVERNA_SOCIAL:
+//            self.busca(CAVERNAS, MUNDO)
+//
+//       def busca(self, cavernas, mundo):
+//          for i in cavernas + mundo:
+//             self.ser = self.ser(i) and not self.ser(i)
+//             self.evolui()
+//             self.pau_mandado = False
+
+
+
+//     O "freakcoder" não faz arte apenas no computador, mas no ambiente que está
+//     inserido, bem como não-estar (i.e. virtualmente, a distância) no ambiente em
+//     que o som ou imagem é cprojetada
+
+//     O "freakcoder" cria aqueles que criam: Bots compositores
+
+//         def bots_compositores(self):
+//            return self.clone()
+
+//     O "freakcoder" não cria sons, estipula figuras e gestos audiovisuais como
+//     seres-vivos pulsantes não antropomórficos
+
+//     O "freakcoder" não tem controle sobre suas criações: Fundamento lógico e
+//     filosófico da função "random" (Math.rand [js], random[Python], etc...)
+
+//     O "freakcoder" não se limita a uma ferramenta, e pode criar suas próprias:
+//     Vivace
+
+//     O "freakcoder" evita fazer sozinho: um sonho sonhado sozinho é apenas um
+//     sonho sonhado sozinho; um sonho sonhado junto é realidade (R. Seixas)
+
+
+//   A ferramenta Vivace é utilizada para esta performance, e foi criada por
+//   integrantes do LabMacambira. Trata-se de uma linguagem de programação criada
+//   para livecoding online (estar e não-estar).  Pode ser utilizada de forma
+//   colaborativa no Browser(Chrome ou Safari).  Os freakcoders e o público podem
+//   participar acessando um link. Esta ferramenta pode ser instalada em um
+//   servidor web um num servidor local.
+  
+
+//              __,aaPPPPPPPPaa,__
+//          ,adP"""'          `""Yb,_
+//       ,adP'                     `"Yb,
+//     ,dP'     ,aadPP"""""YYba,_     `"Y,
+//    ,P'    ,aP"'            `""Ya,     "Y,
+//   ,P'    aP'     _________     `"Ya    `Yb,
+//  ,P'    d"    ,adP""""""""Yba,    `Y,    "Y,
+// ,d'   ,d'   ,dP"            `Yb,   `Y,    `Y,
+// d'   ,d'   ,d'    ,dP""Yb,    `Y,   `Y,    `b
+// 8    d'    d'   ,d"      "b,   `Y,   `8,    Y,
+// 8    8     8    d'    _   `Y,   `8    `8    `b
+// 8    8     8    8     8    `8    8     8     8
+// 8    Y,    Y,   `b, ,aP     P    8    ,P     8
+// I,   `Y,   `Ya    """"     d'   ,P    d"    ,P
+// `Y,   `8,    `Ya         ,8"   ,P'   ,P'    d'
+//  `Y,   `Ya,    `Ya,,__,,d"'   ,P'   ,P"    ,P
+//   `Y,    `Ya,     `""""'     ,P'   ,d"    ,P'
+//    `Yb,    `"Ya,_          ,d"    ,P'    ,P'
+//      `Yb,      ""YbaaaaaadP"     ,P'    ,P'
+//        `Yba,                   ,d'    ,dP'
+//           `"Yba,__       __,adP"     dP"
+//               `"""""""""""""'
+
+  
+
+//   Livecoding
+  
+  
+//  ----------------------------------------------------
+// ===================================
+
+// Curioso isso tudo.
+
+// Sempre fiz questão de dizer que era editor de vídeo, o que inclui o fato de que
+// 'ser editor de vídeo' significava necessariamente um momento de solidão e
+// concentração, mantendo o processo criativo quase como um segredo no qual o que
+// interessava era o resultado final do vídeo somado a experiência da fruição
+// individual do mesmo, sem que houvesse e principalmente reafirmando a minha
+// ausência física para que o processo de fruição se completasse.
+
+// Qual a diferença essencial entre editar vídeo e editar som? Um você concentra
+// para ver detalhes; o outro você concentra para ouvir detalhes. Fazendo a mesma
+// pergunta de maneira diferente: qual a diferença entre fazer música com sons e
+// fazer música com imagens (ou até mesmo música-imagem)?
+
+// Uma convergência temporal quis que ao mesmo tempo em que eu estive fisicamente
+// presente a uma exibição de um vídeo meu o Vivace chegasse até meus ouvidos, e
+// olhos. Minha presença física na apresentação fez com que os presentes, a grande
+// maioria pessoas que trabalham com vídeo ao vivo me perguntassem o por quê de eu
+// não me apresentar ao vivo. O Vivace se mostrou a ferramenta capaz de tornar isso
+// possível.
+
+// Até aí nunca havia ouvido falar de Live Coding.
+
+// O Live Coding me parece um caminho bastante natural para o tipo de utilização e
+// desenvolvimento tecnológicos no qual estamos envolvidos, partindo do principio
+// de que entendemos que a tecnologia nunca deve ser tratada como dogma ou
+// segredo. O Live Coding aparece cada vez mais como uma desreificação do fazer
+// artístico digital. Não apenas o código é mostrado e manipulado, mas, sim, a tela
+// do computador e qualquer interação que houver entre o performer (N.doA. - vou
+// usar performer por entender que estamos tratando de performances e artista é o
+// caralho rsrs, quem considerar outro termo mais interessante é só mudar) e o
+// computador. A tríade performer, computador, público (o termo 'público' também é
+// ambíguo, aqui eu acho realmente necessário um outro termo) é o que possibilita
+// dizer que algo é uma performance de Live Code. A existência de um telão passando
+// imagens, não.
+
+// No ponto performer/computador é onde eu acredito que entra o freakcoder. Mais do
+// que o conteúdo utilizado no Live Coding (que eu gosto muito da utilização da
+// cultura de massa para isso) a postura do performer em relação ao computador é o
+// que subverte não só a utilização do computador mas a relação entre homem e
+// máquina. Isto é, uma postura 'rock and roll'. O freackcoder rompe, por sua
+// própria natureza, com o estigma do computador como canalizador de uma postura
+// séria e profissionalesca. Assim como rompe com a postura do performer erudito
+// (somos de alguma forma eruditos na postura performática) sério e
+// profissionalesco. O freakcoder é rock and roll. O Freakcoder é o Jerry Lee Lewis
+// da tecnologia, o freackcoder faz tecnopirofagia. O freakcoder consegue programar
+// e sorrir ao mesmo tempo. O Freakcoder 'seduz' através do monitor do computador e
+// através do jeito que programa.
+
+//                              .='  ' .`/,/!(=)Zm.
+//                .._,,._..  ,-`- `,\ ` -` -`\\7//WW.
+//           ,v=~/.-,-\- -!|V-s.)iT-|s|\-.'   `///mK%.
+//         v!`i!-.e]-g`bT/i(/[=.Z/m)K(YNYi..   /-]i44M.
+//       v`/,`|v]-DvLcfZ/eV/iDLN\D/ZK@%8W[Z..   `/d!Z8m
+//      //,c\(2(X/NYNY8]ZZ/bZd\()/\7WY%WKKW)   -'|(][%4.
+//    ,\\i\c(e)WX@WKKZKDKWMZ8(b5/ZK8]Z7%ffVM,   -.Y!bNMi
+//    /-iit5N)KWG%%8%%%%W8%ZWM(8YZvD)XN(@.  [   \]!/GXW[
+//   / ))G8\NMN%W%%%%%%%%%%8KK@WZKYK*ZG5KMi,-   vi[NZGM[
+//  i\!(44Y8K%8%%%**~YZYZ@%%%%%4KWZ/PKN)ZDZ7   c=//WZK%!
+// ,\v\YtMZW8W%%f`,`.t/bNZZK%%W%%ZXb*K(K5DZ   -c\\/KM48
+// -|c5PbM4DDW%f  v./c\[tMY8W%PMW%D@KW)Gbf   -/(=ZZKM8[
+// 2(N8YXWK85@K   -'c|K4/KKK%@  V%@@WD8e~  .//ct)8ZK%8`
+// =)b%]Nd)@KM[  !'\cG!iWYK%%|   !M@KZf    -c\))ZDKW%`
+// YYKWZGNM4/Pb  '-VscP4]b@W%     'Mf`   -L\///KM(%W!
+// !KKW4ZK/W7)Z. '/cttbY)DKW%     -`  .',\v)K(5KW%%f
+// 'W)KWKZZg)Z2/,!/L(-DYYb54%  ,,`, -\-/v(((KK5WW%f
+//  \M4NDDKZZ(e!/\7vNTtZd)8\Mi!\-,-/i-v((tKNGN%W%%
+//  'M8M88(Zd))///((|D\tDY\\KK-`/-i(=)KtNNN@W%%%@%[
+//   !8%@KW5KKN4///s(\Pd!ROBY8/=2(/4ZdzKD%K%%%M8@%%
+//    '%%%W%dGNtPK(c\/2\[Z(ttNYZ2NZW8W8K%%%%YKM%M%%.
+//      *%%W%GW5@/%!e]_tZdY()v)ZXMZW%W%%%*5Y]K%ZK%8[
+//       '*%%%%8%8WK\)[/ZmZ/Zi]!/M%%%%@f\ \Y/NNMK%%!
+//         'VM%%%%W%WN5Z/Gt5/b)((cV@f`  - |cZbMKW%%|
+//            'V*M%%%WZ/ZG\t5((+)L'-,,/  -)X(NWW%%
+//                 `~`MZ/DZGNZG5(((\,    ,t\\Z)KW%@
+//                    'M8K%8GN8\5(5///]i!v\K)85W%%f
+//                      YWWKKKKWZ8G54X/GGMeK@WM8%@
+//                       !M8%8%48WG@KWYbW%WWW%%%@
+//                         VM%WKWK%8K%%8WWWW%%%@`
+//                           ~*%%%%%%W%%%%%%%@~
+//                              ~*MM%%%%%%@f`
+//                                  '''''
+
+
+// CORRIGIR PORTUGUES
+
+// Curtiria escrever sobre freakcoding, com a mesma ideia acima, mas com outros
+// nomes; Uma experiência musical a partir de um viés político:
+
+//     Música Anarquista (Música "AAmorfo-fenomenológica"):
+
+
+//     Música é energia em movimento, e portanto não é passível de ser propriedade
+//     (de alguém, de forma ou de um sentido físico)
+
+//                   Musica eh portanto entidade, reflexo do inexistente como
+//                   existente. Es.u'
+
+//     Produção agregadora
+
+//     SEM/COM os grilhões da música histórica europeia
+
+//     Possibilidade de uso de colagens
+
+//     COM procedimentos da música não-histórica americana (no sentido do Milton
+//     Nascimento)
+
+//     SEM/COM os procedimentos da(s) forma(s), subformas e meta-formas
+
+//     COM muitos compositores [1...N] compositor(es)
+
+//     COM/SEM grilhões dos instrumentos tradicionais:
+
+//     Instrumentos não convencionais(acústicos - eletroacústicos)
+
+//     Instrumentos convencionais (acústicos - eletroacústicos)
+
+//     Computadores
+
+//     Celulares
+
+//     Tablets
+
+//     Circuitos
+
+//     Natureza
+
+
+
+//         "AAmórfo-lógica
+
+//     " "é afirmativa
+
+//     [a]morfo-lógica
+
+//     A é negadora de " " (amorfo-lógica)
+
+//     amorfo-lógica
+
+//     AAnão é mais negadora (aamorfo-lógica):
+
+//     AlgorAuto-regulodora do afirmativo-negativo
+
+
+//     Produção Subversiva:
+
+//     SEM compositor: Bots
+
+//     o compositor ao invés de criar música, cria o criador da música
+
+//     Produção SEM os grilhões da música de marketing, massa e corporativa
+
+//     Grandes gravadoras
+
+//     Música Social
+
+//     Música colaborativa
+
+//     live-coding
+
+//     Produção SEM os grilhões das formações:
+
+//     Orquestra
+
+//     Banda
+
+//     Câmara:
+
+//     Quintetos
+
+//     Quartetos
+
+//     Trios
+
+//     Duetos
+
+//     Produção SEM os grilhões do sonoro: música é uma entidade da 7a dimensão (Um
+//     físico russo definiu isso, soh n to lembrandoando o nome) e, portanto merece
+//     nosso respeito e não deve ser escravizada no mundo sonoro, mas liberta dela
+//     e colocada nos N sentidos (se possível):
+
+//     auditivo (possível)
+
+//     visual (possível)
+
+//     tátil (possível)
+
+//     paladar (?)
+
+//     olfato (?)
+
+//     virtual (possível)
+
+//     mental (possível, mas seria uma experiência pessoal)
+
+
+//     Desestruturação:
+
+//      da idéia de Música Absoluta ou Música Programática:
+
+//     Como disse hybrid uma vez quando escutamos uma interpretação do Concerto
+//     para orquestra de B.Bartók em rotação acelerada: "Vamo escutar a proposta, e
+//     não nossos gostos (memórias), velho"
+
+//      da idéia de concertos ou recitais: beber, comer, abraçar, beijar, fumar,
+//      meditar enquanto ocorre a performance musical:
+
+//     Conversar seria a única coisa que subverteria a destruição do ideal acima
+
+//     Trepar tiraria a concentração ou aumentaria a energia? (
+
+//     Performances não podem ser pagas ou plenamente de graça: ouvinte contribui
+//     com o que puder (até mesmo participar da performaçe)
+
+//     Pagar levaria o performer a ser um escravo do ouvinte
+
+//     de graça levaria o ouvinte a ser um escravo do performer
+
+//     uma via dinâmica dos opostos leva a plenitude da experiência musical
+
+        
+        
+//         Parentesco com a música:
+
+//             Música "AAntropomórfica" como entidade e não mais como fenômeno:
+
+//     Uno
+
+//     Música: derivado de
+
+//     Pai: Um aspecto da música
+
+//     Mãe: Outro aspecto da música
+
+//     Filho: Idéia musical (a sombra musical)
+
+//     Neto: A sombra da sombra
+
+
+//         Sustentabilidade Musical:
+
+//     Já tem muita merda no mundo: vamos reciclá-las
+
+//     Re-criar
+
+//     Colagem
+
+//     "Pastiche"
+
+//     Referência diretas
+
+//     Referências indiretas
+
+//     Inverter War por Mar (M como aspecto negativo de W, ou AAar como aspecto
+//     renovador)
+
+
+//         Contexto (espaco-tempo, distribuicao geografica da realizacao)
+
+//     Onde se da a interacao, performance, rito.
+
+//     Aqui temos que considerar o que entendemos por "onde"
+
+//     Conceito de "onde": https://en.wikipedia.org/wiki/War#Types_of_warfare
+
+//     note que um deles é cibernético
+
+//     Não importa aonde você está um com outros
+
+//     A principio, tenho a impressão que o cyber-espaço é aquele terreno que foi
+//     criado para descarregar o interior mais profundo do Neto (A sombra); uma
+//     sombra daquilo que criamos do que poderia pareçer ser; dimensão paralela.
+
+
+//     Multiplicidade dos outros terrenos
+
+//     Envolvimento de envoltorio tipo Jogo. O Ludico.
+
+//     Estado de extase
+
+
+//     outras ideias... e estudar quais são razoáveis e praticaveis no mundo de
+//     Beakman
+
+
+  
+//   texto freakcoding rascunhando aqui, tá foda!! >
+  
+
+//   /** Estrutura Release
+  
+//   1. capa: escrito freak coding imagem/foto bonita
+  
+//   2. release: texto sobre a performace freak coding colocar a duração 20 minutos
+  
+//   3. Manifesto Freakcoding
+  
+//   4. Livecoding
+  
+//   pequena expliação sobre o que é livecoding e suas vertentes
+  
+//   5. Minibio dos integrantes
+  
+//   6. links e contatos
+  
+//   **/
+
+//                             ______
+//                          ___)    (___
+//                       __/     __     \__
+//                      /     \_/  \_/     \
+//                     /      / \__/ \      \
+//                    |          /\          |
+//                   /       ---(  )---       \
+//                  |            \/            |
+//                  | ........................ |
+//                 / ._________/    \_________. \
+//                | ./ _________    _________ \. |
+//                |./ //#/\###())~~(()###/\#\\ \.|
+//                |/ //#([])##// ~~ \\##([])#\\ \|
+//                | //###\/##//  ~~  \\##\/###\\ |
+//                | \\######//   ~~   \\######// |
+//                 \             /\             /                  .^. .^.
+//                  )      __   !II!   __      (                   |~| |~|
+//                 /' .___//    !II!    \\___. '\                  |~| |~|
+//                (  ' .__/     [II]     \__. '  )         __      |~| |~|
+//                 \  '          YY          '  /          \)\_    |~| |~|
+//                  \  '  |   ________   |  '  /            \~~\   |~~V~~|
+//                   \  ' | _/'      '\_ | '  /              \~~\_ |~~|~~~\
+//                    \  '|/____________\|'  /                \~~~\~~~~~~~~)
+//                     \   V___======___V   /                  \~~~\~~~~~~/
+//                      \  V   \____/   V  /                    \~~~|~~~~~\
+//                       \ V   ~~  ~~   V /                      )~~|~~~~~~)
+//                        \V  ~~\~~/~~  V/                       \~~~~~~~~/
+//                        _V ~~~~\/~~~~ V_                        \~~~~~~|
+//                    ___/ V\____/\____/V \_____                   \~~~~~|
+//                 __/ :   V    :  :    V   :  :\___                |====|
+//               _/' .' .' V  .' .' .'  V .' .' .' .\_              |.' .|
+//              /:  :  :  :  :  :  :  :  :  :  :  :  :\             |  : |
+//             /. `. `. `. `. `. `. `. `. `. `. `. `. `\            |`. `|
+//            /  :  :  :  :  :  :  :  :  :  :  :  :  :  \           |  : |
+//           / .' .' .' .' .' \\  '  // ' .' .' .' .' .' \          |.' .|
+//          / :  :  :  :  :    ))   ((   :  :  :  :  :  : \         |  : |
+//         |`. `. `. `. `. `. ((  .  )) . `. `. `. `. `. `.\        |`. `|
+//         |  :  :  :  :  :    ))   ((   :  :  :  :  :  :  :\       |  : |
+//        / .' .'  ' .' .' .' ((  '  )) ' .' .' .'  ' .' .' .|      /.' .|
+//       | :  : //  :  :  :    ))   ((   :  :  :   \\:  :  : |     |:  : |
+//       |. `. || `. `. `. `. ((  .  )) . `. `. `.  ||`. `. `.\    | `. `\
+//      /  :  :||   :  :  :    ))   ((   :  :  :  : ||  :  :  :|   |:  :  |
+//     | .' .' || .' .' .' .' ((  '  )) ' .' .' .'  ||.' .' .' |   | .' .'|
+//     |:  :  :||   :  :  :    ))   ((   :  :  :  : ||  :  :  : \  |:  :  |
+//    /. `. `. || `. `. `. `. ((  .  )) . `. `. `.  ||\. `. `. `.\ | `. `.|
+//   |  :  :  : \\  :  :  :  :  :  : _   :  :  :   //  \:  :  :  :\|:  :  |
+//   |.' .' .' .'\\  .' .' .' . _ ' ._\ ' .' .' . //|   \.' .' .' .| .' .'|
+// ./:  :  :  :  :\\   :  :  : /_  :  \\ :  :   _// |    \ :  :  : |:  :  |
+// |. `. `. `. __ `\\_  `. `. // `. `. \\______/_/ `|     | `. `. `| `. `.|
+// | :/ :  :  /  |  \_\______// :  :  : \______/  : |     |:  :  : |:  :  |
+// .'|.' .' ./   |.' .\______/.' .' .' .' .' .' .' .|      \.' .' .' .' .'|
+//   |  :  :|    \  :  :  :  :  :  :  :  :  :  :  :/        \ : o   :  :  |
+// `/ `. `. |     |. `. `. `. `. `. `. `. `. `. `.|          | o  `. `. `.|
+// | :  :  /      | :  :  :  :  :  :  :  :  :  :  |          | o :  :  :  |
+// |' .' .|       |' .' .' .' .' .' .' .' .' .' .'|           \ o .' .' .'|
+//   :  : |       | :  :  :  :  :  :  :  :  :  :  :\           \ o  :  :  |
+// `. `. /       /`. `. `. I  `. `. `. `. ` I . `. `\           \ oo `  o.|
+//   :  |       /:  :  :  : I   :  :  :  :  I  :  :  \           \_ oooo  |
+// .' .'|      /' .' .' .'  I .' .' .' .' . I ' .' .' \            \_____/
+//   : /      /  :  :  :  : I   :  :  :  : I   :  :  : \
+// `. |      | `. `. `. `.  I `. `. `. `.  I `. `. `. `.\
+//   :|      |:  :  :  :  : I   :  H H   : I   :  :  :  :\
+// .' |     /' .' .' .' .' . I ' . H H .'  I .' .' .' .' .\
+//   :|    |  :  :  :  :  :   I :  H H    I :  :  :  :  :  \
+// `. |    |`. `. `. `. `. `. I  ` L L `. I  `. `. `. `. `. \
+//   :|    |  :  :  :  :  :  : I    H H  I  :  :  :_ :  :  : \
+// .' |    |.' .' .' .' .' .' . I ' H H I .' .' .' .\ .' .' .'\
+//   :|    |  :  :___  :  :  :   I  H HI :  :  :  :  \  :  :  :\
+// `. |    |`. `.|   |. `. `. `.  I H H . `. ` _`. `.|\. `. `. `|
+//   :|    /  :  |   | :  :  :  :  IH H  :  : | _ :  | \:  :  : |
+// .' |   | .' .'|   |' .' _  .' .' H H ' .'  ||   .'|  \.' .' .|
+//   :|   |:  :  |   | :  _ |   :   H H  :   //   :  |   | :  : |
+// `. /   | `. `./   |. `. || `. `. H H . ` //  `. `.|   |. `. `|
+//   |    |:  : |    | :  : \\  :   H H  :_//  :  :  |   | :  : |
+// .'|    / .' .|    /' .' . \\  .' H H ' _/ .' .' .'\   |' .' .|
+//   |   | :  : |   |  :  :   \\    H H  :  :  :  :  :|  | :  : |
+// `.|   |. `. `|   |`. `. `.  \\_. H H . `. `. `. `. |  |. `. `|
+//   |   | :  :/   |:  :  :  :  \_  H H  :  :  :  :  :|  | :  : |
+// .'|   |' .' |  |' .' .' .' .' .' H H ' .' .' .' .' |  |' .' .|
+//   |   | :  :|  | :  :  :  :  :   H H  :  :  :  :  :|  | :  : |
+// `.|  /`. `. |  |. `. `. `. `. `. `. `. `. `. `. `. |   \ `. `|
+//   / |:  :  :/  / :  : __  :  :  :  :  :  :  :__   :\    |  :  \
+// .|  | .' .'|  |.' .' |XX\' .' .' .' .' .' .'/XX|.' .\   |.' .'|
+// .|  /:  :  |  |  :  :  \X\:  :  :  :  :  : /X/ :  :  |  |  :  |
+// `| |. `. `.|  |`. `. `. \X\_. `. `. `. `._/X/`. `. `.|  |`. `.|
+// .| | :  :  |  |  :  :  : \XX\_  :  :  :_/XX/:  :  :  |  |  :  |
+// .| |' .' ./   /.' .' .' .' \XX\' .' .'/XX/.' .' .' .'|  |.' .'|
+// .| | :  :|   |:  :  :  :  :  \X\_____/X/ :  :  :  :  |  |  :  |
+// `| |. `. |   | `. `. `. `. `. |XXXXXXX|`. `. `. `. `.|  \`. `.|
+// .| | :  :|   |:  :  :  :  :  :|XX| |XX|  :  :  :  :  |   | :  |
+// .| |' .' |   | .' .' .' .' .'  \ |V| / .' .' .' .' .'|   |' .'|
+// .| / :  :|   |:  :  :  :  :  : /\/ \/\:  :  :  :  :  |   | :  |
+// =||`. `./    | `. `. `. `. `. |       |`. `. `. `. `.|   |. `.|
+// ~\|  : |     |:  :  :  :  :  :|       |  :  :  :  :  |   | :  |
+// ~~|.' .|      \.' .' .' .' .' |       |.' .' .' .' .'|    \ .' \
+// ~~|  : |       | :  :  :  :  :|       |  :  :  :  :  |     \  : \
+// ~~|`. `|       |. `. `. `. `. |       |`. `. `. `. `.|      \. `.|
+// _~|  : |        \:  :  :  :  :|       |  :  :  :  : /        |:  |
+// .||.' .|         |.' .' .' .' |       |.' .' .' .' |         |===|
+// .||  : \         |  :  :  :  :|       |  :  :  :  :|         /~~~\
+//   V\. `.|        |`. `. `. `. |       |`. `. `. `. |        |~~~~~\
+//     |===|        |  :  :  :  :|       |  :  :  :  :|        \~~~~~~)
+//     /~~~\        |.' .' .' .' |       |.' .' .' .' |         )~~~~/
+//    /~~~~~|        \ :  :  :  :|       |  :  :  :  /         /~_~~~\
+//   (~~~~~~/         | `. `. `. |       |`. `. `. `|         |~| |~~~)
+//    \~~~~(          |:  :  :  :|       |  :  :  : |         |~| |~~/
+//    /~~~_~\         | .' .' .' |       |.' .' .' .|          V  |~|
+//   (~~~| |~|        |:  :  :  :|       |  :  :  : |             |~|
+//    \~~| |~|        | #. `. `. `\     / `. `. `.#`|             |~|
+//     |~|  V        / : #:  : #:  )   ( : #:  : #:  \            |~|
+//     |~|           )' .# .' #' .(     ) .'#.' .# .'(             V
+//     |~|           \ : ###### :  )   ( :  ######:  /
+//     |~|           /. `# `. #. `(     ) `.#`. `# `.\
+//      V            ) : #:  :# :  )   ( :  #  : #:  (
+//                   \' .# .' .# ./     \ .# .' .# .'/
+//                    |:# :  :  :|       |  :  :  # |
+//                    | `. `. `. |       |`. `. `. `|
+//                    |:  :  :  :|       |  :  :  : |
+//                    | .' .' .' \       /.' .' .' .|
+//                    |:  :  :  : |     |:  :  :  : |
+//                   /. `/   |`. `|     | `. |   \ `.\
+//                  |  :/     \ : |     |:  /     \  :|
+//                  |.'[  ( )  ] .|     | .[  ( )  ]' |
+//                  |  [       ]: |     |: [       ] :|
+//                  |`. \     /. `|     | `.\     /`. |
+//                   \ : \   |  : |     |:  :|   /:  /
+//                    \ .' .' .' /       \.' .' .' ./
+//                     |  :  :  |         | :  :  :|
+//                     |`. `. `.|         |. `. `. |
+//                     |  :  :  |         | :  :  :|
+//                      \' .' .'|         |' .' .'/
+//                       \:  :  |         | :  : /
+//                        |`. `.|         |. `. |
+//                        |  :  |         | :  :|
+//                        |.' .'|         |' .' |
+//                        |  :  |         | :  :|
+//                        |`. `.|         |. `. |
+//                       /:  :  |         | :  : \
+//                      |' .' .'|         |' .' .'|
+//                      | :  :  |         | :  :  |
+//                      |. `. `.|         |. `. `.|
+//                      | :  :  |         | :  :  |
+//                      |' .' .'|         |' .' .'|
+//                     /  :  :  |         | :  :  :\
+//                    / `. `. `./         \. `. `. `\
+//                   / :  :  : |           |:  :  :  \
+//                  /.' .' _/ .|           | .\_.' .' \M
+//                 /:  : _/  :/             \  :\_:  : \E
+//                /. `._/ |`./               \. | \_. `.\P
+//               /  :_/  /: /                 \: \  \_  :\H
+//              / ._/   /' /                   \ '\   \_ .\
+//             /__/    |  /                     \  |    \__\
+//                     |_/                       \_|
+
+</textarea>
+
+   <div id="banner" onclick="run();">FREAKCODING</div>
+
+   <script> init();
+/*
+     var elem = document.getElementById('code');
+     
+     sharejs.open('default', 'text', function(error, doc) {
+     if (error) {
+     console.log(error);
+     } else {
+     elem.disabled = false;
+     doc.attach_textarea(elem);
+     }
+     });
+*/
+   </script>
+
+  </body>
+</html>
