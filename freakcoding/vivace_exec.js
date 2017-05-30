@@ -7,7 +7,7 @@ var audioFilesDir = './media/';
 var voices = {};
 
 // our audio context
-var context = new webkitAudioContext();
+var context = new AudioContext();
 
 function exec (input) {
   var tree = vivace.parse(input);
