@@ -7,7 +7,7 @@ var audioFilesDir = './media/';
 var voices = {};
 
 // our audio context
-var context = new AudioContext();
+var context = new webkitAudioContext();
 
 function exec (input) {
   var tree = vivace.parse(input);
@@ -192,47 +192,10 @@ var masterClock = setInterval(tick, timeInterval);
 
 // load all audio and video files
 function init () {
-  var files = [/*{name: 'a', fileName: 'art1.wav', type: 'audio'},
-               {name: 'b', fileName: 'art2.wav', type: 'audio'},
-               {name: 'c', fileName: 'ato1.wav', type: 'audio'},
-               {name: 'd', fileName: 'ato2.wav', type: 'audio'},
-{name: 'e', fileName: 'back1.wav', type: 'audio'},
-{name: 'f', fileName: 'back2.wav', type: 'audio'},
-{name: 'g', fileName: 'bass1.wav', type: 'audio'},*/
-{name: 'f', fileName: 'bass2.wav', type: 'audio'},
-{name: 'e', fileName: 'bass3.wav', type: 'audio'},/*
-//{name: 'bass4', fileName: 'bass4.wav', type: 'audio'},
-//{name: 'bass5', fileName: 'bass5.wav', type: 'audio'},
-//{name: 'bass6', fileName: 'bass6.wav', type: 'audio'},
-//{name: 'bass7', fileName: 'bass7.wav', type: 'audio'},
-//{name: 'bass8', fileName: 'bass8.wav', type: 'audio'},
-//{name: 'bass9', fileName: 'bass9.wav', type: 'audio'},
-//{name: 'bass10', fileName: 'bass10.wav', type: 'audio'},
-//{name: 'bass12', fileName: 'bass12.wav', type: 'audio'},*/
-{name: 'a', fileName: 'beat1.wav', type: 'audio'},
-{name: 'b', fileName: 'beat2.wav', type: 'audio'},
-//{name: 'beat3', fileName: 'beat3.wav', type: 'audio'},
-//{name: 'beat4', fileName: 'beat4.wav', type: 'audio'},
-//{name: 'beat5', fileName: 'beat5.wav', type: 'audio'},
-{name: 'c', fileName: 'bob1.wav', type: 'audio'},
-{name: 'd', fileName: 'bro1.wav', type: 'audio'},
-//{name: 'bro2', fileName: 'bro2.wav', type: 'audio'},
-//{name: 'bro3', fileName: 'bro3.wav', type: 'audio'},
-//{name: 'clap1', fileName: 'clap1.wav', type: 'audio'},
-//{name: 'clap2', fileName: 'clap2.wav', type: 'audio'},
-/*{name: 'fx1', fileName: 'fx1.wav', type: 'audio'},
-{name: 'fx2', fileName: 'fx2.wav', type: 'audio'},
-{name: 'fx3', fileName: 'fx3.wav', type: 'audio'},
-{name: 'fx4', fileName: 'fx4.wav', type: 'audio'},
-{name: 'hat1', fileName: 'hat1.wav', type: 'audio'},
-{name: 'hat2', fileName: 'hat2.wav', type: 'audio'},
-{name: 'kick1', fileName: 'kick1.wav', type: 'audio'},
-{name: 'kick2', fileName: 'kick2.wav', type: 'audio'},
-{name: 'snare1', fileName: 'snare1.wav', type: 'audio'},*/
-               //{name: 'eyes', fileName: 'eyes.mp4', type: 'video'},
-//{name: 'v', fileName: 'monster1.mp4', type: 'video'},
-//{name: 'vvv', fileName: 'monster2.mp4', type: 'video'},
-{name: 'vv', fileName: 'avenidaTapa.mp4', type: 'video'}];
+  var files = [
+    {name: 'a', fileName: 'lamento.ogg', type: 'audio'},
+    {name: 'v', fileName: 'dancasindigenas.mp4', type: 'video'},
+  ];
 
   for (file in files) {
     // create a dict to each voice
