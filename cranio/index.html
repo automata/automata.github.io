@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title> CRANIO SONANTE FREAKCODING </title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <script src="popcorn.min.js"></script>
+    <script src="vivace.js"></script>
+    <script src="vivace_exec.js"></script>
+<!--
+    <script src="/channel/bcsocket.js"></script>
+    <script src="/share/share.js"></script>
+    <script src="/share/textarea.js"></script>
+-->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #000;
+      }
+
+      #code {
+      width: 100%;
+      height: 100%;
+      color: transparent;
+      background-color: transparent;
+      position: absolute; left: 0px; top: 0px;
+      padding: 24px;
+      padding-top: 42px;
+      padding-bottom: 42px;
+      line-height: 1.1em;
+      font-family: monospace;
+      font-size: 18px;
+      font-weight: bold;
+      visibility: visible;
+      z-index: 1000;
+      /* transition between transparent and semi-transparent black on hover */
+      transition: color  1500ms;
+      -webkit-transition: color  1500ms;
+      -o-transition: color  500ms;
+      -moz-transition: color ox-shadow 500ms;
+      -ms-transition: color  500ms;
+      outline: none;
+      border: none;
+      }
+
+      #code:hover {
+      color: #fff;
+      text-shadow: #000 2px 2px 5px;
+
+      background-color:rgba(255,0,0,.3);
+      }
+
+      #banner {
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+      padding: 24px;
+      font-family: monospace;
+      font-size: 18px;
+      font-weight: bold;
+      color: transparent;
+      text-shadow: #555 0px 0px 2px;
+      background-color: transparent;
+      z-index: 1001;
+      display: none;
+      transition: color  1500ms;
+      -webkit-transition: color  1500ms;
+      -o-transition: color  500ms;
+      -moz-transition: color ox-shadow 500ms;
+      -ms-transition: color  500ms;
+      }
+
+      #banner:hover {
+      color: #000;
+      }
+
+      video {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        document.getElementById(voiceName).style.zIndex="800";
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+   <textarea id="code" spellcheck="false">
+// aperte ctrl+x para tocar
+
+v.pos = [14, 14, 16, 20, 16]
+v.pos = {1, 1/2}
+
+a.pos = [30,30,31,32,45,47]
+a.gdur = [2]
+a.pos = {1/2,1/4}
+
+//                             ...----....
+//                         ..-:"''         ''"-..
+//                      .-'                      '-.
+//                    .'              .     .       '.
+//                  .'   .          .    .      .    .''.
+//                .'  .    .       .   .   .     .   . ..:.
+//              .' .   . .  .       .   .   ..  .   . ....::.
+//             ..   .   .      .  .    .     .  ..  . ....:IA.
+//            .:  .   .    .    .  .  .    .. .  .. .. ....:IA.
+//           .: .   .   ..   .    .     . . .. . ... ....:.:VHA.
+//           '..  .  .. .   .       .  . .. . .. . .....:.::IHHB.
+//          .:. .  . .  . .   .  .  . . . ...:.:... .......:HIHMM.
+//         .:.... .   . ."::"'.. .   .  . .:.:.:II;,. .. ..:IHIMMA
+//         ':.:..  ..::IHHHHHI::. . .  ...:.::::.,,,. . ....VIMMHM
+//        .:::I. .AHHHHHHHHHHAI::. .:...,:IIHHHHHHMMMHHL:. . VMMMM
+//       .:.:V.:IVHHHHHHHMHMHHH::..:" .:HIHHHHHHHHHHHHHMHHA. .VMMM.
+//       :..V.:IVHHHHHMMHHHHHHHB... . .:VPHHMHHHMMHHHHHHHHHAI.:VMMI
+//       ::V..:VIHHHHHHMMMHHHHHH. .   .I":IIMHHMMHHHHHHHHHHHAPI:WMM
+//       ::". .:.HHHHHHHHMMHHHHHI.  . .:..I:MHMMHHHHHHHHHMHV:':H:WM
+//       :: . :.::IIHHHHHHMMHHHHV  .ABA.:.:IMHMHMMMHMHHHHV:'. .IHWW
+//       '.  ..:..:.:IHHHHHMMHV" .AVMHMA.:.'VHMMMMHHHHHV:' .  :IHWV
+//        :.  .:...:".:.:TPP"   .AVMMHMMA.:. "VMMHHHP.:... .. :IVAI
+//       .:.   '... .:"'   .   ..HMMMHMMMA::. ."VHHI:::....  .:IHW'
+//       ...  .  . ..:IIPPIH: ..HMMMI.MMMV:I:.  .:ILLH:.. ...:I:IM
+//     : .   .'"' .:.V". .. .  :HMMM:IMMMI::I. ..:HHIIPPHI::'.P:HM.
+//     :.  .  .  .. ..:.. .    :AMMM IMMMM..:...:IV":T::I::.".:IHIMA
+//     'V:.. .. . .. .  .  .   'VMMV..VMMV :....:V:.:..:....::IHHHMH
+//       "IHH:.II:.. .:. .  . . . " :HB"" . . ..PI:.::.:::..:IHHMMV"
+//        :IP""HHII:.  .  .    . . .'V:. . . ..:IH:.:.::IHIHHMMMMM"
+//        :V:. VIMA:I..  .     .  . .. . .  .:.I:I:..:IHHHHMMHHMMM
+//        :"VI:.VWMA::. .:      .   .. .:. ..:.I::.:IVHHHMMMHMMMMI
+//        :."VIIHHMMA:.  .   .   .:  .:.. . .:.II:I:AMMMMMMHMMMMMI
+//        :..VIHIHMMMI...::.,:.,:!"I:!"I!"I!"V:AI:VAMMMMMMHMMMMMM'
+//        ':.:HIHIMHHA:"!!"I.:AXXXVVXXXXXXXA:."HPHIMMMMHHMHMMMMMV
+//          V:H:I:MA:W'I :AXXXIXII:IIIISSSSSSXXA.I.VMMMHMHMMMMMM
+//            'I::IVA ASSSSXSSSSBBSBMBSSSSSSBBMMMBS.VVMMHIMM'"'
+//             I:: VPAIMSSSSSSSSSBSSSMMBSSSBBMMMMXXI:MMHIMMI
+//            .I::. "H:XIIXBBMMMMMMMMMMMMMMMMMBXIXXMMPHIIMM'
+//            :::I.  ':XSSXXIIIIXSSBMBSSXXXIIIXXSMMAMI:.IMM
+//            :::I:.  .VSSSSSISISISSSBII:ISSSSBMMB:MI:..:MM
+//            ::.I:.  ':"SSSSSSSISISSXIIXSSSSBMMB:AHI:..MMM.
+//            ::.I:. . ..:"BBSSSSSSSSSSSSBBBMMMB:AHHI::.HMMI
+//            :..::.  . ..::":BBBBBSSBBBMMMB:MMMMHHII::IHHMI
+//            ':.I:... ....:IHHHHHMMMMMMMMMMMMMMMHHIIIIHMMV"
+//              "V:. ..:...:.IHHHMMMMMMMMMMMMMMMMHHHMHHMHP'
+//               ':. .:::.:.::III::IHHHHMMMMMHMHMMHHHHM"
+//                 "::....::.:::..:..::IIIIIHHHHMMMHHMV"
+//                   "::.::.. .. .  ...:::IIHHMMMMHMV"
+//                     "V::... . .I::IHHMMV"'
+//                       '"VHVHHHAHHHHMMV:"'
+
+//   sSSs   .S_sSSs     .S_SSSs     .S_sSSs     .S    sSSs_sSSs                      
+//  d%%SP  .SS~YS%%b   .SS~SSSSS   .SS~YS%%b   .SS   d%%SP~YS%%b                     
+// d%S'    S%S   `S%b  S%S   SSSS  S%S   `S%b  S%S  d%S'     `S%b                    
+// S%S     S%S    S%S  S%S    S%S  S%S    S%S  S%S  S%S       S%S                    
+// S&S     S%S    d*S  S%S SSSS%S  S%S    S&S  S&S  S&S       S&S                    
+// S&S     S&S   .S*S  S&S  SSS%S  S&S    S&S  S&S  S&S       S&S                    
+// S&S     S&S_sdSSS   S&S    S&S  S&S    S&S  S&S  S&S       S&S                    
+// S&S     S&S~YSY%b   S&S    S&S  S&S    S&S  S&S  S&S       S&S                    
+// S*b     S*S   `S%b  S*S    S&S  S*S    S*S  S*S  S*b       d*S                    
+// S*S.    S*S    S%S  S*S    S*S  S*S    S*S  S*S  S*S.     .S*S                    
+//  SSSbs  S*S    S&S  S*S    S*S  S*S    S*S  S*S   SSSbs_sdSSS                     
+//   YSSP  S*S    SSS  SSS    S*S  S*S    SSS  S*S    YSSP~YSSY                      
+//         SP                 SP   SP          SP                                    
+//         Y                  Y    Y           Y                                     
+//                                                                                   
+//   sSSs    sSSs_sSSs     .S_sSSs     .S_SSSs     .S_sSSs    sdSS_SSSSSSbs    sSSs  
+//  d%%SP   d%%SP~YS%%b   .SS~YS%%b   .SS~SSSSS   .SS~YS%%b   YSSS~S%SSSSSP   d%%SP  
+// d%S'    d%S'     `S%b  S%S   `S%b  S%S   SSSS  S%S   `S%b       S%S       d%S'    
+// S%|     S%S       S%S  S%S    S%S  S%S    S%S  S%S    S%S       S%S       S%S     
+// S&S     S&S       S&S  S%S    S&S  S%S SSSS%S  S%S    S&S       S&S       S&S     
+// Y&Ss    S&S       S&S  S&S    S&S  S&S  SSS%S  S&S    S&S       S&S       S&S_Ss  
+// `S&&S   S&S       S&S  S&S    S&S  S&S    S&S  S&S    S&S       S&S       S&S~SP  
+//   `S*S  S&S       S&S  S&S    S&S  S&S    S&S  S&S    S&S       S&S       S&S     
+//    l*S  S*b       d*S  S*S    S*S  S*S    S&S  S*S    S*S       S*S       S*b     
+//   .S*P  S*S.     .S*S  S*S    S*S  S*S    S*S  S*S    S*S       S*S       S*S.    
+// sSS*S    SSSbs_sdSSS   S*S    S*S  S*S    S*S  S*S    S*S       S*S        SSSbs  
+// YSS'      YSSP~YSSY    S*S    SSS  SSS    S*S  S*S    SSS       S*S         YSSP  
+//                        SP                 SP   SP               SP                
+//                        Y                  Y    Y                Y 
+
+//   _____                       __                    .___.__                
+// _/ ____\______   ____ _____  |  | __ ____  ____   __| _/|__| ____    ____  
+// \   __\\_  __ \_/ __ \\__  \ |  |/ // ___\/  _ \ / __ | |  |/    \  / ___\ 
+//  |  |   |  | \/\  ___/ / __ \|    <\  \__(  <_> ) /_/ | |  |   |  \/ /_/  >
+//  |__|   |__|    \___  >____  /__|_ \\___  >____/\____ | |__|___|  /\___  / 
+//                     \/     \/     \/    \/           \/         \//_____/  
+
+</textarea>
+
+   <div id="banner" onclick="run();">FREAKCODING</div>
+
+   <script> init();
+/*
+     var elem = document.getElementById('code');
+     
+     sharejs.open('default', 'text', function(error, doc) {
+     if (error) {
+     console.log(error);
+     } else {
+     elem.disabled = false;
+     doc.attach_textarea(elem);
+     }
+     });
+*/
+   </script>
+
+  </body>
+</html>
