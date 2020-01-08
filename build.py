@@ -2,15 +2,26 @@ import mistune
 import os
 
 template_head = '''
-<html><head><meta charset="UTF-8"><style>body { background: #000; color: #fff;
-width: 30%; padding: 30px; line-height: 14pt; font-size: 9pt; font-family: monospace; } a { color: cyan; } #logo
-{ margin-bottom: 100px } h1,h2,h3 { margin-top: 50px; }</style></head><body>
-<img id="logo" src="./void-ansi2.png" />
-<br /><br />
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Vilson Vieira Personal Website">
+      <meta name="keywords" content="Personal Website, Machine Learning, AI, Computational Creativity, Gamedev, Research, USP, Physics, CS">
+      <meta name="author" content="Vilson Vieira">
+      <title>Vilson Vieira</title>
+      <link rel="stylesheet" href="style.css">
+      <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+      <img id="logo" src="./void-ansi2.png" />
+      <br /><br />
 '''
 
 template_foot = '''
-</body></html>
+    </body>
+   </html>
 '''
 
 with open('./index.md', 'r') as file_input:

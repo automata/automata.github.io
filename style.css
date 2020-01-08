@@ -1,0 +1,21 @@
+body {
+  background: #000;
+  color: #fff;
+  width: 30%;
+  padding: 30px;
+  line-height: 14pt;
+  font-size: 9pt;
+  font-family: monospace;
+}
+
+a {
+  color: cyan;
+}
+
+#logo {
+  margin-bottom: 100px
+}
+
+h1,h2,h3 {
+  margin-top: 50px;
+}
