@@ -22,7 +22,7 @@ a:hover {
 }
 
 #logo {
-  margin-bottom: 100px
+  margin-bottom: 100px;
   width: 100%;
 }
 
@@ -37,6 +37,7 @@ h1,h2,h3 {
     font-size: 10pt;
   }
   #logo {
+    margin-bottom: 10px;
     width: 50%;
   }
 }
