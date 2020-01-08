@@ -52,7 +52,7 @@ Recently working with [The Grid](http://thegrid.io) team on [Noflo](http://noflo
 
 Recently researching computational creativity as part of a Master Program on Computational Physics atUniversidade de São Paulo supported by CAPES.
 
-* [Associated student of prof. Luciano Fontoura da Costa Group](http://cyvision.ifsc.usp.br/cyvision/home.php?page=PEOPLE&subpage=MEMBERS&profile=vilsonvieira)
+* [Associated student of IFSC/USP/Cyvision Group](http://cyvision.ifsc.usp.br/cyvision/home.php?page=PEOPLE&subpage=MEMBERS&profile=vilsonvieira)
 * [Curriculum Lattes](http://lattes.cnpq.br/4824056327068155)
 
 ### Main research interests
@@ -70,9 +70,9 @@ Recently researching computational creativity as part of a Master Program on Com
 
 ## Selected Publications
 
-- __A quantitative approach to painting styles__. Physica A: Statistical Mechanics and its Applications. Online at: http://www.sciencedirect.com/science/article/pii/S0378437114007961 and http://arxiv.org/abs/1403.4512
-- __A quantitative approach to evolution of music and philosophy__. J. Stat. Mech. (2012). Online at: http://iopscience.iop.org/1742-5468/2012/08/P08010 and http://arxiv.org/abs/1403.4513
-- __The Algorithmic Autoregulation: Software Development Methodology__. Revista Eletrônica de Sistemas de Informação, v. 12, n. 3, May-Aug 2014. doi:10.5329/RESI.2014.130200. ISSN 1677-3071. Online at: http://wsl.softwarelivre.org/2013/0004/
+- __A quantitative approach to painting styles__. Physica A: Statistical Mechanics and its Applications. [Paper](http://www.sciencedirect.com/science/article/pii/S0378437114007961) - [arXiv](http://arxiv.org/abs/1403.4512)
+- __A quantitative approach to evolution of music and philosophy__. J. Stat. Mech. (2012). [Paper](http://iopscience.iop.org/1742-5468/2012/08/P08010) [arXiv](http://arxiv.org/abs/1403.4513)
+- __The Algorithmic Autoregulation: Software Development Methodology__. Revista Eletrônica de Sistemas de Informação, v. 12, n. 3, May-Aug 2014. doi:10.5329/RESI.2014.130200. ISSN 1677-3071. [Paper](http://wsl.softwarelivre.org/2013/0004/)
 
 ## Selected Exhibitions, Talks and Events
 
