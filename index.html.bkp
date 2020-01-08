@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <style>
+      html {
+        background: url(void-ansi2.png) #000 center center no-repeat;
+	width: 100%;
+	height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+  </body>
+</html> 
