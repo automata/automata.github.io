@@ -7,7 +7,7 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 # Open Source Projects
 
 - [Meemoo](https://meemoo.org) // A dataflow programming environment for Web art by Forrest Oliphant
-- [GMR Saliency](https://github.com/automata-gmr-saliency) // C++ implementation of SLIC for paper "Saliency Detection via
+- [GMR Saliency](https://github.com/automata/gmr-saliency) // C++ implementation of SLIC for paper "Saliency Detection via
   Graph-Based Manifold Ranking" by Chuan Yang et al.
 - [KLayJS](https://github.com/automata/klay-js) // Bower component and
   easy-to-use wrapper to KLayJS, making it possible to use KLayJS as a Web
@@ -16,10 +16,10 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
   this dataflow programming library by Henri Bergius
   - noflo-canvas
   - noflo-image
-- [Vivace](https://void.cc/vivace) // One of the first domain specific languages
+- [Vivace](http://void.cc/vivace) // One of the first domain specific languages
   for livecoding using Web Audio API. Presented on workshops and festivals on
   Brazil.
-- [AutoVJ](https://void.cc/autovj) // A just-for-fun GIF-based VJ tool
+- [AutoVJ](http://void.cc/autovj) // A just-for-fun GIF-based VJ tool
 
 # Timeline
 

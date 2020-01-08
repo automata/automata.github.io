@@ -14,7 +14,7 @@ template_foot = '''
 '''
 
 with open('./index.md', 'r') as file_input:
-    with open('./index_.html', 'w') as file_output:
+    with open('./index.html', 'w') as file_output:
         content = file_input.read()
         markdown = mistune.markdown(content)
         html = template_head + markdown + template_foot
