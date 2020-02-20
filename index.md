@@ -19,7 +19,7 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 - [Vivace](https://void.cc/vivace): One of the first domain specific languages
   for livecoding using Web Audio API. Presented on workshops and festivals on
   Brazil.
-- [AutoVJ](https://void.cc/autovj): A just-for-fun GIF-based VJ web tool
+- [AutoVJ](http://void.cc/autovj): A just-for-fun GIF-based VJ web tool
 
 # Timeline
 
