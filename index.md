@@ -20,11 +20,14 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
   Brazil.
 - [AutoVJ](http://void.cc/autovj): A just-for-fun GIF-based VJ web tool
 
-# Experiments
+# Experiments / Art
 
 - [Viz Paintings](https://void.cc/viz-paintings/): Interactive 3D visualization
   of paintings for __A quantitative approach to painting syles__ paper (see
   below).
+- [Code Poems](http://code-poems.com/): The code poem
+  [Rising](https://gist.github.com/automata/8e64b5f67134f51c4cca9bd564e84e66) was selected
+  to be published on this amazing project by [Ishac Bertran](http://ishback.com/).
 
 # Timeline
 
