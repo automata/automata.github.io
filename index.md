@@ -6,7 +6,6 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
 # Open Source Projects
 
-
 - [Meemoo](https://meemoo.org): A dataflow programming environment for Web art by Forrest Oliphant.
 - [GMR Saliency](https://github.com/automata/gmr-saliency): C++ implementation of SLIC for paper "Saliency Detection via
   Graph-Based Manifold Ranking" by Chuan Yang et al.
@@ -20,6 +19,12 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
   for livecoding using Web Audio API. Presented on workshops and festivals on
   Brazil.
 - [AutoVJ](http://void.cc/autovj): A just-for-fun GIF-based VJ web tool
+
+# Experiments
+
+- [Viz Paintings](https://void.cc/viz-paintings/): Interactive 3D visualization
+  of paintings for __A quantitative approach to painting syles__ paper (see
+  below).
 
 # Timeline
 
