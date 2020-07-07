@@ -66,6 +66,7 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 - __Vivace: a collaborative live coding language and platform__. SBCM 2017. [Paper](http://compmus.ime.usp.br/sbcm/2017/papers/sbcm-2017-15.pdf) - [arXiv](https://arxiv.org/abs/1502.01312)
 - __The Algorithmic Autoregulation: Software Development Methodology__. Revista Eletrônica de Sistemas de Informação, v. 12, n. 3, May-Aug 2014. doi:10.5329/RESI.2014.130200. ISSN 1677-3071. [Paper](http://wsl.softwarelivre.org/2013/0004/) - [arXiv](https://arxiv.org/abs/1604.08255)
 - __Musical elements in the discrete-time representation of sound__. Collaborated on revision for Renato Fabbri. [arXiv](https://arxiv.org/abs/1412.6853)
+- __Estudo e Simulação de Algoritmos Aleatórios Quânticos e sua Aplicação em Problemas de Grafos__. Bachelor's CS thesis, 2007 (in pt-br). [Thesis](files/vilson2007-tccii.pdf)
 
 # Selected Exhibitions, Talks and Events
 
