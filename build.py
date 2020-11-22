@@ -24,9 +24,12 @@ template_foot = '''
    </html>
 '''
 
-with open('./index.md', 'r') as file_input:
-    with open('./index.html', 'w') as file_output:
-        content = file_input.read()
-        markdown = mistune.markdown(content, escape=False)
-        html = template_head + markdown + template_foot
-        file_output.write(html)
+def build_html(md_file, html_file):
+    with open(md_file, 'r') as file_input:
+        with open(html_file, 'w') as file_output:
+            content = file_input.read()
+            markdown = mistune.markdown(content, escape=False)
+            html = template_head + markdown + template_foot
+            file_output.write(html)
+
+build_html('./index.md', './index.html')
