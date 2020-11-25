@@ -2,12 +2,13 @@ import mistune
 import mistune_contrib_meta as mc
 import os
 import time
+import shutil
 from datetime import datetime
 
 config = {
-    "index_file": "./archive.html",
+    "index_file": "./docs/index/index.html",
     "braindump_file": "/media/ssd/src/automata/braindump",
-    "html_output": "/media/ssd/src/automata/automata.github.io"
+    "html_output": "/media/ssd/src/automata/automata.github.io/docs"
 }
 
 template_head = '''
@@ -46,6 +47,15 @@ def build_html(md_file, html_file, has_meta=True, skip_private=True):
             file_output.write(html)
 
 
+def is_private(md_file):
+    with open(md_file, "r") as f:
+        content = f.read()
+        meta_data, _ = mc.parse(content)
+        if "Private" in meta_data.keys():
+            return True
+    return False
+
+
 def get_md_files(folder_path):
     md_files = []
     for root, folders, files in os.walk(folder_path):
@@ -64,30 +74,39 @@ def create_md_header(title="", author="Vilson Vieira", date=None, is_private=Fal
         return f"Title: {title}\nAuthor: {author}\nDate: {date}\nPrivate: True\n\n# "
     return f"Title: {title}\nAuthor: {author}\nDate: {date}\n\n"
 
-def convert_braindump():
+def convert_braindump(remove_output_folder=True):
     md_files = get_md_files(config["braindump_file"])
 
+    if remove_output_folder:
+        shutil.rmtree(config["html_output"])
+        os.mkdir(config["html_output"])
     for md_file in md_files:
         file_name, mdf = md_file
         with open(mdf, "r") as f:
-            output_folder = config["html_output"]
-            output_file = os.path.join(output_folder, f"{file_name[:-3]}.html")
+            name_only = file_name[:-3]
+            output_folder = os.path.join(config["html_output"], name_only)
+            os.mkdir(output_folder)
+            output_file = os.path.join(output_folder, "index.html")
             build_html(mdf, output_file)
 
 
 def build_index():
-    content = "<ul>"
-    for file in os.listdir(config["html_output"]):
-        if file.endswith((".html")):
-            content += f"<li><a href='/{file}'>{file[:-5]}</a></li>\n"
-    content += "</ul>"
+    os.mkdir(os.path.join(config["html_output"], "index"))
+    content = "<div class='index_cols'>"
+    files_path = sorted(os.listdir(config["braindump_file"]))
+    for file in files_path:
+        if file.endswith((".md")):
+            if not is_private(os.path.join(config["braindump_file"], file)):
+                name_only = file[:-3]
+                content += f"<a href='/{name_only}'>{name_only}</a>\n"
+    content += "</div>"
     with open(config["index_file"], "w") as f:
         html = template_head + content + template_foot
         f.write(html)
 
 def main():
-    build_html("./index.md", "./index.html")
     convert_braindump()
+    build_html("./index.md", "./docs/index.html")
     # Create index
     build_index()
 
