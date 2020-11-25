@@ -25,8 +25,7 @@ template_head = '''
       <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
     </head>
     <body>
-      <a href="/"><img id="logo" src="/static/void-ansi2.png" /></a>
-      <br /><br />
+      <a class="logo" href="/"><img id="logo" src="/static/void-ansi2.png" /></a>
 '''
 
 template_foot = '''
@@ -34,7 +33,7 @@ template_foot = '''
    </html>
 '''
 
-def build_html(md_file, html_file, has_meta=True, skip_private=True):
+def build_html(md_file, html_file, has_meta=True, skip_private=True, toc=""):
     with open(md_file, 'r') as file_input:
         with open(html_file, 'w') as file_output:
             content = file_input.read()
@@ -44,7 +43,7 @@ def build_html(md_file, html_file, has_meta=True, skip_private=True):
                     content_title = meta_data["Title"]
                     content = f"# {content_title}\n\n" + content
             markdown = mistune.markdown(content, escape=False)
-            html = template_head + markdown + template_foot
+            html = template_head + toc + markdown + template_foot
             file_output.write(html)
 
 
@@ -108,11 +107,12 @@ def build_index():
     with open(config["index_file"], "w") as f:
         html = template_head + content + template_foot
         f.write(html)
+    return content
 
 def main():
     convert_braindump()
-    build_html("./index.md", "./docs/index.html")
-    # Create index
-    build_index()
+    content_index = build_index()
+    content_index = "<h1>Braindump</h1>" + content_index
+    build_html("./index.md", "./docs/index.html", toc=content_index)
 
 main()
