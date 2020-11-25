@@ -40,8 +40,9 @@ def build_html(md_file, html_file, has_meta=True, skip_private=True):
             content = file_input.read()
             if has_meta:
                 meta_data, content = mc.parse(content)
-                if "Private" in meta_data.keys():
-                    return
+                if "Title" in meta_data.keys():
+                    content_title = meta_data["Title"]
+                    content = f"# {content_title}\n\n" + content
             markdown = mistune.markdown(content, escape=False)
             html = template_head + markdown + template_foot
             file_output.write(html)
@@ -51,7 +52,7 @@ def is_private(md_file):
     with open(md_file, "r") as f:
         content = f.read()
         meta_data, _ = mc.parse(content)
-        if "Private" in meta_data.keys():
+        if "Public" not in meta_data.keys():
             return True
     return False
 
@@ -74,7 +75,7 @@ def create_md_header(title="", author="Vilson Vieira", date=None, is_private=Fal
         return f"Title: {title}\nAuthor: {author}\nDate: {date}\nPrivate: True\n\n# "
     return f"Title: {title}\nAuthor: {author}\nDate: {date}\n\n"
 
-def convert_braindump(remove_output_folder=True):
+def convert_braindump(remove_output_folder=False):
     md_files = get_md_files(config["braindump_file"])
 
     if remove_output_folder:
@@ -85,13 +86,17 @@ def convert_braindump(remove_output_folder=True):
         with open(mdf, "r") as f:
             name_only = file_name[:-3]
             output_folder = os.path.join(config["html_output"], name_only)
-            os.mkdir(output_folder)
-            output_file = os.path.join(output_folder, "index.html")
-            build_html(mdf, output_file)
+            if not is_private(mdf):
+                if not os.path.isdir(output_folder):
+                    os.mkdir(output_folder)
+                output_file = os.path.join(output_folder, "index.html")
+                build_html(mdf, output_file)
 
 
 def build_index():
-    os.mkdir(os.path.join(config["html_output"], "index"))
+    index_folder = os.path.join(config["html_output"], "index")
+    if not os.path.isdir(index_folder):
+        os.mkdir(index_folder)
     content = "<div class='index_cols'>"
     files_path = sorted(os.listdir(config["braindump_file"]))
     for file in files_path:

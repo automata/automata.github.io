@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Vilson Vieira Personal Website">
+      <meta name="keywords" content="Personal Website, Machine Learning, AI, Computational Creativity, Gamedev, Research, USP, Physics, CS">
+      <meta name="author" content="Vilson Vieira">
+      <title>Vilson Vieira</title>
+      <link rel="stylesheet" href="/static/style.css">
+      <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+      <a href="/"><img id="logo" src="/static/void-ansi2.png" /></a>
+      <br /><br />
+<h1>Guide to ML Agents 1.0</h1>
+<ul>
+<li><p>Independent agents, but share the same Behavior</p>
+<ul>
+<li>Many instances help to speed up training in parallel</li>
+<li>Behaviors determines how agents makes decisions</li>
+</ul>
+</li>
+<li><p>Agent Properties</p>
+<ul>
+<li>Max Step: how many simulation steps before episode ends. Agents restarts
+every N steps.</li>
+<li>Behaviors parameters<ul>
+<li>Vector Observation Space</li>
+<li>Vector Action Space (Discrete/Continuous)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Mean reward should increase during training</p>
+</li>
+<li><p>Should end the training from Python (keyboard event for ctrl-c) to trigger
+saving the .nn model file</p>
+</li>
+<li><p>TODO Add support for --resume to load up checkpoints</p>
+</li>
+<li><p>To train behaviors we need to define 3 entities for a given environment</p>
+<ul>
+<li>Observations</li>
+<li>Actions</li>
+<li>Reward signals</li>
+</ul>
+</li>
+<li><p>By training, an agents learns a policy, which is an optional map between observations
+into actions</p>
+</li>
+<li><p>Heuristic behaviors is maybe a good place to put our navmesh-based control
+for "classical" AI (eg if agent collides, turn 90deg and continue forward)
+Behaviors defined as hard-coded set of rules</p>
+</li>
+<li><p>Behaviors are like a function: f(observations) = actions</p>
+</li>
+<li><p>Goal of agent: discover a behavior (a Policy) that maximizes a reward</p>
+<ul>
+<li>Rewards<ul>
+<li>Extrinsic</li>
+<li>Intrinsic<ul>
+<li>GAIL (Generative Adversarial IL)</li>
+<li>Behavior Cloning (BC, can be enabled on PPO or SAC)<ul>
+<li>Works better when there's demonstrations of almost all agent states</li>
+</ul>
+</li>
+<li>Curiosity</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>RL algorithms</p>
+<ul>
+<li>Proximal Policy Optimization</li>
+<li>Soft Actor-Critic<ul>
+<li>Heaver/slower (0.1 sec per step)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Imitation Learning: we can combine with RL to dramatically reduce the time
+the agent takes to solve the environment.</p>
+<ul>
+<li>Recording demonstrations on editor or build, saving as assets</li>
+</ul>
+</li>
+</ul>
+<p>To summarize, we provide 3 training methods: BC, GAIL and RL (PPO or SAC) that can be used independently or together:</p>
+<ul>
+<li>BC can be used on its own or as a pre-training step before GAIL and/or RL</li>
+<li>GAIL can be used with or without extrinsic rewards</li>
+<li>RL can be used on its own (either PPO or SAC) or in conjunction with BC and/or GAIL.</li>
+</ul>
+<p>Leveraging either BC or GAIL requires recording demonstrations to be provided as input to the training algorithms.</p>
+<ul>
+<li><p>Training with curriculum</p>
+<ul>
+<li>We can add some incremental variations of parameters (eg wall height) to
+increase difficulty level to agents while training</li>
+</ul>
+</li>
+<li><p>Environment Parameter Randomization</p>
+<ul>
+<li>Training agents by varying environment parameters, making them more robust to
+  avoid overfiting</li>
+</ul>
+</li>
+<li><p>Model types</p>
+<ul>
+<li>Vector Observations<ul>
+<li>Include a fully connected NN to learn from vector observations<ul>
+<li>Visual Observations</li>
+</ul>
+</li>
+<li>Include 3 CNN architectures to learn from multiple-cameras<ul>
+<li>Simple encoder with 2 conv layers</li>
+<li>3 conv layers proposed by Mnih et al.</li>
+<li>3 stacked layers of 2 resnets (IMPALA Resnet), much larter than other two</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Memory-enhanced (LSTM)</li>
+</ul>
+</li>
+</ul>
+<p>Parameters:
+<a href="https://github.com/Unity-Technologies/ml-agents/blob/release_1/docs/Training-Configuration-File.md">https://github.com/Unity-Technologies/ml-agents/blob/release_1/docs/Training-Configuration-File.md</a></p>
+<h1>PPO</h1>
+<p>Proximal Policy Optimization</p>
+<ul>
+<li>Tried to eliminate stepsize flaw on Plicy gradient methods by developing TRPO and ACER<ul>
+<li>ACER is far more complicated than PPO (replay buffer)</li>
+</ul>
+</li>
+</ul>
+<h2>Important Parameters</h2>
+
+    </body>
+   </html>

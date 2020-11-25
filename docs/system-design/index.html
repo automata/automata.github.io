@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Vilson Vieira Personal Website">
+      <meta name="keywords" content="Personal Website, Machine Learning, AI, Computational Creativity, Gamedev, Research, USP, Physics, CS">
+      <meta name="author" content="Vilson Vieira">
+      <title>Vilson Vieira</title>
+      <link rel="stylesheet" href="/static/style.css">
+      <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+      <a href="/"><img id="logo" src="/static/void-ansi2.png" /></a>
+      <br /><br />
+<h1>System Design</h1>
+<p>From original <a href="https://gist.github.com/vasanthk/485d1c25737e8e72759f">https://gist.github.com/vasanthk/485d1c25737e8e72759f</a></p>
+<h1>System Design Cheatsheet</h1>
+<blockquote><p>Picking the right architecture = Picking the right battles + Managing trade-offs</p>
+</blockquote>
+<h2>Basic Steps</h2>
+<p>1) <strong>Clarify and agree on the scope of the system</strong></p>
+<ul>
+<li><strong>User cases</strong> (description of sequences of events that, taken together, lead to a system doing something useful)<ul>
+<li>Who is going to use it?</li>
+<li>How are they going to use it?</li>
+</ul>
+</li>
+<li><strong>Constraints</strong> <ul>
+<li>Mainly identify <strong>traffic and data handling</strong> constraints at scale.</li>
+<li>Scale of the system such as requests per second, requests types, data written per second, data read per second)</li>
+<li>Special system requirements such as multi-threading, read or write oriented.</li>
+</ul>
+</li>
+</ul>
+<p>2) <strong>High level architecture design (Abstract design)</strong></p>
+<ul>
+<li>Sketch the important components and connections between them, but don't go into some details.<ul>
+<li>Application service layer (serves the requests)</li>
+<li>List different services required.<ul>
+<li>Data Storage layer</li>
+<li>eg. Usually a scalable system includes webserver (load balancer), service (service partition), database (master/slave database cluster) and caching systems.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>3) <strong>Component Design</strong></p>
+<ul>
+<li>Component + specific <strong>APIs</strong> required for each of them.</li>
+<li><strong>Object oriented design</strong> for functionalities.<ul>
+<li>Map features to modules: One scenario for one module.</li>
+<li>Consider the relationships among modules: <ul>
+<li>Certain functions must have unique instance (Singletons)</li>
+<li>Core object can be made up of many other objects (composition).</li>
+<li>One object is another object (inheritance)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Database schema design.</strong></li>
+</ul>
+<p>4) <strong>Understanding Bottlenecks</strong></p>
+<ul>
+<li>Perhaps your system needs a load balancer and many machines behind it to handle the user requests. * Or maybe the data is so huge that you need to distribute your database on multiple machines. What are some of the downsides that occur from doing that? </li>
+<li>Is the database too slow and does it need some in-memory caching? </li>
+</ul>
+<p>5) <strong>Scaling</strong> your abstract design</p>
+<ul>
+<li><strong>Vertical scaling</strong><ul>
+<li>You scale by adding more power (CPU, RAM) to your existing machine.</li>
+</ul>
+</li>
+<li><strong>Horizontal scaling</strong><ul>
+<li>You scale by adding more machines into your pool of resources. </li>
+</ul>
+</li>
+<li><strong>Caching</strong><ul>
+<li>Load balancing helps you scale horizontally across an ever-increasing number of servers, but caching will enable you to make vastly better use of the resources you already have, as well as making otherwise unattainable product requirements feasible. </li>
+<li><strong>Application caching</strong> requires explicit integration in the application code itself. Usually it will check if a value is in the cache; if not, retrieve the value from the database.</li>
+<li><strong>Database caching</strong> tends to be "free". When you flip your database on, you're going to get some level of default configuration which will provide some degree of caching and performance. Those initial settings will be optimized for a generic usecase, and by tweaking them to your system's access patterns you can generally squeeze a great deal of performance improvement.</li>
+<li><strong>In-memory caches</strong> are most potent in terms of raw performance. This is because they store their entire set of data in memory and accesses to RAM are orders of magnitude faster than those to disk. eg. Memcached or Redis.</li>
+<li>eg. Precalculating results (e.g. the number of visits from each referring domain for the previous day), </li>
+<li>eg. Pre-generating expensive indexes (e.g. suggested stories based on a user's click history)</li>
+<li>eg. Storing copies of frequently accessed data in a faster backend (e.g. Memcache instead of PostgreSQL.</li>
+</ul>
+</li>
+<li><strong>Load balancing</strong><ul>
+<li>Public servers of a scalable web service are hidden behind a load balancer.  This load balancer evenly distributes load (requests from your users) onto your group/cluster of  application servers.</li>
+<li>Types: Smart client (hard to get it perfect), Hardware load balancers ($$$ but reliable), Software load balancers (hybrid - works for most systems)</li>
+</ul>
+</li>
+</ul>
+<p align="center">
+  <img src="http://lethain.com/static/blog/intro_arch/load_balance.png" alt="Load Balancing"/>
+</p><ul>
+<li><strong>Database replication</strong><ul>
+<li>Database replication is the frequent electronic copying data from a database in one computer or server to a database in another so that all users share the same level of information. The result is a distributed database in which users can access data relevant to their tasks without interfering with the work of others. The implementation of database replication for the purpose of eliminating data ambiguity or inconsistency among users is known as normalization.</li>
+</ul>
+</li>
+<li><strong>Database partitioning</strong><ul>
+<li>Partitioning of relational data usually refers to decomposing your tables either row-wise (horizontally) or column-wise (vertically).</li>
+</ul>
+</li>
+<li><strong>Map-Reduce</strong><ul>
+<li>For sufficiently small systems you can often get away with adhoc queries on a SQL database, but that approach may not scale up trivially once the quantity of data stored or write-load requires sharding your database, and will usually require dedicated slaves for the purpose of performing these queries (at which point, maybe you'd rather use a system designed for analyzing large quantities of data, rather than fighting your database). </li>
+<li>Adding a map-reduce layer makes it possible to perform data and/or processing intensive operations in a reasonable amount of time. You might use it for calculating suggested users in a social graph, or for generating analytics reports. eg. Hadoop, and maybe Hive or HBase.</li>
+</ul>
+</li>
+<li><strong>Platform Layer (Services)</strong><ul>
+<li>Separating the platform and web application allow you to scale the pieces independently. If you add a new API, you can add platform servers without adding unnecessary capacity for your web application tier.</li>
+<li>Adding a platform layer can be a way to reuse your infrastructure for multiple products or interfaces (a web application, an API, an iPhone app, etc) without writing too much redundant boilerplate code for dealing with caches, databases, etc.</li>
+</ul>
+</li>
+</ul>
+<p align="center">
+  <img src="http://lethain.com/static/blog/intro_arch/platform_layer.png" alt="Platform Layer"/>
+</p><h2>Key topics for designing a system</h2>
+<p>1) <strong>Concurrency</strong></p>
+<ul>
+<li>Do you understand threads, deadlock, and starvation? Do you know how to parallelize algorithms? Do you understand consistency and coherence?</li>
+</ul>
+<p>2) <strong>Networking</strong></p>
+<ul>
+<li>Do you roughly understand IPC and TCP/IP? Do you know the difference between throughput and latency, and when each is the relevant factor?</li>
+</ul>
+<p>3) <strong>Abstraction</strong></p>
+<ul>
+<li>You should understand the systems you’re building upon. Do you know roughly how an OS, file system, and database work? Do you know about the various levels of caching in a modern OS?</li>
+</ul>
+<p>4) <strong>Real-World Performance</strong></p>
+<ul>
+<li>You should be familiar with the speed of everything your computer can do, including the relative performance of RAM, disk, SSD and your network.</li>
+</ul>
+<p>5) <strong>Estimation</strong></p>
+<ul>
+<li>Estimation, especially in the form of a back-of-the-envelope calculation, is important because it helps you narrow down the list of possible solutions to only the ones that are feasible. Then you have only a few prototypes or micro-benchmarks to write.  </li>
+</ul>
+<p>6) <strong>Availability &amp; Reliability</strong></p>
+<ul>
+<li>Are you thinking about how things can fail, especially in a distributed environment? Do know how to design a system to cope with network failures? Do you understand durability?</li>
+</ul>
+<h2>Web App System design considerations:</h2>
+<ul>
+<li>Security (CORS)</li>
+<li>Using CDN<ul>
+<li>A content delivery network (CDN) is a system of distributed servers (network) that deliver webpages and other Web content to a user based on the geographic locations of the user, the origin of the webpage and a content delivery server.</li>
+<li>This service is effective in speeding the delivery of content of websites with high traffic and websites that have global reach. The closer the CDN server is to the user geographically, the faster the content will be delivered to the user. </li>
+<li>CDNs also provide protection from large surges in traffic.</li>
+</ul>
+</li>
+<li>Full Text Search<ul>
+<li>Using Sphinx/Lucene/Solr - which achieve fast search responses because, instead of searching the text directly, it searches an index instead.</li>
+</ul>
+</li>
+<li>Offline support/Progressive enhancement<ul>
+<li>Service Workers</li>
+</ul>
+</li>
+<li>Web Workers</li>
+<li>Server Side rendering</li>
+<li>Asynchronous loading of assets (Lazy load items)</li>
+<li>Minimizing netwrok requests (Http2 + bundling/sprites etc)</li>
+<li>Developer productivity/Tooling</li>
+<li>Accessibility</li>
+<li>Internationalization</li>
+<li>Responsive design</li>
+<li>Browser compatibility</li>
+</ul>
+<h2>Working Components of Front-end Architecture</h2>
+<ul>
+<li>Code<ul>
+<li>HTML5/WAI-ARIA</li>
+<li>CSS/Sass Code standards and organization</li>
+<li>Object-Oriented approach (how do objects break down and get put together)</li>
+<li>JS frameworks/organization/performance optimization techniques</li>
+<li>Asset Delivery - Front-end Ops</li>
+</ul>
+</li>
+<li>Documentation<ul>
+<li>Onboarding Docs</li>
+<li>Styleguide/Pattern Library</li>
+<li>Architecture Diagrams (code flow, tool chain)</li>
+</ul>
+</li>
+<li>Testing<ul>
+<li>Performance Testing</li>
+<li>Visual Regression</li>
+<li>Unit Testing</li>
+<li>End-to-End Testing</li>
+</ul>
+</li>
+<li>Process<ul>
+<li>Git Workflow</li>
+<li>Dependency Management (npm, Bundler, Bower)</li>
+<li>Build Systems (Grunt/Gulp)</li>
+<li>Deploy Process</li>
+<li>Continuous Integration (Travis CI, Jenkins)</li>
+</ul>
+</li>
+</ul>
+<p><strong>Links</strong></p>
+<p><a href="http://www.palantir.com/2011/10/how-to-rock-a-systems-design-interview/">How to rock a systems design interview</a></p>
+<p><a href="http://www.hiredintech.com/system-design/">System Design Interviewing</a></p>
+<p><a href="http://www.lecloud.net/tagged/scalability">Scalability for Dummies</a></p>
+<p><a href="http://lethain.com/introduction-to-architecting-systems-for-scale/">Introduction to Architecting Systems for Scale</a></p>
+<p><a href="http://horicky.blogspot.com/2010/10/scalable-system-design-patterns.html">Scalable System Design Patterns</a></p>
+<p><a href="http://www.aosabook.org/en/distsys.html">Scalable Web Architecture and Distributed Systems</a></p>
+<p><a href="http://programmers.stackexchange.com/a/108679/62739">What is the best way to design a web site to be highly scalable?</a></p>
+<p><a href="https://github.com/vasanthk/how-web-works">How web works?</a></p>
+
+    </body>
+   </html>

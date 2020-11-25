@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Vilson Vieira Personal Website">
+      <meta name="keywords" content="Personal Website, Machine Learning, AI, Computational Creativity, Gamedev, Research, USP, Physics, CS">
+      <meta name="author" content="Vilson Vieira">
+      <title>Vilson Vieira</title>
+      <link rel="stylesheet" href="/static/style.css">
+      <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+      <a href="/"><img id="logo" src="/static/void-ansi2.png" /></a>
+      <br /><br />
+<h1>Cubo Mágico</h1>
+<pre><code>  1. Cruz                                                                                      ? w ?
+     - Leve os meios brancos para a face amarela (com meio amarelo)                            w y w  (visto de cima)
+     - Segure a camada de cima e faça a cor secundária  do meio branco alinhar com o centro    ? w ?
+       da face na frente
+     - Quando alinhar, gire a frente duas vezes                                                ? ? ?
+     - Repita até todos os brancos estiverem na face de baixo com meios alinhados              ? c ?  (visto de lado)
+                                                                                               ? c ?
+
+  2. 1a. Camada                                                                                       ? ? c w
+     - Atente para os brancos que estão nos cantos, na camada de cima                                 ? c ?    (visto de lado)
+     - Vire as duas camadas de baixo até alinhar o lado esquerdo/direito do branco com o centro       ? ? ?
+     - Pesca:
+       - Vire o lado que tem o branco para trás
+       - Vire Cima (para esquerda)
+       - Vire para baixo
+     - Repita até todos os brancos dos cantos estarem embaixo
+
+     - Agora atente para as peças dos lados (que não na camada do topo)
+     - Vire a coluna com o branco para cima
+     - Vira para a esquerda (traga para perto de você)
+     - Isso vai colocar a peça branca para cima
+     - Procure um lugar que esteja vazio embaixo e vire Cima até ficar
+       nessa coluna
+     - Vira para cima (para trás)
+     - Vira duas vezes para esquerda
+     - Vira para baixo (desce)
+     - Você trouxe o branco para o lado no topo, repita o primeiro passo lá
+       de cima agora
+
+  3. 2a. Camada
+     - Atente para as peças de meio de Cima que não tenham amarelo
+     - Vire as duas camadas de baixo até alinhar com a de meio
+     - Duas pescas:
+       - Vire Cima para o lado que não seja a cor de cima de meio
+       - Sobe o lado oposto
+       - Vira (traga perto de vc)
+       - Desce o lado oposto
+       - Saiu um canto branco, alinhe a cor do lado (movas as duas camadas
+         de baixo)
+       - Sobe o lado que tem o branco
+       - Vira (traga perto de vc)
+       - Desce
+     - Repita até a segunda camada fechar
+
+  4. Cruz Amarela
+     - Olha a parte de cima (topo), se estiver:
+       - Um L: deixa L no canto esquerdo e aplica algoritmo uma vez
+       - Linha amarela: deixa linha na horizontal e aplica algoritmo duas vezes
+       - Apenas centro: aplica algoritmo três vezes
+     - Frente (para direita)
+     - Cima (para esquerda)
+     - Direita (para cima)
+     - Volta cima
+     - Volta Direita
+     - Volta Frente
+
+  5. Face Amarela
+     - Casos:
+       - Cruz amarela + 1 canto amarelo
+         - Deixa o canto amarelo virado pra cima do lado esquerdo
+       - Cruz amarela + 2 cantos amarelos
+         - Deixa o canto amarelo NÃO VIRADO PRA CIMA MAS PARA VC, do lado esquerdo
+       - Cruz amarela apenas (nenhum canto)
+         - Deixa um dos amarelos do lado na sua esquerda (não virado para vc)
+     - SUNI
+       - Sobe lado direito
+       - Vira topo para esquerda
+       - Desce lado direito
+       - Vira topo para esquerda
+       - Sobe lado direito
+       - Vira topo para esquerda DUAS VEZES
+       - Desce lado direito
+
+  6. Cantos
+     - Atente para as peças dos cantos
+     - Casos:
+       - Um lado apenas tem os cantos de cima iguais   c ? c
+         - Deixa os cantos para trás
+         - Desce lado direito
+         - Vira Frente para direita
+         - Desce lado direito
+         - Vira atrás duas vezes (para direita)
+         - Sobe lado direito
+         - Vire Frente para ESQUERDA (anti-horário)
+         - Desce lado direito
+         - Vire atrás duas vezes (para direita)
+         - Sobe lado direito duas vezes
+       - Nenhum dos lados iguais
+         - Idem, mas faz duas vezes
+       - Todos os lados iguais: pula para etapa 7
+
+
+  7. Meios
+     - Analisa se há como resolver um lado apenas virando cima, vira até
+       resolver
+     - Vira lado resolvido para trás (qualquer se não tiver nenhum)
+     - Vira Frente 2 vezes
+     - Vira Cima para direita ou esquerda, combinando meio com centro
+     - Vira meio para trás
+     - Vira Cima 2 vezes
+     - Vira meio para frente (desce ele)
+     - Vira fileira branca de cima para você (frente)
+     - Vira frente duas vezes
+</code></pre>
+
+    </body>
+   </html>

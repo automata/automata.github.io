@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Vilson Vieira Personal Website">
+      <meta name="keywords" content="Personal Website, Machine Learning, AI, Computational Creativity, Gamedev, Research, USP, Physics, CS">
+      <meta name="author" content="Vilson Vieira">
+      <title>Vilson Vieira</title>
+      <link rel="stylesheet" href="/static/style.css">
+      <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+      <a href="/"><img id="logo" src="/static/void-ansi2.png" /></a>
+      <br /><br />
+<h1>Git Notes</h1>
+<h2>Rebase</h2>
+<p>You're in working in the repos <code>foo</code>. You're working on a feature branch
+called <code>beautiful-flower</code>:</p>
+<pre><code>git checkout beautiful-flower
+</code></pre>
+<p>You pull requested that branch. Someone did
+changes on <code>origin/master</code> and now your branch is outdated.
+You want to update your branch with <code>origin/master</code>.</p>
+<p>First, fetch <code>origin</code>, to get all the updates on it:</p>
+<pre><code>git fetch origin
+</code></pre>
+<p>Now do an interactive rebase of <code>origin/master</code> on your branch. It will
+basically take your commits and place on top of the last commits on
+<code>origin/master</code>, without the useless merge commits of a <code>git merge</code>:</p>
+<pre><code>git rebase -i origin/master
+</code></pre>
+<p>Now you can <code>pick</code> the commits you want, <code>squash</code> the commits you want
+to concatenate with the previous one (or <code>fixup</code>, better than <code>squash</code> when you
+want to discard the commit message), <code>reword</code> the commits with more
+beautiful messages and so on.</p>
+<p>If something gets into conflict, resolve it, <code>git add</code> the files and
+<code>git rebase --continue</code>. If you do something wrong during the rebase,
+don't worry, just do a <code>git rebase --abort</code> and start everything again
+with <code>git rebase -i origin/master</code>.</p>
+<p>After you have completed the rebase, your log should have all the
+commits from <code>origin/master</code> on bottom and the commits of your branch
+on top.</p>
+<p>Now your branch is update with <code>origin/master</code>. If you want to
+push those updates to your remote branch, go ahead.</p>
+<p>In some cases (when you change the history of your repos), git will
+say your branch and <code>origin/master</code> diverged and will suggest you to
+<code>git pull</code>. Don't do that. Do a <code>git push origin beautiful-flower</code> and
+if it needs to, force it with <code>git push --force origin beautiful-flower</code>.
+Double check that you're not pushing to master!</p>
+<h2>Rebase is a powerful tool to tweak commits</h2>
+<p>Use <code>git rebase -i HEAD~n</code> where <code>n</code> is the number of commits you want to
+tweak. Now you can pick, squash, delete, reorder, reword and do other
+little miracles.</p>
+<p>It helps us to keep our history tight and readable.</p>
+<h2>Cheatsheet</h2>
+<p>Nice one, however I didn't follow it so much:</p>
+<p><img src="http://justinhileman.info/article/git-pretty/git-pretty.png" alt=""></p>
+<p>The slides of author is <a href="https://presentate.com/bobthecow/talks/changing-history">here</a>.</p>
+<h2>GitHub flow</h2>
+<ul>
+<li><code>master</code> should be also ready to deployment</li>
+<li>New features should be done in a branch</li>
+<li>You should work on that branch locally and push to it's remote branch
+continuously</li>
+<li>Branch should become a PR to <code>origin/master</code> when you need feedback/help
+from someone else or when it's ready to merge</li>
+<li>After someone has reviewed your feature</li>
+<li>After a PR got merged, it should be immediately deployed</li>
+</ul>
+<p>Other practices from my own:</p>
+<ul>
+<li>Create an issue to every feature branch</li>
+<li>Create a Trello card to every issue</li>
+<li>Tag your commits when necessary</li>
+<li>Follow semver</li>
+<li>Never use a commit as dependency (only when trying stuff), always use a
+tagged version</li>
+<li>Add a "WIP:" in front of your PR if you're working on it (not ready to merge)</li>
+</ul>
+<h2>Partial file changesets</h2>
+<p>Add <code>-p</code> to <code>git commit</code> and other commands. It will give you the possibility
+to split your changes ini multiple commits.</p>
+<h2>Avoid git add -a or git commit -a</h2>
+<p>Enemy of clean commits.</p>
+<h2>Never git push --force</h2>
+<p>NEVER! EVER! EVER!</p>
+<p>You should always add <code>git push --force &lt;remote&gt; &lt;branch&gt;</code>!</p>
+<h1>Git Flow x GitHub Flow</h1>
+<p>"For teams that have to do formal releases on a longer term interval (a few weeks to a few months between releases), and be able to do hot-fixes and maintenance branches and other things that arise from shipping so infrequently, git-flow makes sense and I would highly advocate it’s use.</p>
+<p>For teams that have set up a culture of shipping, who push to production every day, who are constantly testing and deploying, I would advocate picking something simpler like GitHub Flow."</p>
+<h1>Undo git reset --hard</h1>
+<p>Git only cleans cache after days (weeks?). It stores every reference. To list
+all references:</p>
+<pre><code>git reflog
+</code></pre>
+<p>Find the hash of the commit you want to go back and then:</p>
+<pre><code>git reset --hard &lt;HASH HERE&gt;
+</code></pre>
+<h2>References</h2>
+<ul>
+<li>Nice tips on <code>git rebase</code>: <a href="http://nathanleclaire.com/blog/2014/09/14/dont-be-scared-of-git-rebase/">http://nathanleclaire.com/blog/2014/09/14/dont-be-scared-of-git-rebase/</a></li>
+<li>Presentation about git-flow: <a href="https://presentate.com/bobthecow/talks/changing-history">https://presentate.com/bobthecow/talks/changing-history</a></li>
+<li>GitHub creator about github flow: <a href="http://scottchacon.com/2011/08/31/github-flow.html">http://scottchacon.com/2011/08/31/github-flow.html</a></li>
+</ul>
+
+    </body>
+   </html>

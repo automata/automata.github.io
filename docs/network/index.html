@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Vilson Vieira Personal Website">
+      <meta name="keywords" content="Personal Website, Machine Learning, AI, Computational Creativity, Gamedev, Research, USP, Physics, CS">
+      <meta name="author" content="Vilson Vieira">
+      <title>Vilson Vieira</title>
+      <link rel="stylesheet" href="/static/style.css">
+      <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+      <a href="/"><img id="logo" src="/static/void-ansi2.png" /></a>
+      <br /><br />
+<h1>Useful networking commands</h1>
+<p>Copy your ssh key and remove password based ssh access:</p>
+<pre><code>scp ~/.ssh/id_rsa.pub user@host:.ssh/authorized_keys
+sudo vim /etc/ssh/sshd_config
+    PasswordAuthentication no
+sudo /etc/init.d/sshd restart
+</code></pre>
+<p>Check if failing ssh accesses:</p>
+<pre><code>sudo less /var/log/auth.log | grep "\: Failed password" | less
+sudo less /var/log/auth.log.1 | grep "\: Failed password" | less
+</code></pre>
+<p>List all open ports:</p>
+<pre><code>netstat -tulpn
+# ...or...
+ss -tulpn
+# ...or...
+nmap -sT -O localhost
+nmap -sT -O server.example.com
+</code></pre>
+<p>Check latest logins (and if system rebooted):</p>
+<pre><code>last | head -50
+</code></pre>
+<p>Scan devices on LAN:</p>
+<pre><code>nmap -sP 192.168.1.0/24
+</code></pre>
+<p>Scan all open ports on LAN (fastest way):</p>
+<pre><code>nmap -T5 192.168.1.0/24
+</code></pre>
+<p>Scan open ports (and services) on host/IP:</p>
+<pre><code>nmap -Pn -v host
+</code></pre>
+
+    </body>
+   </html>

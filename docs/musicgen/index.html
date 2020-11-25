@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Vilson Vieira Personal Website">
+      <meta name="keywords" content="Personal Website, Machine Learning, AI, Computational Creativity, Gamedev, Research, USP, Physics, CS">
+      <meta name="author" content="Vilson Vieira">
+      <title>Vilson Vieira</title>
+      <link rel="stylesheet" href="/static/style.css">
+      <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+      <a href="/"><img id="logo" src="/static/void-ansi2.png" /></a>
+      <br /><br />
+<h1>Music Generation</h1>
+<p>The basic idea is to teach an AI to compose like me.</p>
+<h2>Key points</h2>
+<ul>
+<li>ML as a music instrument</li>
+<li>ML as a creativity explorer/augmenter</li>
+</ul>
+<h2>How do I compose?</h2>
+<ul>
+<li>Think about some abstract idea I want to explore (a musical idea)</li>
+<li>Generally play with some audio material (synth, sample, etc) and try to shape
+it in the idea I want to express<ul>
+<li>Can be as a rhythm, or some lines, or a sensation, or even by imitating some other music piece</li>
+</ul>
+</li>
+<li>I keep iterating on this audio material and add new ones</li>
+<li>I record musical notes, keep chaining lots of effects, draw automations</li>
+<li>I know already some patterns that works great (eg. a signal follower from
+main lead/bass to kick, so we can hear both; which chord progression to use)</li>
+<li>I generally build most of the sound core first, then I go stretching it,
+building structure (eg longer lines, Intro-A-B-Outro)</li>
+</ul>
+<h2>Pain points</h2>
+<ul>
+<li>Automation is pretty powerful but time consuming</li>
+<li>Hard to enter each note/chord by hand (well we could use a keyboard), would
+be better to have some templates/phrases to select from</li>
+<li>Stretching core idea to make the whole song generally makes me give up on
+finishing the piece</li>
+</ul>
+<h1>Challenges / Questions</h1>
+<ul>
+<li>How to create a model that learns how to add automation? (MIDI has no
+dynamics)</li>
+</ul>
+<h1>Ideas to implement</h1>
+<ul>
+<li>Use DDSP and forget about MIDI</li>
+<li>Maybe combine DDSP+MIDI as input/output, so we can learn what
+notes/automations generated that output</li>
+<li>Great idea to use multitask models
+<a href="https://github.com/bearpelican/musicautobot">https://github.com/bearpelican/musicautobot</a></li>
+</ul>
+<h1>Refs</h1>
+<ul>
+<li><a href="https://musicautobot.com/">https://musicautobot.com/</a></li>
+<li><a href="https://towardsdatascience.com/a-multitask-music-model-with-bert-transformer-xl-and-seq2seq-3d80bd2ea08e">https://towardsdatascience.com/a-multitask-music-model-with-bert-transformer-xl-and-seq2seq-3d80bd2ea08e</a></li>
+<li><a href="https://github.com/ybayle/awesome-deep-learning-music">https://github.com/ybayle/awesome-deep-learning-music</a></li>
+<li><a href="https://medium.com/@snikolov/neuralbeats-generative-techno-with-recurrent-neural-networks-3824d7ba7972">https://medium.com/@snikolov/neuralbeats-generative-techno-with-recurrent-neural-networks-3824d7ba7972</a></li>
+<li><a href="https://github.com/snikolov/neural-beats">https://github.com/snikolov/neural-beats</a></li>
+<li><a href="https://magenta.tensorflow.org/ddsp">https://magenta.tensorflow.org/ddsp</a></li>
+<li>Neurofunk: <a href="https://towardsdatascience.com/neuralfunk-combining-deep-learning-with-sound-design-91935759d628">https://towardsdatascience.com/neuralfunk-combining-deep-learning-with-sound-design-91935759d628</a></li>
+</ul>
+
+    </body>
+   </html>
