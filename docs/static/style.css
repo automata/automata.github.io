@@ -3,16 +3,16 @@ body {
   color: #fff;
   width: 40%;
   padding: 30px;
-  line-height: 14pt;
+  line-height: 16pt;
   font-size: 9pt;
   font-family: monospace;
 }
 
 a, a:visited {
-  color: #000;
+  color: #fff;
   padding: 2px;
-  background-color: cyan;
-  transition: all 1s;
+  border: 1px solid yellow;
+  background-color: none;
   text-decoration: none;
 }
 a:hover {
@@ -26,13 +26,20 @@ a:hover {
   margin: 20px;
 }
 
+a.logo, a.logo:visited, a.logo:hover {
+  border: none;
+  text-decoration: none;
+  color: none;
+  background: none;
+}
+
 img.project-thumb {
   float: right;
   margin: 10px;
 }
 
 h1,h2,h3 {
-  margin-top: 50px;
+  margin-top: 20px;
 }
 @media screen and (max-width: 800px) {
   body {
