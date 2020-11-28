@@ -25,6 +25,14 @@ a:hover {
   float: right;
   margin: 20px;
 }
+img.webring_icon {
+  width: 30px;
+}
+#footer {
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid white;
+}
 
 a.logo, a.logo:visited, a.logo:hover {
   border: none;
@@ -38,7 +46,10 @@ img.project-thumb {
   margin: 10px;
 }
 
-h1,h2,h3 {
+h1 {
+  margin-top: 50px;
+}
+h2,h3 {
   margin-top: 20px;
 }
 @media screen and (max-width: 800px) {

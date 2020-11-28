@@ -29,11 +29,14 @@ template_head = '''
 '''
 
 template_foot = '''
+    <div id="footer">
+      <a class="logo" href='https://webring.xxiivv.com/#random' target='_blank'><img class="webring_icon" src='https://webring.xxiivv.com/icon.white.svg'/></a>
+    </div>
     </body>
    </html>
 '''
 
-def build_html(md_file, html_file, has_meta=True, skip_private=True, toc=""):
+def build_html(md_file, html_file, has_meta=True, skip_private=True, footer=""):
     with open(md_file, 'r') as file_input:
         with open(html_file, 'w') as file_output:
             content = file_input.read()
@@ -43,7 +46,7 @@ def build_html(md_file, html_file, has_meta=True, skip_private=True, toc=""):
                     content_title = meta_data["Title"]
                     content = f"# {content_title}\n\n" + content
             markdown = mistune.markdown(content, escape=False)
-            html = template_head + toc + markdown + template_foot
+            html = template_head + markdown + footer + template_foot
             file_output.write(html)
 
 
@@ -113,6 +116,6 @@ def main():
     convert_braindump()
     content_index = build_index()
     content_index = "<h1>Braindump</h1>" + content_index
-    build_html("./index.md", "./docs/index.html", toc=content_index)
+    build_html("./index.md", "./docs/index.html", footer=content_index)
 
 main()
