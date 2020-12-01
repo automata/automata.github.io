@@ -52,6 +52,13 @@ h1 {
 h2,h3 {
   margin-top: 20px;
 }
+
+pre {
+  background-color: #222;
+  color: #aaa;
+  padding: 10px;
+}
+
 @media screen and (max-width: 800px) {
   body {
     width: auto;

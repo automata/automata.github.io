@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Vilson Vieira Personal Website">
+      <meta name="keywords" content="Personal Website, Machine Learning, AI, Computational Creativity, Gamedev, Research, USP, Physics, CS">
+      <meta name="author" content="Vilson Vieira">
+      <title>Vilson Vieira</title>
+      <link rel="stylesheet" href="/static/style.css">
+      <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+      <a class="logo" href="/"><img id="logo" src="/static/void-ansi2.png" /></a>
+<h1>SSH</h1>
+<h1>SSH server is slow</h1>
+<p>On server, disable DNS:</p>
+<pre><code>vim /etc/ssh/sshd_config:
+
+    UseDNS no
+</code></pre>
+<h1>SSH client is slow</h1>
+<p>On client, disable Avahi:</p>
+<pre><code>vim /etc/nsswitch.conf
+
+    hosts:          files dnsu
+</code></pre>
+
+    <div id="footer">
+      <a class="logo" href='https://webring.xxiivv.com/#random' target='_blank'><img class="webring_icon" src='https://webring.xxiivv.com/icon.white.svg'/></a>
+    </div>
+    </body>
+   </html>
