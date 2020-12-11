@@ -73,6 +73,17 @@ sudo add-apt-repository ppa:graphics-drivers/ppa
 sudo apt-get update
 sudo apt-get upgrade
 </code></pre>
+<h1>Setup NVIDIA + Vulkan</h1>
+<p>sudo apt-get purge nvidia*
+sudo apt-get autoremove</p>
+<h1>- Download drivers from <a href="https://www.nvidia.com/object/unix.html">https://www.nvidia.com/object/unix.html</a></h1>
+<h1>- sudo ./NVIDIA...run</h1>
+<ul>
+<li>sudo add-apt-repository ppa:graphics-drivers/ppa</li>
+<li>sudo apt upgrade</li>
+<li>sudo apt install nvidia-driver-450 nvidia-settings vulkan-* vulkan-utils</li>
+<li>vulkaninfo | less</li>
+</ul>
 <h1>Refs</h1>
 <ul>
 <li><a href="https://drasite.com/blog/Pimp%20my%20terminal">https://drasite.com/blog/Pimp%20my%20terminal</a></li>

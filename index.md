@@ -31,7 +31,8 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
 # Timeline
 
-- 2018 - Present: AI Engineer at Extend AI
+- 2019 - 2020: CTO at Extend AI
+- 2018 - 2019: AI Engineer at Extend AI
 - 2017 - Present: Co-founder of CodAI with Gabriela Thumé
 - 2014 - 2017: Software & AI Engineer at The Grid
 - 2014: Software Engineer at Google/Mozilla (GSoC intership/grant)
