@@ -13,29 +13,11 @@
     </head>
     <body>
       <a class="logo" href="/"><img id="logo" src="/static/void-ansi2.png" /></a>
-<h1>SSH</h1>
-<h1>Creating a tunnel</h1>
-<p>That's useful for connecting to a running Jupyter Server somewhere:</p>
-<pre><code>ssh -N -f -L localhost:8101:localhost:8101 user@host
-</code></pre>
-<h1>Debug messages</h1>
-<pre><code>ssh -vvv
-</code></pre>
-<h1>SSH server is slow</h1>
-<p>On server, disable DNS:</p>
-<pre><code>vim /etc/ssh/sshd_config:
-
-    UseDNS no
-</code></pre>
-<h1>SSH client is slow</h1>
-<p>On client, disable Avahi:</p>
-<pre><code>vim /etc/nsswitch.conf
-
-    hosts:          files dnsu
-</code></pre>
-<h1>References</h1>
+<h1>C</h1>
+<h1>Refs</h1>
 <ul>
-<li><a href="https://jrs-s.net/2017/07/01/slow-ssh-logins/#:~:text=It&#39;s%20usually%20DNS.,restart%20ssh%2C%20etc%20as%20appropriate">https://jrs-s.net/2017/07/01/slow-ssh-logins/#:~:text=It&#39;s%20usually%20DNS.,restart%20ssh%2C%20etc%20as%20appropriate</a>.</li>
+<li><a href="https://github.com/rby90/project-based-tutorials-in-c">https://github.com/rby90/project-based-tutorials-in-c</a></li>
+<li><a href="https://opinionatedguide.github.io/engineering/8-lowlvl/">https://opinionatedguide.github.io/engineering/8-lowlvl/</a></li>
 </ul>
 
     <div id="footer">
