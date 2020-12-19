@@ -22,8 +22,9 @@ a:hover {
 }
 
 #logo {
+  background-color: #000;
   float: right;
-  margin: 20px;
+  margin: 50px;
 }
 img.webring_icon {
   width: 30px;
