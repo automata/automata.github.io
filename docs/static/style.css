@@ -22,9 +22,20 @@ a:hover {
 }
 
 #logo {
-  background-color: #000;
+  background-color: transparent;
   float: right;
-  margin: 50px;
+  margin-right: 0px;
+  margin-top: 40px;
+  margin-left: 60px;
+  margin-bottom: 60px;
+  width: 20%;
+  transition: transform 1s;
+  transform-origin: 46% 44%;
+  transform-style: preserve-3D;
+}
+#logo:hover {
+  transform: rotate(-120deg);
+
 }
 img.webring_icon {
   width: 30px;
@@ -68,10 +79,12 @@ pre {
     font-size: 10pt;
   }
   #logo {
-    margin-bottom: 0px;
-    padding: 0px;
-    width: 50%;
     float: right;
+    width: 30%;
+    margin-right: 0px;
+    margin-top: 40px;
+    margin-left: 40px;
+    margin-bottom: 30px;
   }
 }
 
