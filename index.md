@@ -1,13 +1,18 @@
-__Vilson Vieira__ (a.k.a automata) is a software engineer, artist and open source enthusiast who has being developing for Google, Mozilla, The Grid and most recently for Extend AI.
-He holds a BSc. in Computer Science and MSc. in Computational and Applied Physics by University of São Paulo (USP) advised by 
+__Vilson Vieira__ (a.k.a automata) is a software engineer, artist and
+open source enthusiast who has being developing for Google, Mozilla, The Grid
+and most recently for Extend AI.
+He holds a BSc. in Computer Science and MSc. in Computational and Applied
+Physics by University of São Paulo (USP) advised by
 profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
 [Twitter](https://twitter.com/aut0mata) - [GitHub](https://github.com/automata)
 
 # Open Source Projects
 
-- [Meemoo](https://meemoo.org): A dataflow programming environment for Web art by Forrest Oliphant.
-- [GMR Saliency](https://github.com/automata/gmr-saliency): C++ implementation of SLIC for paper "Saliency Detection via
+- [Meemoo](https://meemoo.org): A dataflow programming environment for Web art
+  by Forrest Oliphant.
+- [GMR Saliency](https://github.com/automata/gmr-saliency): C++ implementation
+  of SLIC for paper "Saliency Detection via
   Graph-Based Manifold Ranking" by Chuan Yang et al.
 - [KLayJS](https://github.com/automata/klay-js): Bower component and
   easy-to-use wrapper to KLayJS, making it possible to use KLayJS as a Web
@@ -19,6 +24,27 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
   for livecoding using Web Audio API. Presented on workshops and festivals on
   Brazil.
 - [AutoVJ](http://void.cc/autovj): A just-for-fun GIF-based VJ web tool
+- [Canary Component](https://github.com/KappaSigmaMu/canary-component): A React
+  component for interactive 3D visualization of Kusama blockchain nodes
+  (Sponsored by Kusama)
+
+## WIP / Drafts / Ideas
+
+I have this habit of creating a Git repos for some ideas and experiments I
+want to test and explore more instead of let them spinning free in my mind.
+They're totally work in progress, they can break and they will probably not
+be finalized, or maybe they will be, who knows :)
+
+- dsgn.monster : Eats data, dumps form
+- pitaya : Minimalist static site generator that powers this website
+- sgnls : World events as easy-to-mix data feeds
+- edy : Markdown editor with drag-n-drop support for imgs
+- mnm : Mini computer from nand ports to ML
+- tinycoin : Mini blockchain
+- cryptobot : Experiments around crypto prediction
+- stocknews : HN for stocks and cryptos
+- arc : Graphical livecoding experiment
+- bzz : Sampler and synth based on PortAudio
 
 # Experiments / Art
 
@@ -26,12 +52,15 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
   of paintings for __A quantitative approach to painting syles__ paper (see
   below).
 - [Code Poems](http://code-poems.com/): The code poem
-  [Rising](https://gist.github.com/automata/8e64b5f67134f51c4cca9bd564e84e66) was selected
-  to be published on this amazing project by [Ishac Bertran](http://ishback.com/).
+  [Rising](https://gist.github.com/automata/8e64b5f67134f51c4cca9bd564e84e66)
+  was selected to be published on this amazing project by
+  [Ishac Bertran](http://ishback.com/).
 
 # Timeline
 
-- 2019 - 2020: CTO at Extend AI
+- 2019 - Present: CTO at Extend AI
+- 2020 - Present: Co-founder of [2aliens](https://2aliens.cc)
+  with Gabriela Thumé
 - 2018 - 2019: AI Engineer at Extend AI
 - 2017 - Present: Co-founder of CodAI with Gabriela Thumé
 - 2014 - 2017: Software & AI Engineer at The Grid
@@ -47,18 +76,18 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
 # Main research interests
 
-* Machine Learning
-* Computational Creativity
-* Algorithmic Music Composition
-* Game Development
-* Digital/Software/Electronic/Generative/Procedural Art
-* Physical Computing
+- Machine Learning
+- Computational Creativity
+- Algorithmic Music Composition
+- Game Development
+- Digital/Software/Electronic/Generative/Procedural Art
+- Physical Computing
 
 # Grants
 
-* Google Summer of Code 2012 for Mozilla
-* Google Summer of Code 2014 for Mozilla
-* CNPq/CAPES Postgraduation Grant from IFSC/USP
+- Google Summer of Code 2012 for Mozilla
+- Google Summer of Code 2014 for Mozilla
+- CNPq/CAPES Postgraduation Grant from IFSC/USP
 
 # Selected Publications
 
@@ -99,6 +128,7 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 - [MuSA](http://musa.cc)
 - [Lab Macambira](http://labmacambira.sf.net)
 - [NosDigitais](http://nosdigitais.teia.org.br)
+- [KappaSigmaMu](https://ksmsociety.io/)
 
 # Teaching
 
