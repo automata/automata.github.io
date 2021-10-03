@@ -27,6 +27,18 @@
 <li><a href="https://blendermarket.com/products/Creating-3D-environments">https://blendermarket.com/products/Creating-3D-environments</a></li>
 <li><a href="https://www.youtube.com/watch?v=eH9oTLEaSZw">https://www.youtube.com/watch?v=eH9oTLEaSZw</a></li>
 </ul>
+<h1>Pipeline</h1>
+<ul>
+<li>Take shot of bg</li>
+<li>Record 4K videos (Sony ZV1) using a static-ish bg</li>
+<li>Background matting using <a href="https://github.com/PeterL1n/BackgroundMattingV2">https://github.com/PeterL1n/BackgroundMattingV2</a> or Runway ML</li>
+<li>Import on Blender</li>
+<li>Run some Python script to prepare the scene (composition, etc)</li>
+<li>Loop on Blender to tweak 3D assets</li>
+<li>Run some Python script to add pre/post scenes (intro, credits, etc)</li>
+<li>And another to post-processing (color grading, etc)</li>
+<li>Render final video</li>
+</ul>
 
     <div id="footer">
       <a class="logo" href='https://webring.xxiivv.com/#random' target='_blank'><img class="webring_icon" src='https://webring.xxiivv.com/icon.white.svg'/></a>
