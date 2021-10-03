@@ -30,10 +30,15 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
 ## WIP / Drafts / Ideas
 
-I have this habit of creating a Git repos for some ideas and experiments I
+I have this habit of creating Git repos for some ideas and experiments I
 want to test and explore more instead of let them spinning free in my mind.
-They're totally work in progress, they can break and they will probably not
-be finalized, or maybe they will be, who knows :)
+If you don't see a link on them yet, it's because they're still spinning
+in my mind :-)
+
+A portfolio of small projects to understand complex topics from first
+principles.
+
+> "What I cannot create, I do not understand." - Richard Feynman
 
 - dsgn.monster : Eats data, dumps form
 - pitaya : Minimalist static site generator that powers this website
