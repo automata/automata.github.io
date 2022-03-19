@@ -3,13 +3,11 @@ import mistune_contrib_meta as mc
 import os
 import time
 import shutil
+import json
+
 from datetime import datetime
 
-config = {
-    "index_file": "./docs/index/index.html",
-    "braindump_file": "/media/ssd/src/automata/braindump",
-    "html_output": "/media/ssd/src/automata/automata.github.io/docs"
-}
+config_file = "./config.json"
 
 template_head = '''
 <!DOCTYPE html>
@@ -36,6 +34,12 @@ template_foot = '''
     </body>
    </html>
 '''
+
+
+def load_config():
+    with open("./config.json") as f:
+        return json.load(f)
+
 
 def build_html(md_file, html_file, has_meta=True, skip_private=True, footer=""):
     with open(md_file, 'r') as file_input:
@@ -119,4 +123,5 @@ def main():
     content_index = "<h1>Braindump</h1>" + content_index
     build_html("./index.md", "./docs/index.html", footer=content_index)
 
+config = load_config()
 main()
