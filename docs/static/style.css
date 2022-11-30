@@ -1,10 +1,10 @@
 body {
   background: #000;
   color: #fff;
-  width: 40%;
+  width: 50%;
   padding: 30px;
   line-height: 16pt;
-  font-size: 9pt;
+  font-size: 10pt;
   font-family: monospace;
 }
 
@@ -34,7 +34,7 @@ a:hover {
   transform-style: preserve-3D;
 }
 #logo:hover {
-  transform: rotate(-120deg);
+  /*transform: rotate(-120deg);*/
 
 }
 img.webring_icon {
@@ -53,16 +53,29 @@ a.logo, a.logo:visited, a.logo:hover {
   background: none;
 }
 
-img.project-thumb {
-  float: right;
-  margin: 10px;
+.project {
+  float: left;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-left: 30px;
+  width: 100%;
+}
+
+.project-thumb {
+  float: left;
+  margin-right: 15px;
+  width: 200px;
 }
 
 h1 {
   margin-top: 50px;
 }
 h2,h3 {
-  margin-top: 20px;
+  margin-top: 30px;
+}
+
+.block {
+  float: left;
 }
 
 pre {
