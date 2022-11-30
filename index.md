@@ -1,74 +1,97 @@
-__Vilson Vieira__ (a.k.a automata) is a software engineer, artist and
+__Vilson Vieira__ is a Software and Machine Learning Engineer, artist and
 open source enthusiast who has being developing for Google, Mozilla, The Grid
 and most recently for Extend AI.
 He holds a BSc. in Computer Science and MSc. in Computational and Applied
 Physics by University of São Paulo (USP) advised by
 profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
-[Twitter](https://twitter.com/aut0mata) - [GitHub](https://github.com/automata)
+[Mastodon](https://sigmoid.social/@automata) - [Twitter](https://twitter.com/aut0mata) - [GitHub](https://github.com/automata)
 
 # Open Source Projects
 
-- [Meemoo](https://meemoo.org): A dataflow programming environment for Web art
-  by Forrest Oliphant.
-- [GMR Saliency](https://github.com/automata/gmr-saliency): C++ implementation
-  of SLIC for paper "Saliency Detection via
-  Graph-Based Manifold Ranking" by Chuan Yang et al.
-- [KLayJS](https://github.com/automata/klay-js): Bower component and
-  easy-to-use wrapper to KLayJS, making it possible to use KLayJS as a Web
-  Worker on modern browsers.
-- [NofloJS](https://noflojs.org): Developed some components libraries (ie
-  noflo-canvas, noflo-image) for
-  this dataflow programming library by Henri Bergius
-- [Vivace](https://void.cc/vivace): One of the first domain specific languages
-  for livecoding using Web Audio API. Presented on workshops and festivals on
-  Brazil.
-- [AutoVJ](http://void.cc/autovj): A just-for-fun GIF-based VJ web tool
-- [Canary Component](https://github.com/KappaSigmaMu/canary-component): A React
+<div class="project">
+  <img class="project-thumb" src="/static/project_canary.png" />
+  <a href="https://github.com/KappaSigmaMu/canary-component">Canary Component</a>
+  <p>
+  A React
   component for interactive 3D visualization of Kusama blockchain nodes
-  (Sponsored by Kusama)
+  (Sponsored by Kusama).</p>
+</div>
 
-## WIP / Drafts / Ideas
+<div class="project">
+  <img class="project-thumb" src="/static/project_klayjs.gif" />
+  <a href="https://github.com/automata/klay-js">KlayJS</a>
+  <p>
+  Bower component and easy-to-use wrapper to KLayJS, making it possible to use KLayJS as a Web Worker on modern browsers.
+  </p>
+</div>
 
-I have this habit of creating Git repos for some ideas and experiments I
-want to test and explore more instead of let them spinning free in my mind.
-If you don't see a link on them yet, it's because they're still spinning
-in my mind :-)
+<div class="project">
+  <img class="project-thumb" src="/static/project_meemoo.gif" />
+  <a href="https://meemoo.org">Meemoo</a>
+  <p>
+  A dataflow programming environment for Web art by Forrest Oliphant.
+  </p>
+</div>
 
-A portfolio of small projects to understand complex topics from first
-principles.
+<div class="project">
+  <img class="project-thumb" src="/static/project_gmrsaliency.png" />
+  <a href="https://github.com/automata/gmr-saliency">GMR-Saliency</a>
+  <p>
+  C++ implementation of SLIC for paper "Saliency Detection via Graph-Based Manifold Ranking" by Chuan Yang et al.
+  </p>
+</div>
 
-> "What I cannot create, I do not understand." - Richard Feynman
+<div class="project">
+  <img class="project-thumb" src="/static/project_noflo.jpg" />
+  <a href="https://noflojs.org">NoFloJS</a>
+  <p>Developed some components libraries (ie
+  noflo-canvas, noflo-image) for
+  this dataflow programming library by Henri Bergius.</p>
+</div>
 
-- dsgn.monster : Eats data, dumps form
-- pitaya : Minimalist static site generator that powers this website
-- sgnls : World events as easy-to-mix data feeds
-- edy : Markdown editor with drag-n-drop support for imgs
-- mnm : Mini computer from nand ports to ML
-- tinycoin : Mini blockchain
-- cryptobot : Experiments around crypto prediction
-- stocknews : HN for stocks and cryptos
-- arc : Graphical livecoding experiment
-- bzz : Sampler and synth based on PortAudio
+<div class="project">
+  <img class="project-thumb" src="/static/project_vivace.jpg" />
+  <a href="https://void.cc/vivace">Vivace</a>
+  <p>
+  One of the first domain specific languages
+  for livecoding using Web Audio API. Presented on workshops and festivals on
+  Brazil.</p>
+</div>
 
-# Experiments / Art
+<div class="project">
+  <img class="project-thumb" src="/static/project_autovj.png" />
+  <a href="http://void.cc/autovj">AutoVJ</a>
+  <p>A just-for-fun GIF-based VJ web tool.</p>
+</div>
 
-- [Viz Paintings](https://void.cc/viz-paintings/): Interactive 3D visualization
-  of paintings for __A quantitative approach to painting syles__ paper (see
-  below).
-- [Code Poems](http://code-poems.com/): The code poem
-  [Rising](https://gist.github.com/automata/8e64b5f67134f51c4cca9bd564e84e66)
+<div class="project">
+  <img class="project-thumb" src="/static/project_vizpaintings.png" />
+  <a href="https://void.cc/viz-paintings/">Viz Paintings</a>
+  <p>Interactive 3D visualization
+  of paintings for <b>A quantitative approach to painting syles</b> paper (see
+  below).</p>
+</div>
+
+<div class="project">
+  <img class="project-thumb" src="/static/project_codepoems.png" />
+  <a href="http://code-poems.com/">Code Poems</a>
+  <p>The code poem
+  <a href="https://gist.github.com/automata/8e64b5f67134f51c4cca9bd564e84e66">Rising</a>
   was selected to be published on this amazing project by
-  [Ishac Bertran](http://ishback.com/).
+  <a href="http://ishback.com/">Ishac Bertran</a>.</p>
+</div>
+
+<div class="block">
 
 # Timeline
 
-- 2019 - Present: CTO at Extend AI
+- 2019 - Present: Chief of AI at Extend AI
 - 2020 - Present: Co-founder of [2aliens](https://2aliens.cc)
   with Gabriela Thumé
-- 2018 - 2019: AI Engineer at Extend AI
+- 2018 - 2019: ML Engineer at Extend AI
 - 2017 - Present: Co-founder of CodAI with Gabriela Thumé
-- 2014 - 2017: Software & AI Engineer at The Grid
+- 2014 - 2017: Software & ML Engineer at The Grid
 - 2014: Software Engineer at Google/Mozilla (GSoC intership/grant)
 - 2011 - 2013: MSc of Applied Physics at University of São Paulo (CAPES grant)
 - 2011 - 2013: Co-founder and team leader of FLOSS collective LabMacambira
@@ -82,9 +105,11 @@ principles.
 # Main research interests
 
 - Machine Learning
+- Computer Vision
 - Computational Creativity
-- Algorithmic Music Composition
 - Game Development
+- VR / AR / XR
+- Digital Twins
 - Digital/Software/Electronic/Generative/Procedural Art
 - Physical Computing
 

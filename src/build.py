@@ -31,6 +31,7 @@ template_foot = '''
     <div id="footer">
       <a class="logo" href='https://webring.xxiivv.com/#random' target='_blank'><img class="webring_icon" src='https://webring.xxiivv.com/icon.white.svg'/></a>
     </div>
+    </div>
     </body>
    </html>
 '''
