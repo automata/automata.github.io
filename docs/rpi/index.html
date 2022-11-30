@@ -39,26 +39,27 @@ iface eth0 inet dhcp
 auto wlan0
 allow-hotplug wlan0
 iface wlan0 inet dhcp
-wpa-ssid "your-network-name"
-wpa-psk "password-here"
+wpa-ssid &quot;your-network-name&quot;
+wpa-psk &quot;password-here&quot;
 </code></pre>
-<ol>
+<ol start="3">
 <li>Reboot <code>sudo reboot</code></li>
 <li>On your computer, try to use nmap to find the IP of your RPI:</li>
 </ol>
 <pre><code>sudo nmap -sP 192.168.1.0/24
 </code></pre>
-<ol>
+<ol start="5">
 <li>Connect to that by SSH with <code>ssh pi@</code></li>
 </ol>
 <p>Another option is to edit the same file on a mounted SD card.</p>
 <h1>References</h1>
 <ul>
-<li>Nice tips to config by command line: <a href="http://blog.self.li/post/63281257339/raspberry-pi-part-1-basic-setup-without-cables">http://blog.self.li/post/63281257339/raspberry-pi-part-1-basic-setup-without-cables</a></li>
+<li>Nice tips to config by command line: http://blog.self.li/post/63281257339/raspberry-pi-part-1-basic-setup-without-cables</li>
 </ul>
 
     <div id="footer">
       <a class="logo" href='https://webring.xxiivv.com/#random' target='_blank'><img class="webring_icon" src='https://webring.xxiivv.com/icon.white.svg'/></a>
+    </div>
     </div>
     </body>
    </html>

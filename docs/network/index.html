@@ -20,10 +20,12 @@
 sudo vim /etc/ssh/sshd_config
     PasswordAuthentication no
 sudo /etc/init.d/sshd restart
+
 </code></pre>
 <p>Check if failing ssh accesses:</p>
-<pre><code>sudo less /var/log/auth.log | grep "\: Failed password" | less
-sudo less /var/log/auth.log.1 | grep "\: Failed password" | less
+<pre><code>sudo less /var/log/auth.log | grep &quot;\: Failed password&quot; | less
+sudo less /var/log/auth.log.1 | grep &quot;\: Failed password&quot; | less
+
 </code></pre>
 <p>List all open ports:</p>
 <pre><code>netstat -tulpn
@@ -32,22 +34,29 @@ ss -tulpn
 # ...or...
 nmap -sT -O localhost
 nmap -sT -O server.example.com
+
 </code></pre>
 <p>Check latest logins (and if system rebooted):</p>
 <pre><code>last | head -50
+
 </code></pre>
 <p>Scan devices on LAN:</p>
 <pre><code>nmap -sP 192.168.1.0/24
+
 </code></pre>
 <p>Scan all open ports on LAN (fastest way):</p>
 <pre><code>nmap -T5 192.168.1.0/24
+
 </code></pre>
 <p>Scan open ports (and services) on host/IP:</p>
 <pre><code>nmap -Pn -v host
+
+
 </code></pre>
 
     <div id="footer">
       <a class="logo" href='https://webring.xxiivv.com/#random' target='_blank'><img class="webring_icon" src='https://webring.xxiivv.com/icon.white.svg'/></a>
+    </div>
     </div>
     </body>
    </html>

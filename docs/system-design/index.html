@@ -15,26 +15,31 @@
       <a class="logo" href="/">
       <img id="logo" src="/static/void-logo-white.svg" /></a>
 <h1>System Design</h1>
-<p>From original <a href="https://gist.github.com/vasanthk/485d1c25737e8e72759f">https://gist.github.com/vasanthk/485d1c25737e8e72759f</a></p>
-<h1>System Design Cheatsheet</h1>
-<blockquote><p>Picking the right architecture = Picking the right battles + Managing trade-offs</p>
+<p>From original https://gist.github.com/vasanthk/485d1c25737e8e72759f</p>
+<p>#System Design Cheatsheet</p>
+<blockquote>
+<p>Picking the right architecture = Picking the right battles + Managing trade-offs</p>
 </blockquote>
-<h2>Basic Steps</h2>
-<p>1) <strong>Clarify and agree on the scope of the system</strong></p>
+<p>##Basic Steps</p>
+<ol>
+<li><strong>Clarify and agree on the scope of the system</strong></li>
+</ol>
 <ul>
 <li><strong>User cases</strong> (description of sequences of events that, taken together, lead to a system doing something useful)<ul>
 <li>Who is going to use it?</li>
 <li>How are they going to use it?</li>
 </ul>
 </li>
-<li><strong>Constraints</strong> <ul>
+<li><strong>Constraints</strong><ul>
 <li>Mainly identify <strong>traffic and data handling</strong> constraints at scale.</li>
 <li>Scale of the system such as requests per second, requests types, data written per second, data read per second)</li>
 <li>Special system requirements such as multi-threading, read or write oriented.</li>
 </ul>
 </li>
 </ul>
-<p>2) <strong>High level architecture design (Abstract design)</strong></p>
+<ol start="2">
+<li><strong>High level architecture design (Abstract design)</strong></li>
+</ol>
 <ul>
 <li>Sketch the important components and connections between them, but don't go into some details.<ul>
 <li>Application service layer (serves the requests)</li>
@@ -46,12 +51,14 @@
 </ul>
 </li>
 </ul>
-<p>3) <strong>Component Design</strong></p>
+<ol start="3">
+<li><strong>Component Design</strong></li>
+</ol>
 <ul>
 <li>Component + specific <strong>APIs</strong> required for each of them.</li>
 <li><strong>Object oriented design</strong> for functionalities.<ul>
 <li>Map features to modules: One scenario for one module.</li>
-<li>Consider the relationships among modules: <ul>
+<li>Consider the relationships among modules:<ul>
 <li>Certain functions must have unique instance (Singletons)</li>
 <li>Core object can be made up of many other objects (composition).</li>
 <li>One object is another object (inheritance)</li>
@@ -61,27 +68,31 @@
 </li>
 <li><strong>Database schema design.</strong></li>
 </ul>
-<p>4) <strong>Understanding Bottlenecks</strong></p>
+<ol start="4">
+<li><strong>Understanding Bottlenecks</strong></li>
+</ol>
 <ul>
-<li>Perhaps your system needs a load balancer and many machines behind it to handle the user requests. * Or maybe the data is so huge that you need to distribute your database on multiple machines. What are some of the downsides that occur from doing that? </li>
-<li>Is the database too slow and does it need some in-memory caching? </li>
+<li>Perhaps your system needs a load balancer and many machines behind it to handle the user requests. * Or maybe the data is so huge that you need to distribute your database on multiple machines. What are some of the downsides that occur from doing that?</li>
+<li>Is the database too slow and does it need some in-memory caching?</li>
 </ul>
-<p>5) <strong>Scaling</strong> your abstract design</p>
+<ol start="5">
+<li><strong>Scaling</strong> your abstract design</li>
+</ol>
 <ul>
 <li><strong>Vertical scaling</strong><ul>
 <li>You scale by adding more power (CPU, RAM) to your existing machine.</li>
 </ul>
 </li>
 <li><strong>Horizontal scaling</strong><ul>
-<li>You scale by adding more machines into your pool of resources. </li>
+<li>You scale by adding more machines into your pool of resources.</li>
 </ul>
 </li>
 <li><strong>Caching</strong><ul>
-<li>Load balancing helps you scale horizontally across an ever-increasing number of servers, but caching will enable you to make vastly better use of the resources you already have, as well as making otherwise unattainable product requirements feasible. </li>
+<li>Load balancing helps you scale horizontally across an ever-increasing number of servers, but caching will enable you to make vastly better use of the resources you already have, as well as making otherwise unattainable product requirements feasible.</li>
 <li><strong>Application caching</strong> requires explicit integration in the application code itself. Usually it will check if a value is in the cache; if not, retrieve the value from the database.</li>
-<li><strong>Database caching</strong> tends to be "free". When you flip your database on, you're going to get some level of default configuration which will provide some degree of caching and performance. Those initial settings will be optimized for a generic usecase, and by tweaking them to your system's access patterns you can generally squeeze a great deal of performance improvement.</li>
+<li><strong>Database caching</strong> tends to be &quot;free&quot;. When you flip your database on, you're going to get some level of default configuration which will provide some degree of caching and performance. Those initial settings will be optimized for a generic usecase, and by tweaking them to your system's access patterns you can generally squeeze a great deal of performance improvement.</li>
 <li><strong>In-memory caches</strong> are most potent in terms of raw performance. This is because they store their entire set of data in memory and accesses to RAM are orders of magnitude faster than those to disk. eg. Memcached or Redis.</li>
-<li>eg. Precalculating results (e.g. the number of visits from each referring domain for the previous day), </li>
+<li>eg. Precalculating results (e.g. the number of visits from each referring domain for the previous day),</li>
 <li>eg. Pre-generating expensive indexes (e.g. suggested stories based on a user's click history)</li>
 <li>eg. Storing copies of frequently accessed data in a faster backend (e.g. Memcache instead of PostgreSQL.</li>
 </ul>
@@ -94,7 +105,8 @@
 </ul>
 <p align="center">
   <img src="http://lethain.com/static/blog/intro_arch/load_balance.png" alt="Load Balancing"/>
-</p><ul>
+</p>
+<ul>
 <li><strong>Database replication</strong><ul>
 <li>Database replication is the frequent electronic copying data from a database in one computer or server to a database in another so that all users share the same level of information. The result is a distributed database in which users can access data relevant to their tasks without interfering with the work of others. The implementation of database replication for the purpose of eliminating data ambiguity or inconsistency among users is known as normalization.</li>
 </ul>
@@ -104,7 +116,7 @@
 </ul>
 </li>
 <li><strong>Map-Reduce</strong><ul>
-<li>For sufficiently small systems you can often get away with adhoc queries on a SQL database, but that approach may not scale up trivially once the quantity of data stored or write-load requires sharding your database, and will usually require dedicated slaves for the purpose of performing these queries (at which point, maybe you'd rather use a system designed for analyzing large quantities of data, rather than fighting your database). </li>
+<li>For sufficiently small systems you can often get away with adhoc queries on a SQL database, but that approach may not scale up trivially once the quantity of data stored or write-load requires sharding your database, and will usually require dedicated slaves for the purpose of performing these queries (at which point, maybe you'd rather use a system designed for analyzing large quantities of data, rather than fighting your database).</li>
 <li>Adding a map-reduce layer makes it possible to perform data and/or processing intensive operations in a reasonable amount of time. You might use it for calculating suggested users in a social graph, or for generating analytics reports. eg. Hadoop, and maybe Hive or HBase.</li>
 </ul>
 </li>
@@ -116,37 +128,50 @@
 </ul>
 <p align="center">
   <img src="http://lethain.com/static/blog/intro_arch/platform_layer.png" alt="Platform Layer"/>
-</p><h2>Key topics for designing a system</h2>
-<p>1) <strong>Concurrency</strong></p>
+</p>
+<p>##Key topics for designing a system</p>
+<ol>
+<li><strong>Concurrency</strong></li>
+</ol>
 <ul>
 <li>Do you understand threads, deadlock, and starvation? Do you know how to parallelize algorithms? Do you understand consistency and coherence?</li>
 </ul>
-<p>2) <strong>Networking</strong></p>
+<ol start="2">
+<li><strong>Networking</strong></li>
+</ol>
 <ul>
 <li>Do you roughly understand IPC and TCP/IP? Do you know the difference between throughput and latency, and when each is the relevant factor?</li>
 </ul>
-<p>3) <strong>Abstraction</strong></p>
+<ol start="3">
+<li><strong>Abstraction</strong></li>
+</ol>
 <ul>
 <li>You should understand the systems you’re building upon. Do you know roughly how an OS, file system, and database work? Do you know about the various levels of caching in a modern OS?</li>
 </ul>
-<p>4) <strong>Real-World Performance</strong></p>
+<ol start="4">
+<li><strong>Real-World Performance</strong></li>
+</ol>
 <ul>
 <li>You should be familiar with the speed of everything your computer can do, including the relative performance of RAM, disk, SSD and your network.</li>
 </ul>
-<p>5) <strong>Estimation</strong></p>
+<ol start="5">
+<li><strong>Estimation</strong></li>
+</ol>
 <ul>
-<li>Estimation, especially in the form of a back-of-the-envelope calculation, is important because it helps you narrow down the list of possible solutions to only the ones that are feasible. Then you have only a few prototypes or micro-benchmarks to write.  </li>
+<li>Estimation, especially in the form of a back-of-the-envelope calculation, is important because it helps you narrow down the list of possible solutions to only the ones that are feasible. Then you have only a few prototypes or micro-benchmarks to write.</li>
 </ul>
-<p>6) <strong>Availability &amp; Reliability</strong></p>
+<ol start="6">
+<li><strong>Availability &amp; Reliability</strong></li>
+</ol>
 <ul>
 <li>Are you thinking about how things can fail, especially in a distributed environment? Do know how to design a system to cope with network failures? Do you understand durability?</li>
 </ul>
-<h2>Web App System design considerations:</h2>
+<p>##Web App System design considerations:</p>
 <ul>
 <li>Security (CORS)</li>
 <li>Using CDN<ul>
 <li>A content delivery network (CDN) is a system of distributed servers (network) that deliver webpages and other Web content to a user based on the geographic locations of the user, the origin of the webpage and a content delivery server.</li>
-<li>This service is effective in speeding the delivery of content of websites with high traffic and websites that have global reach. The closer the CDN server is to the user geographically, the faster the content will be delivered to the user. </li>
+<li>This service is effective in speeding the delivery of content of websites with high traffic and websites that have global reach. The closer the CDN server is to the user geographically, the faster the content will be delivered to the user.</li>
 <li>CDNs also provide protection from large surges in traffic.</li>
 </ul>
 </li>
@@ -212,6 +237,7 @@
 
     <div id="footer">
       <a class="logo" href='https://webring.xxiivv.com/#random' target='_blank'><img class="webring_icon" src='https://webring.xxiivv.com/icon.white.svg'/></a>
+    </div>
     </div>
     </body>
    </html>

@@ -18,7 +18,7 @@
 <h2>Setup on MacOS</h2>
 <ol>
 <li>Install Docker for Mac (will ask for privileges and be shown on your top
-bar). See <a href="https://docs.docker.com/docker-for-mac/">https://docs.docker.com/docker-for-mac/</a></li>
+bar). See https://docs.docker.com/docker-for-mac/</li>
 <li>Run <code>docker run hello-world</code> to see if everything is setup</li>
 </ol>
 <h2>Examples of config files</h2>
@@ -64,7 +64,7 @@ bar). See <a href="https://docs.docker.com/docker-for-mac/">https://docs.docker.
     # Get NPM_TOKEN from `--build-arg NPM_TOKEN=${NPM_TOKEN}`
     ARG NPM_TOKEN
     # Now we can npm install private packages
-    RUN echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" &gt; ~/.npmrc
+    RUN echo &quot;//registry.npmjs.org/:_authToken=${NPM_TOKEN}&quot; &gt; ~/.npmrc
     # Setup our working directory
     RUN mkdir -p /app/src
     RUN mkdir -p /app/vendor
@@ -92,12 +92,13 @@ bar). See <a href="https://docs.docker.com/docker-for-mac/">https://docs.docker.
     # Install Heroku CLI
     RUN wget -O- https://toolbelt.heroku.com/install-ubuntu.sh | sh
 
-    ENV POLY_BROWSER `node -e "console.log(require('phantomjs-prebuilt').path)"`
+    ENV POLY_BROWSER `node -e &quot;console.log(require('phantomjs-prebuilt').path)&quot;`
     RUN grunt build
     #RUN ./knex migrate:latest
     #RUN ./node_modules/.bin/coffee scripts/addTestSite.coffee
     #RUN ./node_modules/.bin/msgflo-setup --participants --ignore serving graphs/apis.fbp --shell bash
     #RUN PORT=3000 heroku local:start -e secrets.env
+
 </code></pre>
 <p>Example of a <code>docker-compose.yml</code> file:</p>
 <pre><code># For dev environment, probably need another config for prod
@@ -107,7 +108,7 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     ports:
-      - "15672:15672"
+      - &quot;15672:15672&quot;
     restart: always
   postgres:
     image: postgres:9.4
@@ -137,10 +138,11 @@ services:
         NPM_TOKEN: ${NPM_TOKEN}
         NODE: development
     ports:
-      - "3000:443"
+      - &quot;3000:443&quot;
     links:
       - rabbitmq
       - postgres
+
 </code></pre>
 <p>To use <code>version: 2</code> remember to have Compose 1.6.0+ and require a Docker Engine
 of version 1.10.0+.</p>
@@ -169,27 +171,34 @@ before_install:
 - docker-compose -v
 script:
 - npm test
+
 </code></pre>
 <h2>Useful commands</h2>
 <h3>Docker Compose</h3>
 <p>Force rebuilding some services (will ignore services that are images):</p>
 <pre><code>docker-compose build
+
 </code></pre>
 <p>If that's not enough, the following could help:</p>
 <pre><code>docker-compose up --force-recreate
+
 </code></pre>
 <p>Start the services specified on the <code>docker-compose.yml</code> on current folder:</p>
 <pre><code>docker-compose up
+
 </code></pre>
 <p>Remove current image:</p>
 <pre><code>docker-compose rm
+
 </code></pre>
 <p>Run something on a service:</p>
 <pre><code>docker-compose run &lt;service_name&gt; bash
+
 </code></pre>
 <p>If you get out of space, clean the following disk image and restart Docker
 Engine (you'll lose all your images):</p>
 <pre><code>rm -rf ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/Docker.qcow2
+
 </code></pre>
 <h3>Docker Engine</h3>
 <pre><code># List all running containers
@@ -224,21 +233,23 @@ docker volume ls -qf dangling=true
 docker volume ls
 
 # Remove &lt;none&gt; (unused) images
-docker rmi -f $(docker images | grep "^&lt;none&gt;" | awk "{print $3}")
+docker rmi -f $(docker images | grep &quot;^&lt;none&gt;&quot; | awk &quot;{print $3}&quot;)
 
 # List all space ocupied by images/containers/volumes
 docker system df -v
+
 </code></pre>
 <h1>Refs</h1>
 <ul>
-<li><a href="http://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html">http://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html</a></li>
-<li><a href="https://github.com/jdleesmiller/docker-chat-demo">https://github.com/jdleesmiller/docker-chat-demo</a></li>
-<li><a href="https://docs.docker.com/compose/startup-order/">https://docs.docker.com/compose/startup-order/</a></li>
-<li><a href="http://stackoverflow.com/questions/30604846/docker-error-no-space-left-on-device">http://stackoverflow.com/questions/30604846/docker-error-no-space-left-on-device</a></li>
+<li>http://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html</li>
+<li>https://github.com/jdleesmiller/docker-chat-demo</li>
+<li>https://docs.docker.com/compose/startup-order/</li>
+<li>http://stackoverflow.com/questions/30604846/docker-error-no-space-left-on-device</li>
 </ul>
 
     <div id="footer">
       <a class="logo" href='https://webring.xxiivv.com/#random' target='_blank'><img class="webring_icon" src='https://webring.xxiivv.com/icon.white.svg'/></a>
+    </div>
     </div>
     </body>
    </html>
