@@ -1,6 +1,6 @@
 {
     "index_file": "./docs/index/index.html",
-    "braindump_file": "/home/vilson/src/automata/braindump",
-    "html_output": "/home/vilson/src/automata/automata.github.io/docs"
+    "braindump_file": "/Users/vilson/src/braindump",
+    "html_output": "/Users/vilson/src/automata.github.io/docs"
 }
 
