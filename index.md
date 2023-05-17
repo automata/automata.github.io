@@ -10,7 +10,15 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 # Open Source Projects
 
 <div class="project">
-  <img class="project-thumb" src="/static/project_canary.png" />
+  <img class="project-thumb" src="/static/project_generative_monster.jpg" />
+  <a href="https://github.com/automata/generative.monster">Generative Monster</a>
+  <p>
+  A fully autonomous AI artist based on LangChain (GPT) and Stable Diffusion models that
+  tweets its creations daily on <a href="https://twitter.com/generativemnstr">@generativemnstr</a>.</p>
+</div>
+
+<div class="project">
+  <img class="project-thumb" src="/static/project_canary.jpg" />
   <a href="https://github.com/KappaSigmaMu/canary-component">Canary Component</a>
   <p>
   A React
@@ -35,7 +43,7 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 </div>
 
 <div class="project">
-  <img class="project-thumb" src="/static/project_gmrsaliency.png" />
+  <img class="project-thumb" src="/static/project_gmrsaliency.jpg" />
   <a href="https://github.com/automata/gmr-saliency">GMR-Saliency</a>
   <p>
   C++ implementation of SLIC for paper "Saliency Detection via Graph-Based Manifold Ranking" by Chuan Yang et al.
@@ -60,13 +68,13 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 </div>
 
 <div class="project">
-  <img class="project-thumb" src="/static/project_autovj.png" />
+  <img class="project-thumb" src="/static/project_autovj.jpg" />
   <a href="http://void.cc/autovj">AutoVJ</a>
   <p>A just-for-fun GIF-based VJ web tool.</p>
 </div>
 
 <div class="project">
-  <img class="project-thumb" src="/static/project_vizpaintings.png" />
+  <img class="project-thumb" src="/static/project_vizpaintings.jpg" />
   <a href="https://void.cc/viz-paintings/">Viz Paintings</a>
   <p>Interactive 3D visualization
   of paintings for <b>A quantitative approach to painting syles</b> paper (see
@@ -74,7 +82,7 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 </div>
 
 <div class="project">
-  <img class="project-thumb" src="/static/project_codepoems.png" />
+  <img class="project-thumb" src="/static/project_codepoems.jpg" />
   <a href="http://code-poems.com/">Code Poems</a>
   <p>The code poem
   <a href="https://gist.github.com/automata/8e64b5f67134f51c4cca9bd564e84e66">Rising</a>
@@ -86,10 +94,11 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
 # Timeline
 
-- 2019 - Present: Chief of AI at Extend AI
+- 2023 - Present: ML Engineer at [Anything World](https://anything.world)
+- 2019 - 2023: Chief of AI at ExAI
 - 2020 - Present: Co-founder of [2aliens](https://2aliens.cc)
   with Gabriela Thumé
-- 2018 - 2019: ML Engineer at Extend AI
+- 2018 - 2019: ML Engineer at ExAI
 - 2017 - Present: Co-founder of CodAI with Gabriela Thumé
 - 2014 - 2017: Software & ML Engineer at The Grid
 - 2014: Software Engineer at Google/Mozilla (GSoC intership/grant)
@@ -105,12 +114,13 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 # Main research interests
 
 - Machine Learning
+- Generative AI
 - Computer Vision
 - Computational Creativity
 - Game Development
 - VR / AR / XR
 - Digital Twins
-- Digital/Software/Electronic/Generative/Procedural Art
+- Digital / Software / Electronic / Generative / Procedural Art & Music
 - Physical Computing
 
 # Grants
@@ -159,6 +169,7 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 - [Lab Macambira](http://labmacambira.sf.net)
 - [NosDigitais](http://nosdigitais.teia.org.br)
 - [KappaSigmaMu](https://ksmsociety.io/)
+- [Hackable Space](https://hackable.space)
 
 # Teaching
 
