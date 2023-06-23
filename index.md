@@ -5,7 +5,7 @@ He holds a BSc. in Computer Science and MSc. in Computational and Applied
 Physics by University of São Paulo (USP) advised by
 profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
-[Mastodon](https://sigmoid.social/@automata) - [Twitter](https://twitter.com/aut0mata) - [GitHub](https://github.com/automata)
+[Notion](https://aut0mata.notion.site/Digital-Garden-6d61fd49d4f04d468a466b9eaa9c4871?pvs=4) - [Mastodon](https://sigmoid.social/@automata) - [Twitter](https://twitter.com/aut0mata) - [GitHub](https://github.com/automata)
 
 # Open Source Projects
 
