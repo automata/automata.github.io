@@ -1,7 +1,7 @@
-__Vilson Vieira__ is a Software and Machine Learning Engineer, artist and
-open source enthusiast who has being developing for Google, Mozilla, The Grid
-and most recently for Extend AI.
-He holds a BSc. in Computer Science and MSc. in Computational and Applied
+Hi, I'm __Vilson Vieira__, a Software and Machine Learning Engineer, artist and
+open source enthusiast who has being developing for Google, Mozilla, The Grid,
+ExAI and most recently for Anything World.
+I'm a BSc. in Computer Science and MSc. in Computational and Applied
 Physics by University of São Paulo (USP) advised by
 profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
