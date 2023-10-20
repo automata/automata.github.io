@@ -10,6 +10,14 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 # Open Source Projects
 
 <div class="project">
+  <img class="project-thumb" src="/static/project_basquiat.jpg" />
+  <a href="https://github.com/automata/basquiat">Basquiat</a>
+  <p>
+  Small Mojo 🔥 and Python library for creative coding powered by Cairo.
+  </p>
+</div>
+
+<div class="project">
   <img class="project-thumb" src="/static/project_generative_monster.jpg" />
   <a href="https://github.com/automata/generative.monster">Generative Monster</a>
   <p>
