@@ -1,4 +1,4 @@
-Hi, I'm __Vilson Vieira__, a Software and Machine Learning Engineer, artist and
+Hi, I'm __Vilson Vieira__, a Software and Machine Learning Researcher, artist and
 open source enthusiast who has being developing for Google, Mozilla, The Grid,
 ExAI and most recently for Anything World.
 I'm a BSc. in Computer Science and MSc. in Computational and Applied
@@ -8,6 +8,17 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 [Notion](https://aut0mata.notion.site/Digital-Garden-6d61fd49d4f04d468a466b9eaa9c4871?pvs=4) - [Mastodon](https://sigmoid.social/@automata) - [Twitter](https://twitter.com/aut0mata) - [GitHub](https://github.com/automata)
 
 # Open Source Projects
+
+<div class="project">
+  <img class="project-thumb" src="/static/project_mojograd.gif" />
+  <a href="https://github.com/automata/mojograd">mojograd</a>
+  <p>
+  Implementation of Karpathy's micrograd in Mojo 🔥. A reverse-mode autodiff
+  library with a PyTorch-like API.
+  </p>
+</div>
+
+
 
 <div class="project">
   <img class="project-thumb" src="/static/project_basquiat.jpg" />
