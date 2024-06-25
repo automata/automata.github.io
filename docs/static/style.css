@@ -1,10 +1,10 @@
 body {
   background: #000;
   color: #fff;
-  width: 50%;
-  padding: 30px;
+  max-width: 624px;
+  padding: 20px;
   line-height: 16pt;
-  font-size: 10pt;
+  font-size: 9pt;
   font-family: monospace;
 }
 
@@ -20,7 +20,9 @@ a:hover {
   background-color: yellow;
   text-decoration: none;
 }
-
+ul {
+  padding-left: 10px;
+}
 #logo {
   background-color: transparent;
   float: right;
@@ -57,7 +59,7 @@ a.logo, a.logo:visited, a.logo:hover {
   float: left;
   margin-top: 15px;
   margin-bottom: 15px;
-  margin-left: 30px;
+  margin-left: 0px;
   width: 100%;
 }
 
@@ -87,9 +89,7 @@ pre {
 @media screen and (max-width: 800px) {
   body {
     width: auto;
-    padding: 10px;
-    margin: 0px;
-    font-size: 10pt;
+    font-size: 9pt;
   }
   #logo {
     float: right;

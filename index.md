@@ -113,7 +113,7 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
 # Timeline
 
-- 2023 - Present: ML Engineer at [Anything World](https://anything.world)
+- 2023 - Present: Lead ML Engineer at [Anything World](https://anything.world)
 - 2019 - 2023: Chief of AI at ExAI
 - 2020 - Present: Co-founder of [2aliens](https://2aliens.cc)
   with Gabriela Thumé
@@ -132,13 +132,12 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
 # Main research interests
 
-- Machine Learning
+- AI / Machine Learning
 - Generative AI
 - Computer Vision
 - Computational Creativity
 - Game Development
 - VR / AR / XR
-- Digital Twins
 - Digital / Software / Electronic / Generative / Procedural Art & Music
 - Physical Computing
 
@@ -159,6 +158,7 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
 # Selected Exhibitions, Talks and Events
 
+* 2024 : London AI Summit : London, UK
 * 2017 : 16th Brazilian Symposium on Computer Music (SBCM17) : São Paulo, BR. Presented by Renato Fabbri
 * 2015 : [Chaos Communication Camp](https://events.ccc.de/camp/2015/wiki/Main_Page) : Berlin, DE : With [The Grid](http://thegrid.io) team
 * 2014 : ENCUN 2014. National Encounter of Music Composers : São Paulo, BR : __Web Audio and Livecoding Workshop__. With Guilherme Lunhani and Caleb Luporini
