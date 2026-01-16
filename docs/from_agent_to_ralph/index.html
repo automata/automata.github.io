@@ -1,0 +1,576 @@
+
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Vilson Vieira Personal Website">
+      <meta name="keywords" content="Personal Website, Machine Learning, AI, Computational Creativity, Gamedev, Research, USP, Physics, CS">
+      <meta name="author" content="Vilson Vieira">
+      <title>Vilson Vieira</title>
+      <link rel="stylesheet" href="/static/style.css">
+      <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+      <a class="logo" href="/">
+      <img id="logo" src="/static/void-logo-white.svg" /></a>
+<h1>From Zero to Agent: Building a CLI AI Coding Assistant in 100 Lines</h1>
+<p>Let's build an AI coding agent from scratch. No frameworks, no abstractions—just the core loop that makes agents work.</p>
+<p>We'll use TypeScript with Bun and OpenRouter to call any LLM. In about 100 lines, you'll have a working agent that can read files, execute commands, and help you code.</p>
+<h2>The Agentic Loop</h2>
+<p>Every AI agent follows the same pattern:</p>
+<ol>
+<li>Send messages to the LLM</li>
+<li>Get a response (text or tool calls)</li>
+<li>If there are tool calls, execute them</li>
+<li>Add the results back to the conversation</li>
+<li>Repeat until done</li>
+</ol>
+<p>That's it. Let's build it.</p>
+<h2>Setup</h2>
+<pre><code class="language-bash">mkdir ai-agent
+cd ai-agent
+bun init -y
+bun add openai
+</code></pre>
+<p>We'll use the OpenAI SDK because OpenRouter is API-compatible.</p>
+<p>Create <code>agent.ts</code> and let's go.</p>
+<h2>Step 1: The Basic Client</h2>
+<p>First, configure the OpenRouter client:</p>
+<pre><code class="language-typescript">import OpenAI from &quot;openai&quot;;
+
+const client = new OpenAI({
+  baseURL: &quot;https://openrouter.ai/api/v1&quot;,
+  apiKey: process.env.OPENROUTER_API_KEY,
+});
+
+const MODEL = &quot;anthropic/claude-3.5-sonnet&quot;;
+</code></pre>
+<p>Simple. OpenRouter handles routing to any model.</p>
+<h2>Step 2: Define Tools</h2>
+<p>An agent needs tools. Let's give it two: read files and execute shell commands.</p>
+<pre><code class="language-typescript">const tools = [
+  {
+    type: &quot;function&quot; as const,
+    function: {
+      name: &quot;read_file&quot;,
+      description: &quot;Read contents of a file&quot;,
+      parameters: {
+        type: &quot;object&quot;,
+        properties: {
+          path: { type: &quot;string&quot;, description: &quot;File path to read&quot; },
+        },
+        required: [&quot;path&quot;],
+      },
+    },
+  },
+  {
+    type: &quot;function&quot; as const,
+    function: {
+      name: &quot;execute_command&quot;,
+      description: &quot;Execute a shell command&quot;,
+      parameters: {
+        type: &quot;object&quot;,
+        properties: {
+          command: { type: &quot;string&quot;, description: &quot;Command to execute&quot; },
+        },
+        required: [&quot;command&quot;],
+      },
+    },
+  },
+];
+</code></pre>
+<p>These JSON schemas tell the LLM what it can do.</p>
+<h2>Step 3: Implement the Tools</h2>
+<p>Now the actual functions:</p>
+<pre><code class="language-typescript">import { readFileSync } from &quot;fs&quot;;
+import { execSync } from &quot;child_process&quot;;
+
+async function executeTool(name: string, args: any): Promise&lt;string&gt; {
+  try {
+    if (name === &quot;read_file&quot;) {
+      return readFileSync(args.path, &quot;utf-8&quot;);
+    } else if (name === &quot;execute_command&quot;) {
+      return execSync(args.command, { encoding: &quot;utf-8&quot;, maxBuffer: 10 * 1024 * 1024 });
+    }
+    return &quot;Unknown tool&quot;;
+  } catch (error: any) {
+    return `Error: ${error.message}`;
+  }
+}
+</code></pre>
+<p>Read files, run commands, catch errors. That's all we need.</p>
+<h2>Step 4: The Agentic Loop</h2>
+<p>Here's where it gets interesting:</p>
+<pre><code class="language-typescript">async function runAgent(userMessage: string) {
+  const messages: any[] = [
+    {
+      role: &quot;system&quot;,
+      content: &quot;You are a helpful coding assistant. Use tools to help the user.&quot;,
+    },
+    { role: &quot;user&quot;, content: userMessage },
+  ];
+
+  while (true) {
+    const response = await client.chat.completions.create({
+      model: MODEL,
+      messages,
+      tools,
+    });
+
+    const message = response.choices[0].message;
+    messages.push(message);
+
+    // If no tool calls, we're done
+    if (!message.tool_calls || message.tool_calls.length === 0) {
+      console.log(message.content);
+      break;
+    }
+
+    // Execute each tool call
+    for (const toolCall of message.tool_calls) {
+      const args = JSON.parse(toolCall.function.arguments);
+      const result = await executeTool(toolCall.function.name, args);
+
+      console.log(`[${toolCall.function.name}] ${JSON.stringify(args)}`);
+
+      messages.push({
+        role: &quot;tool&quot;,
+        tool_call_id: toolCall.id,
+        content: result,
+      });
+    }
+  }
+}
+</code></pre>
+<p>This is the heart of the agent:</p>
+<ul>
+<li>Call the LLM with current messages</li>
+<li>If it responds with text, print and exit</li>
+<li>If it makes tool calls, execute them</li>
+<li>Add results to messages</li>
+<li>Loop until done</li>
+</ul>
+<h2>Step 5: CLI Interface</h2>
+<p>Make it usable:</p>
+<pre><code class="language-typescript">const prompt = process.argv.slice(2).join(&quot; &quot;);
+
+if (!prompt) {
+  console.log(&quot;Usage: bun agent.ts &lt;your request&gt;&quot;);
+  process.exit(1);
+}
+
+runAgent(prompt);
+</code></pre>
+<h2>Running It</h2>
+<pre><code class="language-bash">export OPENROUTER_API_KEY=&quot;your-key-here&quot;
+bun agent.ts &quot;read package.json and tell me what dependencies I have&quot;
+</code></pre>
+<p>The agent will:</p>
+<ol>
+<li>Read package.json</li>
+<li>Analyze the contents</li>
+<li>Report back</li>
+</ol>
+<p>That's an AI agent.</p>
+<h2>The Complete Code</h2>
+<p>Here's everything together:</p>
+<pre><code class="language-typescript">import OpenAI from &quot;openai&quot;;
+import { readFileSync } from &quot;fs&quot;;
+import { execSync } from &quot;child_process&quot;;
+
+const client = new OpenAI({
+  baseURL: &quot;https://openrouter.ai/api/v1&quot;,
+  apiKey: process.env.OPENROUTER_API_KEY,
+});
+
+const MODEL = &quot;anthropic/claude-3.5-sonnet&quot;;
+
+const tools = [
+  {
+    type: &quot;function&quot; as const,
+    function: {
+      name: &quot;read_file&quot;,
+      description: &quot;Read contents of a file&quot;,
+      parameters: {
+        type: &quot;object&quot;,
+        properties: {
+          path: { type: &quot;string&quot;, description: &quot;File path to read&quot; },
+        },
+        required: [&quot;path&quot;],
+      },
+    },
+  },
+  {
+    type: &quot;function&quot; as const,
+    function: {
+      name: &quot;execute_command&quot;,
+      description: &quot;Execute a shell command&quot;,
+      parameters: {
+        type: &quot;object&quot;,
+        properties: {
+          command: { type: &quot;string&quot;, description: &quot;Command to execute&quot; },
+        },
+        required: [&quot;command&quot;],
+      },
+    },
+  },
+];
+
+async function executeTool(name: string, args: any): Promise&lt;string&gt; {
+  try {
+    if (name === &quot;read_file&quot;) {
+      return readFileSync(args.path, &quot;utf-8&quot;);
+    } else if (name === &quot;execute_command&quot;) {
+      return execSync(args.command, { encoding: &quot;utf-8&quot;, maxBuffer: 10 * 1024 * 1024 });
+    }
+    return &quot;Unknown tool&quot;;
+  } catch (error: any) {
+    return `Error: ${error.message}`;
+  }
+}
+
+async function runAgent(userMessage: string) {
+  const messages: any[] = [
+    {
+      role: &quot;system&quot;,
+      content: &quot;You are a helpful coding assistant. Use tools to help the user.&quot;,
+    },
+    { role: &quot;user&quot;, content: userMessage },
+  ];
+
+  while (true) {
+    const response = await client.chat.completions.create({
+      model: MODEL,
+      messages,
+      tools,
+    });
+
+    const message = response.choices[0].message;
+    messages.push(message);
+
+    if (!message.tool_calls || message.tool_calls.length === 0) {
+      console.log(message.content);
+      break;
+    }
+
+    for (const toolCall of message.tool_calls) {
+      const args = JSON.parse(toolCall.function.arguments);
+      const result = await executeTool(toolCall.function.name, args);
+
+      console.log(`[${toolCall.function.name}] ${JSON.stringify(args)}`);
+
+      messages.push({
+        role: &quot;tool&quot;,
+        tool_call_id: toolCall.id,
+        content: result,
+      });
+    }
+  }
+}
+
+const prompt = process.argv.slice(2).join(&quot; &quot;);
+
+if (!prompt) {
+  console.log(&quot;Usage: bun agent.ts &lt;your request&gt;&quot;);
+  process.exit(1);
+}
+
+runAgent(prompt);
+</code></pre>
+<h2>What's Next?</h2>
+<p>This is minimal but functional. You could add:</p>
+<ul>
+<li>Streaming responses for better UX</li>
+<li>More tools (write files, search, etc.)</li>
+<li>Better error handling</li>
+<li>Conversation history</li>
+<li>Token usage tracking</li>
+</ul>
+<p>But you don't need any of that to understand how agents work. It's just a loop.</p>
+<p>The LLM decides what to do. You execute it. Repeat.</p>
+<p>That's the whole game.</p>
+<hr />
+<h2>Going Deeper: The Ralph Loop</h2>
+<p>But there's a problem with our agent. It stops when the LLM <em>thinks</em> it's done. Not when the work is actually complete.</p>
+<p>What if the tests fail? What if the build breaks? The agent just shrugs and exits.</p>
+<p>Enter the <strong>Ralph Loop</strong>.</p>
+<h3>What is the Ralph Loop?</h3>
+<p>Named after Ralph Wiggum from The Simpsons (yes, the &quot;I'm in danger&quot; kid), the Ralph Loop is a technique that's exploded in popularity in early 2026. Originally coined by Geoffrey Huntley, it's beautifully simple:</p>
+<pre><code class="language-bash">while :; do cat PROMPT.md | &lt;ANY_CODING_AGENT&gt; ; done
+</code></pre>
+<p>That's it. Just keep running the agent until the task is actually complete.</p>
+<h3>The Philosophy</h3>
+<p>Traditional agents stop when the LLM says &quot;I'm done.&quot; Ralph Loop stops when <strong>external verification</strong> confirms success.</p>
+<ul>
+<li>Not when the LLM says tests pass—when <code>npm test</code> exits 0</li>
+<li>Not when the LLM says the build works—when <code>docker build</code> succeeds</li>
+<li>Not when the LLM claims the server starts—when <code>curl localhost:3000/health</code> returns 200</li>
+</ul>
+<p>The mantra: <strong>Verify, don't trust.</strong></p>
+<h3>How It Works</h3>
+<p>Wrap your agent in an outer loop that:</p>
+<ol>
+<li>Runs the agent</li>
+<li>Checks if the objective is met (via external verification)</li>
+<li>If not, injects feedback and runs again</li>
+<li>Repeats until success (or max iterations)</li>
+</ol>
+<p>Think of it as <code>while (true)</code> for AI autonomy.</p>
+<h3>Implementing Ralph Loop</h3>
+<p>Let's wrap our agent. Create <code>ralph.ts</code>:</p>
+<pre><code class="language-typescript">import { readFileSync, writeFileSync } from &quot;fs&quot;;
+import { execSync } from &quot;child_process&quot;;
+
+const MAX_ITERATIONS = 10;
+const PROMPT_FILE = &quot;PROMPT.md&quot;;
+const TASK_FILE = &quot;TASK.md&quot;;
+
+async function verifyCompletion(): Promise&lt;{ complete: boolean; feedback?: string }&gt; {
+  try {
+    // Example: check if tests pass
+    execSync(&quot;npm test&quot;, { stdio: &quot;pipe&quot; });
+    return { complete: true };
+  } catch (error: any) {
+    return {
+      complete: false,
+      feedback: `Tests failed:\n${error.stdout?.toString() || error.message}`,
+    };
+  }
+}
+
+async function runRalphLoop() {
+  const originalPrompt = readFileSync(PROMPT_FILE, &quot;utf-8&quot;);
+
+  for (let iteration = 1; iteration &lt;= MAX_ITERATIONS; iteration++) {
+    console.log(`\n=== Ralph Iteration ${iteration}/${MAX_ITERATIONS} ===\n`);
+
+    // Run the agent (using our existing agent)
+    try {
+      execSync(`bun agent.ts &quot;$(cat ${TASK_FILE})&quot;`, { stdio: &quot;inherit&quot; });
+    } catch (error) {
+      console.log(&quot;Agent execution failed, continuing...&quot;);
+    }
+
+    // Verify completion
+    const { complete, feedback } = await verifyCompletion();
+
+    if (complete) {
+      console.log(&quot;\n✓ Task completed successfully!&quot;);
+      break;
+    }
+
+    // Inject feedback for next iteration
+    console.log(`\n✗ Not complete yet. Feedback:\n${feedback}\n`);
+
+    const updatedTask = `${originalPrompt}\n\n## Previous Attempt Feedback\n${feedback}\n\nPlease fix the issues above.`;
+    writeFileSync(TASK_FILE, updatedTask);
+
+    if (iteration === MAX_ITERATIONS) {
+      console.log(&quot;\n⚠ Max iterations reached. Manual intervention needed.&quot;);
+    }
+  }
+}
+
+runRalphLoop();
+</code></pre>
+<p>Now create <code>PROMPT.md</code>:</p>
+<pre><code class="language-markdown"># Task: Implement User Authentication
+
+Create a simple user authentication system with:
+- Login endpoint at POST /login
+- Registration endpoint at POST /register
+- Tests that verify both endpoints work
+- All tests must pass
+
+Use the tools available to read existing code, write new files, and run tests.
+</code></pre>
+<p>Run it:</p>
+<pre><code class="language-bash">cp PROMPT.md TASK.md
+bun ralph.ts
+</code></pre>
+<h3>What Happens</h3>
+<ol>
+<li><strong>Iteration 1</strong>: Agent creates login/register endpoints, writes tests</li>
+<li>Verification fails: tests don't pass (forgot password hashing)</li>
+<li><strong>Iteration 2</strong>: Feedback injected: &quot;Tests failed: password comparison failing&quot;</li>
+<li>Agent fixes password hashing</li>
+<li>Verification succeeds: all tests pass</li>
+<li>Loop exits</li>
+</ol>
+<p>The agent keeps going until it <strong>actually works</strong>.</p>
+<h3>Real-World Ralph Loop</h3>
+<p>In practice, verification can be anything:</p>
+<ul>
+<li><code>docker build &amp;&amp; docker run --health-check</code></li>
+<li><code>git diff --exit-code</code> (no uncommitted changes)</li>
+<li>Custom health checks, API responses, file existence</li>
+<li>Multiple verification steps in sequence</li>
+</ul>
+<p>Example with multiple checks:</p>
+<pre><code class="language-typescript">async function verifyCompletion(): Promise&lt;{ complete: boolean; feedback?: string }&gt; {
+  // Check 1: Build succeeds
+  try {
+    execSync(&quot;npm run build&quot;, { stdio: &quot;pipe&quot; });
+  } catch (error: any) {
+    return { complete: false, feedback: `Build failed:\n${error.message}` };
+  }
+
+  // Check 2: Tests pass
+  try {
+    execSync(&quot;npm test&quot;, { stdio: &quot;pipe&quot; });
+  } catch (error: any) {
+    return { complete: false, feedback: `Tests failed:\n${error.message}` };
+  }
+
+  // Check 3: Lint passes
+  try {
+    execSync(&quot;npm run lint&quot;, { stdio: &quot;pipe&quot; });
+  } catch (error: any) {
+    return { complete: false, feedback: `Lint failed:\n${error.message}` };
+  }
+
+  return { complete: true };
+}
+</code></pre>
+<h3>Why This Works</h3>
+<p>The secret is that <strong>progress lives in your files, not in the LLM's context</strong>.</p>
+<p>When the agent runs again:</p>
+<ul>
+<li>It reads the files it just modified</li>
+<li>It sees the test output</li>
+<li>It gets feedback on what failed</li>
+<li>It tries a different approach</li>
+</ul>
+<p>Fresh context, persistent progress.</p>
+<h3>The 2026 Movement</h3>
+<p>Ralph Loop has exploded in 2026. There are now:</p>
+<ul>
+<li>An official <a href="https://github.com/anthropics/claude-code">Anthropic Claude Code plugin</a></li>
+<li><a href="https://github.com/vercel-labs/ralph-loop-agent">Vercel's ralph-loop-agent</a> for AI SDK</li>
+<li>Implementations in Google ADK, Cursor, and more</li>
+<li>Reports of developers completing $50k contracts for $297 in API costs</li>
+<li>14-hour autonomous sessions upgrading entire codebases</li>
+</ul>
+<h3>A Word of Caution</h3>
+<p>Ralph Loop is powerful but dangerous. It gives the AI full control over your terminal. Security experts strictly advise:</p>
+<ol>
+<li><strong>Always use sandboxed environments</strong> (Docker, VMs, isolated containers)</li>
+<li><strong>Set strict max-iterations</strong> (don't let it run forever)</li>
+<li><strong>Monitor API costs</strong> (infinite loops cost infinite money)</li>
+<li><strong>Review generated code</strong> (autonomy ≠ correctness)</li>
+</ol>
+<h3>The Complete Ralph Pattern</h3>
+<p>Here's the full implementation with safety checks:</p>
+<pre><code class="language-typescript">import { readFileSync, writeFileSync, existsSync } from &quot;fs&quot;;
+import { execSync } from &quot;child_process&quot;;
+
+const MAX_ITERATIONS = 10;
+const PROMPT_FILE = &quot;PROMPT.md&quot;;
+const TASK_FILE = &quot;TASK.md&quot;;
+const STATE_FILE = &quot;.ralph-state.json&quot;;
+
+interface RalphState {
+  iteration: number;
+  startTime: number;
+  totalCost: number;
+}
+
+async function verifyCompletion(): Promise&lt;{ complete: boolean; feedback?: string }&gt; {
+  try {
+    execSync(&quot;npm test&quot;, { stdio: &quot;pipe&quot; });
+    return { complete: true };
+  } catch (error: any) {
+    return {
+      complete: false,
+      feedback: `Tests failed:\n${error.stdout?.toString() || error.message}`,
+    };
+  }
+}
+
+function loadState(): RalphState {
+  if (existsSync(STATE_FILE)) {
+    return JSON.parse(readFileSync(STATE_FILE, &quot;utf-8&quot;));
+  }
+  return { iteration: 0, startTime: Date.now(), totalCost: 0 };
+}
+
+function saveState(state: RalphState) {
+  writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
+}
+
+async function runRalphLoop() {
+  const originalPrompt = readFileSync(PROMPT_FILE, &quot;utf-8&quot;);
+  const state = loadState();
+
+  // Safety: max runtime check (4 hours)
+  const MAX_RUNTIME_MS = 4 * 60 * 60 * 1000;
+  const elapsed = Date.now() - state.startTime;
+  if (elapsed &gt; MAX_RUNTIME_MS) {
+    console.log(&quot;⚠ Max runtime exceeded. Stopping.&quot;);
+    return;
+  }
+
+  for (let iteration = state.iteration + 1; iteration &lt;= MAX_ITERATIONS; iteration++) {
+    console.log(`\n=== Ralph Iteration ${iteration}/${MAX_ITERATIONS} ===`);
+    console.log(`Elapsed: ${Math.round(elapsed / 1000 / 60)} minutes\n`);
+
+    state.iteration = iteration;
+    saveState(state);
+
+    try {
+      execSync(`bun agent.ts &quot;$(cat ${TASK_FILE})&quot;`, { stdio: &quot;inherit&quot; });
+    } catch (error) {
+      console.log(&quot;Agent execution failed, continuing...&quot;);
+    }
+
+    const { complete, feedback } = await verifyCompletion();
+
+    if (complete) {
+      console.log(&quot;\n✓ Task completed successfully!&quot;);
+      execSync(`rm ${STATE_FILE}`); // Clean up
+      break;
+    }
+
+    console.log(`\n✗ Not complete. Feedback:\n${feedback}\n`);
+
+    const updatedTask = `${originalPrompt}\n\n## Iteration ${iteration} Feedback\n${feedback}\n\nFix the issues and try again.`;
+    writeFileSync(TASK_FILE, updatedTask);
+
+    if (iteration === MAX_ITERATIONS) {
+      console.log(&quot;\n⚠ Max iterations reached.&quot;);
+    }
+  }
+}
+
+runRalphLoop();
+</code></pre>
+<h3>The Future</h3>
+<p>Ralph Loop represents a shift in how we think about AI coding agents:</p>
+<p><strong>Old way</strong>: &quot;Run the agent, check the output, manually iterate&quot;</p>
+<p><strong>New way</strong>: &quot;Define success criteria, let the agent iterate until it's actually done&quot;</p>
+<p>It's autonomous in the truest sense. You write the goal, define verification, and walk away.</p>
+<p>When you come back, it's either done or you know exactly why it failed.</p>
+<p>That's the Ralph Loop.</p>
+<hr />
+<h2>Sources</h2>
+<ul>
+<li><a href="https://dev.to/alexandergekov/2026-the-year-of-the-ralph-loop-agent-1gkj">2026 - The year of the Ralph Loop Agent</a></li>
+<li><a href="https://medium.com/ai-artistry/ralph-loop-for-deep-agents-building-autonomous-ai-that-just-keeps-going-cb4da3a09b37">Ralph Loop for Deep Agents: Building Autonomous AI That Just Keeps Going</a></li>
+<li><a href="https://github.com/snarktank/ralph">GitHub - snarktank/ralph</a></li>
+<li><a href="https://medium.com/google-cloud/ralph-loop-with-google-adk-ai-agents-that-verify-not-guess-b41f71c0f30f">Ralph Loop with Google ADK: AI Agents That Verify, Not Guess</a></li>
+<li><a href="https://github.com/vercel-labs/ralph-loop-agent">GitHub - vercel-labs/ralph-loop-agent</a></li>
+<li><a href="https://medium.com/byte-sized-brainwaves/ralph-mode-why-ai-agents-should-forget-9f98bec6fc91">Ralph Mode: Why AI Agents Should Forget</a></li>
+<li><a href="https://devinterrupted.substack.com/p/inventing-the-ralph-wiggum-loop-creator">Inventing the Ralph Wiggum Loop</a></li>
+<li><a href="https://venturebeat.com/technology/how-ralph-wiggum-went-from-the-simpsons-to-the-biggest-name-in-ai-right-now">How Ralph Wiggum went from 'The Simpsons' to the biggest name in AI right now</a></li>
+<li><a href="https://www.alibabacloud.com/blog/from-react-to-ralph-loop-a-continuous-iteration-paradigm-for-ai-agents_602799">From ReAct to Ralph Loop: A Continuous Iteration Paradigm for AI Agents</a></li>
+<li><a href="https://github.com/anthropics/claude-code/blob/main/plugins/ralph-wiggum/README.md">Claude Code Ralph Wiggum Plugin</a></li>
+</ul>
+
+    <div id="footer">
+      <a class="logo" href='https://webring.xxiivv.com/#random' target='_blank'><img class="webring_icon" src='https://webring.xxiivv.com/icon.white.svg'/></a>
+      <a class="logo" href="http://www.catb.org/~esr/faqs/hacker-howto.html" target="_blank"><img class="webring_icon" src="/static/hacker_glider.svg"/></a>
+    </div>
+    </div>
+    </body>
+   </html>

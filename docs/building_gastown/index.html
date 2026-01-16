@@ -1,0 +1,625 @@
+
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Vilson Vieira Personal Website">
+      <meta name="keywords" content="Personal Website, Machine Learning, AI, Computational Creativity, Gamedev, Research, USP, Physics, CS">
+      <meta name="author" content="Vilson Vieira">
+      <title>Vilson Vieira</title>
+      <link rel="stylesheet" href="/static/style.css">
+      <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+      <a class="logo" href="/">
+      <img id="logo" src="/static/void-logo-white.svg" /></a>
+<h1>Building Gas Town: Orchestrating Multiple AI Agents</h1>
+<p>In the <a href="./001_from_agent_to_ralph.md">last post</a>, we built a single AI coding agent. It worked. But what if you need to build a complex feature that requires multiple agents working in parallel?</p>
+<p>You need orchestration.</p>
+<p>Enter <strong>Gas Town</strong> — Steve Yegge's multi-agent workspace manager that coordinates 20-30 concurrent AI agents, each playing specialized roles. Released on January 1, 2026, it's an orchestrator for getting multiple agents to work together toward a common goal.</p>
+<p>Let's build a minimal version in TypeScript.</p>
+<h2>The Gas Town Architecture</h2>
+<p>Gas Town has three core components:</p>
+<h3>1. The Mayor</h3>
+<p>The central coordinator. A Claude Code instance with full context about your workspace. You tell the Mayor what you want, and it breaks the work down into tasks.</p>
+<h3>2. Workers</h3>
+<p>Regular coding agents, each with a specialized role:</p>
+<ul>
+<li><strong>Architect</strong>: Designs system structure</li>
+<li><strong>Developer</strong>: Implements features</li>
+<li><strong>Tester</strong>: Writes and runs tests</li>
+<li><strong>Reviewer</strong>: Reviews code quality</li>
+<li><strong>Debugger</strong>: Fixes bugs</li>
+<li><strong>Documenter</strong>: Writes documentation</li>
+<li><strong>DevOps</strong>: Handles deployment</li>
+</ul>
+<h3>3. Beads</h3>
+<p>A Git-backed work tracking system. Each task is a &quot;bead&quot; — a TOML file storing work state. Workers pick up beads, complete them, and update the state.</p>
+<p>The genius: <strong>Everything persists in Git</strong>. Agents can crash, restart, and pick up where they left off.</p>
+<h2>Why This Matters</h2>
+<p>Traditional coding agents are single-threaded. One agent, one task, sequential execution.</p>
+<p>Gas Town is parallel. Multiple agents, each specialized, all working simultaneously on different parts of the same project.</p>
+<p><strong>Old way</strong>: &quot;Build a user auth system&quot; → 1 agent does everything sequentially</p>
+<p><strong>Gas Town way</strong>: &quot;Build a user auth system&quot; → Mayor splits it → Architect designs schema → Developer implements API → Tester writes tests → All happening in parallel</p>
+<p>It's like going from a single-core CPU to multi-core.</p>
+<h2>Our Minimal Implementation</h2>
+<p>We'll build a stripped-down Gas Town with:</p>
+<ul>
+<li>1 Mayor (task coordinator)</li>
+<li>3 Worker types (developer, tester, reviewer)</li>
+<li>Simple file-based Beads (no Git, just JSON)</li>
+</ul>
+<p>Let's go.</p>
+<h2>Step 1: Define the Bead Structure</h2>
+<p>A Bead is a unit of work. Create <code>bead.ts</code>:</p>
+<pre><code class="language-typescript">export type BeadStatus = &quot;pending&quot; | &quot;in_progress&quot; | &quot;completed&quot; | &quot;failed&quot;;
+export type WorkerRole = &quot;developer&quot; | &quot;tester&quot; | &quot;reviewer&quot;;
+
+export interface Bead {
+  id: string;
+  title: string;
+  description: string;
+  role: WorkerRole;
+  status: BeadStatus;
+  assignedTo?: string;
+  result?: string;
+  error?: string;
+  createdAt: number;
+  updatedAt: number;
+}
+</code></pre>
+<p>This is our work tracking. Simple, serializable, persistent.</p>
+<h2>Step 2: The Bead Store</h2>
+<p>We need to read/write beads. Create <code>bead-store.ts</code>:</p>
+<pre><code class="language-typescript">import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from &quot;fs&quot;;
+import { join } from &quot;path&quot;;
+import type { Bead } from &quot;./bead&quot;;
+
+const BEADS_DIR = &quot;.beads&quot;;
+
+export class BeadStore {
+  constructor() {
+    if (!existsSync(BEADS_DIR)) {
+      mkdirSync(BEADS_DIR, { recursive: true });
+    }
+  }
+
+  save(bead: Bead): void {
+    const path = join(BEADS_DIR, `${bead.id}.json`);
+    writeFileSync(path, JSON.stringify(bead, null, 2));
+  }
+
+  get(id: string): Bead | null {
+    const path = join(BEADS_DIR, `${id}.json`);
+    if (!existsSync(path)) return null;
+    return JSON.parse(readFileSync(path, &quot;utf-8&quot;));
+  }
+
+  list(): Bead[] {
+    const files = readdirSync(BEADS_DIR).filter((f) =&gt; f.endsWith(&quot;.json&quot;));
+    return files.map((f) =&gt; {
+      const content = readFileSync(join(BEADS_DIR, f), &quot;utf-8&quot;);
+      return JSON.parse(content);
+    });
+  }
+
+  listByStatus(status: Bead[&quot;status&quot;]): Bead[] {
+    return this.list().filter((b) =&gt; b.status === status);
+  }
+
+  listByRole(role: Bead[&quot;role&quot;]): Bead[] {
+    return this.list().filter((b) =&gt; b.role === role);
+  }
+}
+</code></pre>
+<p>Persistent work tracking in 40 lines.</p>
+<h2>Step 3: The Mayor</h2>
+<p>The Mayor breaks down high-level goals into specific beads. Create <code>mayor.ts</code>:</p>
+<pre><code class="language-typescript">import OpenAI from &quot;openai&quot;;
+import { BeadStore } from &quot;./bead-store&quot;;
+import type { Bead, WorkerRole } from &quot;./bead&quot;;
+
+const client = new OpenAI({
+  baseURL: &quot;https://openrouter.ai/api/v1&quot;,
+  apiKey: process.env.OPENROUTER_API_KEY,
+});
+
+const MODEL = &quot;anthropic/claude-3.5-sonnet&quot;;
+
+export class Mayor {
+  private store = new BeadStore();
+
+  async planWork(goal: string): Promise&lt;void&gt; {
+    console.log(&quot;🏛️  Mayor: Planning work...\n&quot;);
+
+    const response = await client.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {
+          role: &quot;system&quot;,
+          content: `You are the Mayor, a task coordinator. Break down user goals into specific tasks.
+
+For each task, specify:
+1. A clear title
+2. Detailed description
+3. The role needed (developer, tester, or reviewer)
+
+Return tasks as JSON array:
+[
+  {
+    &quot;title&quot;: &quot;Task title&quot;,
+    &quot;description&quot;: &quot;What to do&quot;,
+    &quot;role&quot;: &quot;developer&quot;
+  }
+]`,
+        },
+        { role: &quot;user&quot;, content: goal },
+      ],
+    });
+
+    const content = response.choices[0].message.content || &quot;[]&quot;;
+    const tasks = JSON.parse(content);
+
+    for (const task of tasks) {
+      const bead: Bead = {
+        id: `bead-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        title: task.title,
+        description: task.description,
+        role: task.role as WorkerRole,
+        status: &quot;pending&quot;,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      this.store.save(bead);
+      console.log(`📋 Created: [${bead.role}] ${bead.title}`);
+    }
+
+    console.log(`\n✓ Created ${tasks.length} beads\n`);
+  }
+
+  listWork(): void {
+    const beads = this.store.list();
+    console.log(&quot;📊 Work Status:\n&quot;);
+
+    const byStatus = {
+      pending: beads.filter((b) =&gt; b.status === &quot;pending&quot;),
+      in_progress: beads.filter((b) =&gt; b.status === &quot;in_progress&quot;),
+      completed: beads.filter((b) =&gt; b.status === &quot;completed&quot;),
+      failed: beads.filter((b) =&gt; b.status === &quot;failed&quot;),
+    };
+
+    for (const [status, items] of Object.entries(byStatus)) {
+      console.log(`${status.toUpperCase()}: ${items.length}`);
+      items.forEach((b) =&gt; console.log(`  - [${b.role}] ${b.title}`));
+    }
+  }
+}
+</code></pre>
+<p>The Mayor uses an LLM to intelligently break down goals into actionable beads.</p>
+<h2>Step 4: Workers</h2>
+<p>Workers pick up beads and execute them. Create <code>worker.ts</code>:</p>
+<pre><code class="language-typescript">import OpenAI from &quot;openai&quot;;
+import { BeadStore } from &quot;./bead-store&quot;;
+import { readFileSync } from &quot;fs&quot;;
+import { execSync } from &quot;child_process&quot;;
+import type { Bead, WorkerRole } from &quot;./bead&quot;;
+
+const client = new OpenAI({
+  baseURL: &quot;https://openrouter.ai/api/v1&quot;,
+  apiKey: process.env.OPENROUTER_API_KEY,
+});
+
+const MODEL = &quot;anthropic/claude-3.5-sonnet&quot;;
+
+const ROLE_PROMPTS: Record&lt;WorkerRole, string&gt; = {
+  developer: &quot;You are a Developer. Write clean, functional code. Use tools to create/modify files.&quot;,
+  tester: &quot;You are a Tester. Write comprehensive tests. Use tools to create test files and run them.&quot;,
+  reviewer: &quot;You are a Reviewer. Review code for quality, bugs, and best practices. Provide actionable feedback.&quot;,
+};
+
+const tools = [
+  {
+    type: &quot;function&quot; as const,
+    function: {
+      name: &quot;read_file&quot;,
+      description: &quot;Read contents of a file&quot;,
+      parameters: {
+        type: &quot;object&quot;,
+        properties: {
+          path: { type: &quot;string&quot;, description: &quot;File path to read&quot; },
+        },
+        required: [&quot;path&quot;],
+      },
+    },
+  },
+  {
+    type: &quot;function&quot; as const,
+    function: {
+      name: &quot;execute_command&quot;,
+      description: &quot;Execute a shell command&quot;,
+      parameters: {
+        type: &quot;object&quot;,
+        properties: {
+          command: { type: &quot;string&quot;, description: &quot;Command to execute&quot; },
+        },
+        required: [&quot;command&quot;],
+      },
+    },
+  },
+];
+
+async function executeTool(name: string, args: any): Promise&lt;string&gt; {
+  try {
+    if (name === &quot;read_file&quot;) {
+      return readFileSync(args.path, &quot;utf-8&quot;);
+    } else if (name === &quot;execute_command&quot;) {
+      return execSync(args.command, { encoding: &quot;utf-8&quot;, maxBuffer: 10 * 1024 * 1024 });
+    }
+    return &quot;Unknown tool&quot;;
+  } catch (error: any) {
+    return `Error: ${error.message}`;
+  }
+}
+
+export class Worker {
+  private store = new BeadStore();
+  private workerId: string;
+
+  constructor(private role: WorkerRole) {
+    this.workerId = `${role}-${Math.random().toString(36).slice(2, 9)}`;
+  }
+
+  async work(): Promise&lt;boolean&gt; {
+    const beads = this.store.listByRole(this.role).filter((b) =&gt; b.status === &quot;pending&quot;);
+
+    if (beads.length === 0) {
+      return false; // No work available
+    }
+
+    const bead = beads[0]; // Take first pending bead
+    console.log(`\n👷 ${this.workerId}: Starting [${bead.title}]`);
+
+    // Mark as in progress
+    bead.status = &quot;in_progress&quot;;
+    bead.assignedTo = this.workerId;
+    bead.updatedAt = Date.now();
+    this.store.save(bead);
+
+    try {
+      const result = await this.executeTask(bead);
+
+      bead.status = &quot;completed&quot;;
+      bead.result = result;
+      bead.updatedAt = Date.now();
+      this.store.save(bead);
+
+      console.log(`✓ ${this.workerId}: Completed [${bead.title}]`);
+      return true;
+    } catch (error: any) {
+      bead.status = &quot;failed&quot;;
+      bead.error = error.message;
+      bead.updatedAt = Date.now();
+      this.store.save(bead);
+
+      console.log(`✗ ${this.workerId}: Failed [${bead.title}] - ${error.message}`);
+      return true;
+    }
+  }
+
+  private async executeTask(bead: Bead): Promise&lt;string&gt; {
+    const messages: any[] = [
+      {
+        role: &quot;system&quot;,
+        content: ROLE_PROMPTS[this.role],
+      },
+      {
+        role: &quot;user&quot;,
+        content: `Task: ${bead.title}\n\nDescription: ${bead.description}\n\nComplete this task using the available tools.`,
+      },
+    ];
+
+    let finalResponse = &quot;&quot;;
+
+    for (let i = 0; i &lt; 10; i++) {
+      // Max 10 iterations
+      const response = await client.chat.completions.create({
+        model: MODEL,
+        messages,
+        tools,
+      });
+
+      const message = response.choices[0].message;
+      messages.push(message);
+
+      if (!message.tool_calls || message.tool_calls.length === 0) {
+        finalResponse = message.content || &quot;Task completed&quot;;
+        break;
+      }
+
+      for (const toolCall of message.tool_calls) {
+        const args = JSON.parse(toolCall.function.arguments);
+        const result = await executeTool(toolCall.function.name, args);
+
+        console.log(`  [${toolCall.function.name}] ${JSON.stringify(args)}`);
+
+        messages.push({
+          role: &quot;tool&quot;,
+          tool_call_id: toolCall.id,
+          content: result,
+        });
+      }
+    }
+
+    return finalResponse;
+  }
+}
+</code></pre>
+<p>Workers are autonomous agents with specialized system prompts based on their role.</p>
+<h2>Step 5: The Orchestrator</h2>
+<p>Tie it all together. Create <code>gastown.ts</code>:</p>
+<pre><code class="language-typescript">import { Mayor } from &quot;./mayor&quot;;
+import { Worker } from &quot;./worker&quot;;
+import type { WorkerRole } from &quot;./bead&quot;;
+
+const WORKER_POOL: WorkerRole[] = [&quot;developer&quot;, &quot;developer&quot;, &quot;tester&quot;, &quot;reviewer&quot;];
+
+async function runGastown(goal: string) {
+  const mayor = new Mayor();
+
+  // Step 1: Mayor plans the work
+  await mayor.planWork(goal);
+  mayor.listWork();
+
+  // Step 2: Spawn workers
+  const workers = WORKER_POOL.map((role) =&gt; new Worker(role));
+
+  console.log(`\n🏭 Spawned ${workers.length} workers\n`);
+
+  // Step 3: Run workers until all work is done
+  let activeWork = true;
+
+  while (activeWork) {
+    const promises = workers.map((w) =&gt; w.work());
+    const results = await Promise.all(promises);
+
+    // If no worker found work, we're done
+    activeWork = results.some((r) =&gt; r === true);
+
+    if (activeWork) {
+      await new Promise((resolve) =&gt; setTimeout(resolve, 1000)); // Small delay between rounds
+    }
+  }
+
+  console.log(&quot;\n🎉 All work completed!\n&quot;);
+  mayor.listWork();
+}
+
+const goal = process.argv.slice(2).join(&quot; &quot;);
+
+if (!goal) {
+  console.log(&quot;Usage: bun gastown.ts &lt;your goal&gt;&quot;);
+  process.exit(1);
+}
+
+runGastown(goal);
+</code></pre>
+<h2>Step 6: Running It</h2>
+<pre><code class="language-bash">export OPENROUTER_API_KEY=&quot;your-key-here&quot;
+bun gastown.ts &quot;Build a REST API for a todo list with CRUD operations and tests&quot;
+</code></pre>
+<h3>What Happens:</h3>
+<ol>
+<li><strong>Mayor</strong> receives the goal</li>
+<li><strong>Mayor</strong> breaks it down into beads:<ul>
+<li><code>[developer]</code> Create Express server with CRUD endpoints</li>
+<li><code>[developer]</code> Implement data persistence</li>
+<li><code>[tester]</code> Write integration tests</li>
+<li><code>[reviewer]</code> Review API implementation</li>
+</ul>
+</li>
+<li><strong>Workers</strong> spawn and start picking up beads</li>
+<li><strong>Two developers</strong> work in parallel on different parts</li>
+<li><strong>Tester</strong> writes tests once code exists</li>
+<li><strong>Reviewer</strong> checks everything</li>
+<li><strong>All work completes</strong> automatically</li>
+</ol>
+<p>Workers run in parallel. Multiple developers can implement different endpoints simultaneously. The tester waits for code to exist before testing. The reviewer checks everything at the end.</p>
+<h2>The Complete Code Structure</h2>
+<pre><code>gastown/
+├── bead.ts           # Type definitions
+├── bead-store.ts     # Persistent work tracking
+├── mayor.ts          # Task coordinator
+├── worker.ts         # Autonomous workers
+├── gastown.ts        # Orchestrator
+└── .beads/           # Work state (auto-generated)
+    ├── bead-xxx.json
+    └── bead-yyy.json
+</code></pre>
+<h2>Why This Works</h2>
+<p><strong>Parallel Execution</strong>: Multiple agents work simultaneously on independent tasks.</p>
+<p><strong>Specialization</strong>: Each worker has a focused role with a specialized system prompt.</p>
+<p><strong>Persistent State</strong>: Work survives crashes. If a worker dies, another picks up the bead.</p>
+<p><strong>Coordination Without Coupling</strong>: Workers don't talk to each other. They just pick up beads. The Mayor doesn't micromanage. It creates beads and walks away.</p>
+<p><strong>Git-Ready</strong>: Our file-based beads could easily be Git-backed. Commit after each bead completion. Full audit trail.</p>
+<h2>Extending It</h2>
+<p>Want to make it production-ready? Add:</p>
+<h3>1. Git Integration</h3>
+<pre><code class="language-typescript">function commitBead(bead: Bead) {
+  execSync(`git add .beads/${bead.id}.json`);
+  execSync(`git commit -m &quot;Completed: ${bead.title}&quot;`);
+}
+</code></pre>
+<h3>2. Worker Retry Logic</h3>
+<pre><code class="language-typescript">if (bead.status === &quot;failed&quot; &amp;&amp; bead.retryCount &lt; 3) {
+  bead.status = &quot;pending&quot;;
+  bead.retryCount++;
+  this.store.save(bead);
+}
+</code></pre>
+<h3>3. Dependencies Between Beads</h3>
+<pre><code class="language-typescript">interface Bead {
+  // ... existing fields
+  dependsOn?: string[]; // Array of bead IDs
+}
+
+// Worker checks dependencies before starting
+const canStart = bead.dependsOn?.every(id =&gt; {
+  const dep = this.store.get(id);
+  return dep?.status === &quot;completed&quot;;
+});
+</code></pre>
+<h3>4. More Worker Roles</h3>
+<pre><code class="language-typescript">const ROLE_PROMPTS = {
+  architect: &quot;Design system architecture and data models&quot;,
+  developer: &quot;Implement features&quot;,
+  tester: &quot;Write and run tests&quot;,
+  reviewer: &quot;Review code quality&quot;,
+  debugger: &quot;Fix bugs and errors&quot;,
+  documenter: &quot;Write documentation&quot;,
+  devops: &quot;Handle deployment and infrastructure&quot;,
+};
+</code></pre>
+<h3>5. Streaming Progress</h3>
+<pre><code class="language-typescript">// Add WebSocket server to broadcast bead updates
+import { WebSocketServer } from &quot;ws&quot;;
+
+const wss = new WebSocketServer({ port: 8080 });
+
+function broadcastUpdate(bead: Bead) {
+  wss.clients.forEach((client) =&gt; {
+    client.send(JSON.stringify({ type: &quot;bead_update&quot;, bead }));
+  });
+}
+</code></pre>
+<h2>Real-World Gas Town</h2>
+<p>Steve Yegge's <a href="https://github.com/steveyegge/gastown">full Gas Town</a> supports:</p>
+<ul>
+<li>20-30 concurrent workers</li>
+<li>7 specialized roles</li>
+<li>Full Git integration via Beads</li>
+<li>TOML-based workflow definitions</li>
+<li>Crash recovery and restart</li>
+<li>Multi-project coordination</li>
+</ul>
+<p>It's written in Go and integrates with Claude Code and other agent runtimes.</p>
+<p>Early reports from the community show mixed results—some developers swear by it for large projects, while others find the overhead unnecessary for small tasks. One developer spent <a href="https://medium.com/@enterprisevibecode/10-hours-with-gas-town-out-of-a-possible-48-17a6b2801a73">10 hours in 48</a> learning the system.</p>
+<p>The verdict: <strong>Gas Town shines for complex, multi-faceted projects where parallel agent execution provides real value.</strong></p>
+<h2>When to Use Gas Town</h2>
+<p><strong>Use it when:</strong></p>
+<ul>
+<li>Building large features with independent sub-tasks</li>
+<li>Multiple specialized roles make sense (API + tests + docs)</li>
+<li>You need parallel execution for speed</li>
+<li>Work needs to survive restarts/crashes</li>
+</ul>
+<p><strong>Don't use it when:</strong></p>
+<ul>
+<li>Task is simple and linear</li>
+<li>Single agent can handle it</li>
+<li>Coordination overhead exceeds benefits</li>
+<li>You're just starting with agents (learn single-agent first)</li>
+</ul>
+<h2>The Future</h2>
+<p>Gas Town represents the next evolution:</p>
+<p><strong>Phase 1</strong>: Single coding agents (what we built in post 001)</p>
+<p><strong>Phase 2</strong>: Looping agents (Ralph Loop from post 001)</p>
+<p><strong>Phase 3</strong>: Orchestrated multi-agent systems (Gas Town)</p>
+<p>We're moving from &quot;one smart agent&quot; to &quot;teams of specialized agents working in parallel.&quot;</p>
+<p>The question isn't whether this future arrives—it's how fast.</p>
+<hr />
+<h2>Full Example Code</h2>
+<p>Here's everything together:</p>
+<p><strong>bead.ts</strong>:</p>
+<pre><code class="language-typescript">export type BeadStatus = &quot;pending&quot; | &quot;in_progress&quot; | &quot;completed&quot; | &quot;failed&quot;;
+export type WorkerRole = &quot;developer&quot; | &quot;tester&quot; | &quot;reviewer&quot;;
+
+export interface Bead {
+  id: string;
+  title: string;
+  description: string;
+  role: WorkerRole;
+  status: BeadStatus;
+  assignedTo?: string;
+  result?: string;
+  error?: string;
+  createdAt: number;
+  updatedAt: number;
+}
+</code></pre>
+<p><strong>bead-store.ts</strong>:</p>
+<pre><code class="language-typescript">import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from &quot;fs&quot;;
+import { join } from &quot;path&quot;;
+import type { Bead } from &quot;./bead&quot;;
+
+const BEADS_DIR = &quot;.beads&quot;;
+
+export class BeadStore {
+  constructor() {
+    if (!existsSync(BEADS_DIR)) {
+      mkdirSync(BEADS_DIR, { recursive: true });
+    }
+  }
+
+  save(bead: Bead): void {
+    const path = join(BEADS_DIR, `${bead.id}.json`);
+    writeFileSync(path, JSON.stringify(bead, null, 2));
+  }
+
+  get(id: string): Bead | null {
+    const path = join(BEADS_DIR, `${id}.json`);
+    if (!existsSync(path)) return null;
+    return JSON.parse(readFileSync(path, &quot;utf-8&quot;));
+  }
+
+  list(): Bead[] {
+    const files = readdirSync(BEADS_DIR).filter((f) =&gt; f.endsWith(&quot;.json&quot;));
+    return files.map((f) =&gt; {
+      const content = readFileSync(join(BEADS_DIR, f), &quot;utf-8&quot;);
+      return JSON.parse(content);
+    });
+  }
+
+  listByStatus(status: Bead[&quot;status&quot;]): Bead[] {
+    return this.list().filter((b) =&gt; b.status === status);
+  }
+
+  listByRole(role: Bead[&quot;role&quot;]): Bead[] {
+    return this.list().filter((b) =&gt; b.role === role);
+  }
+}
+</code></pre>
+<p><strong>mayor.ts</strong>, <strong>worker.ts</strong>, and <strong>gastown.ts</strong> as shown above.</p>
+<h2>Try It</h2>
+<pre><code class="language-bash">mkdir mini-gastown
+cd mini-gastown
+bun init -y
+bun add openai
+
+# Create all the TypeScript files above
+# Then run:
+bun gastown.ts &quot;Your project goal here&quot;
+</code></pre>
+<p>Watch multiple agents work in parallel toward your goal.</p>
+<p>That's Gas Town.</p>
+<hr />
+<h2>Sources</h2>
+<ul>
+<li><a href="https://steve-yegge.medium.com/welcome-to-gas-town-4f25ee16dd04">Welcome to Gas Town by Steve Yegge</a></li>
+<li><a href="https://steve-yegge.medium.com/the-future-of-coding-agents-e9451a84207c">The Future of Coding Agents by Steve Yegge</a></li>
+<li><a href="https://github.com/steveyegge/gastown">GitHub - steveyegge/gastown</a></li>
+<li><a href="https://justin.abrah.ms/blog/2026-01-05-wrapping-my-head-around-gas-town.html">Wrapping my head around Gas Town - Justin Abrahms</a></li>
+<li><a href="https://medium.com/@enterprisevibecode/10-hours-with-gas-town-out-of-a-possible-48-17a6b2801a73">10 hours with Gas Town (out of a possible 48)</a></li>
+<li><a href="https://www.todayintabs.com/p/all-gas-town-no-brakes-town">All Gas Town, No Brakes Town</a></li>
+<li><a href="https://news.ycombinator.com/item?id=46458936">Welcome to Gas Town - Hacker News</a></li>
+<li><a href="https://steve-yegge.medium.com/gas-town-emergency-user-manual-cf0e4556d74b">Gas Town Emergency User Manual</a></li>
+</ul>
+
+    <div id="footer">
+      <a class="logo" href='https://webring.xxiivv.com/#random' target='_blank'><img class="webring_icon" src='https://webring.xxiivv.com/icon.white.svg'/></a>
+      <a class="logo" href="http://www.catb.org/~esr/faqs/hacker-howto.html" target="_blank"><img class="webring_icon" src="/static/hacker_glider.svg"/></a>
+    </div>
+    </div>
+    </body>
+   </html>
