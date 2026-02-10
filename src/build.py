@@ -102,17 +102,30 @@ def convert_braindump(remove_output_folder=False):
                 build_html(mdf, output_file)
 
 
+def convert_posts():
+    posts_folder = "./posts"
+    md_files = get_md_files(posts_folder)
+
+    for md_file in md_files:
+        file_name, mdf = md_file
+        name_only = file_name[:-3]
+        output_folder = os.path.join(config["html_output"], name_only)
+        if not os.path.isdir(output_folder):
+            os.mkdir(output_folder)
+        output_file = os.path.join(output_folder, "index.html")
+        build_html(mdf, output_file, has_meta=False)
+
+
 def build_index():
     index_folder = os.path.join(config["html_output"], "index")
     if not os.path.isdir(index_folder):
         os.mkdir(index_folder)
     content = "<div class='index_cols'>"
-    files_path = sorted(os.listdir(config["braindump_file"]))
-    for file in files_path:
-        if file.endswith((".md")):
-            if not is_private(os.path.join(config["braindump_file"], file)):
-                name_only = file[:-3]
-                content += f"<a href='/{name_only}'>{name_only}</a>\n"
+    entries = sorted(os.listdir(config["html_output"]))
+    for entry in entries:
+        entry_path = os.path.join(config["html_output"], entry)
+        if os.path.isdir(entry_path) and entry != "index" and entry != "static":
+            content += f"<a href='/{entry}'>{entry}</a>\n"
     content += "</div>"
     with open(config["index_file"], "w") as f:
         html = template_head + content + template_foot
@@ -120,7 +133,7 @@ def build_index():
     return content
 
 def main():
-    convert_braindump()
+    convert_posts()
     content_index = build_index()
     content_index = "<h1>Braindump</h1>" + content_index
     build_html("./index.md", "./docs/index.html", footer=content_index)
