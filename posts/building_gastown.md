@@ -1,8 +1,11 @@
-# Building Gas Town: Orchestrating Multiple AI Agents
+Title: Building Gas Town: Orchestrating Multiple AI Agents
+Author: Vilson Vieira
+Date: 2026-02-12 11:20:00
+Public: True
 
-In the [last post](./001_from_agent_to_ralph.md), we built a single AI coding agent. It worked. But what if you need to build a complex feature that requires multiple agents working in parallel?
+In the [last post](https://void.cc/from_agent_to_ralph), we built a single AI coding agent. It worked. But what if you need to build a complex feature that requires multiple agents working in parallel?
 
-You need orchestration.
+We need orchestration.
 
 Enter **Gas Town** — Steve Yegge's multi-agent workspace manager that coordinates 20-30 concurrent AI agents, each playing specialized roles. Released on January 1, 2026, it's an orchestrator for getting multiple agents to work together toward a common goal.
 

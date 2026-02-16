@@ -9,14 +9,15 @@
       <meta name="author" content="Vilson Vieira">
       <title>Vilson Vieira</title>
       <link rel="stylesheet" href="/static/style.css">
+      <link rel="stylesheet" href="/static/syntax.css">
       <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
     </head>
     <body>
       <a class="logo" href="/">
       <img id="logo" src="/static/void-logo-white.svg" /></a>
 <h1>Building Gas Town: Orchestrating Multiple AI Agents</h1>
-<p>In the <a href="./001_from_agent_to_ralph.md">last post</a>, we built a single AI coding agent. It worked. But what if you need to build a complex feature that requires multiple agents working in parallel?</p>
-<p>You need orchestration.</p>
+<p>In the <a href="https://void.cc/from_agent_to_ralph">last post</a>, we built a single AI coding agent. It worked. But what if you need to build a complex feature that requires multiple agents working in parallel?</p>
+<p>We need orchestration.</p>
 <p>Enter <strong>Gas Town</strong> — Steve Yegge's multi-agent workspace manager that coordinates 20-30 concurrent AI agents, each playing specialized roles. Released on January 1, 2026, it's an orchestrator for getting multiple agents to work together toward a common goal.</p>
 <p>Let's build a minimal version in TypeScript.</p>
 <h2>The Gas Town Architecture</h2>
@@ -53,361 +54,361 @@
 <p>Let's go.</p>
 <h2>Step 1: Define the Bead Structure</h2>
 <p>A Bead is a unit of work. Create <code>bead.ts</code>:</p>
-<pre><code class="language-typescript">export type BeadStatus = &quot;pending&quot; | &quot;in_progress&quot; | &quot;completed&quot; | &quot;failed&quot;;
-export type WorkerRole = &quot;developer&quot; | &quot;tester&quot; | &quot;reviewer&quot;;
+<pre><code class="highlight"><span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">BeadStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;pending&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;in_progress&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;completed&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;failed&quot;</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">WorkerRole</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;developer&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;tester&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;reviewer&quot;</span><span class="p">;</span>
 
-export interface Bead {
-  id: string;
-  title: string;
-  description: string;
-  role: WorkerRole;
-  status: BeadStatus;
-  assignedTo?: string;
-  result?: string;
-  error?: string;
-  createdAt: number;
-  updatedAt: number;
-}
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Bead</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="kt">WorkerRole</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">BeadStatus</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">assignedTo?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">result?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">error?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">createdAt</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">updatedAt</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="p">}</span>
 </code></pre>
 <p>This is our work tracking. Simple, serializable, persistent.</p>
 <h2>Step 2: The Bead Store</h2>
 <p>We need to read/write beads. Create <code>bead-store.ts</code>:</p>
-<pre><code class="language-typescript">import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from &quot;fs&quot;;
-import { join } from &quot;path&quot;;
-import type { Bead } from &quot;./bead&quot;;
+<pre><code class="highlight"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">,</span><span class="w"> </span><span class="nx">writeFileSync</span><span class="p">,</span><span class="w"> </span><span class="nx">existsSync</span><span class="p">,</span><span class="w"> </span><span class="nx">mkdirSync</span><span class="p">,</span><span class="w"> </span><span class="nx">readdirSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;fs&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">join</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Bead</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;./bead&quot;</span><span class="p">;</span>
 
-const BEADS_DIR = &quot;.beads&quot;;
+<span class="kd">const</span><span class="w"> </span><span class="nx">BEADS_DIR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;.beads&quot;</span><span class="p">;</span>
 
-export class BeadStore {
-  constructor() {
-    if (!existsSync(BEADS_DIR)) {
-      mkdirSync(BEADS_DIR, { recursive: true });
-    }
-  }
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">BeadStore</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kr">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">mkdirSync</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">recursive</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
 
-  save(bead: Bead): void {
-    const path = join(BEADS_DIR, `${bead.id}.json`);
-    writeFileSync(path, JSON.stringify(bead, null, 2));
-  }
+<span class="w">  </span><span class="nx">save</span><span class="p">(</span><span class="nx">bead</span><span class="o">:</span><span class="w"> </span><span class="kt">Bead</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">join</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">,</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">.json`</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">writeFileSync</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">bead</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
 
-  get(id: string): Bead | null {
-    const path = join(BEADS_DIR, `${id}.json`);
-    if (!existsSync(path)) return null;
-    return JSON.parse(readFileSync(path, &quot;utf-8&quot;));
-  }
+<span class="w">  </span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Bead</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">join</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">,</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">.json`</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">path</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
 
-  list(): Bead[] {
-    const files = readdirSync(BEADS_DIR).filter((f) =&gt; f.endsWith(&quot;.json&quot;));
-    return files.map((f) =&gt; {
-      const content = readFileSync(join(BEADS_DIR, f), &quot;utf-8&quot;);
-      return JSON.parse(content);
-    });
-  }
+<span class="w">  </span><span class="nx">list</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nx">Bead</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">readdirSync</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">).</span><span class="nx">filter</span><span class="p">((</span><span class="nx">f</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">files</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">f</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">content</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">join</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">content</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
 
-  listByStatus(status: Bead[&quot;status&quot;]): Bead[] {
-    return this.list().filter((b) =&gt; b.status === status);
-  }
+<span class="w">  </span><span class="nx">listByStatus</span><span class="p">(</span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">Bead</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span><span class="o">:</span><span class="w"> </span><span class="nx">Bead</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">list</span><span class="p">().</span><span class="nx">filter</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">status</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
 
-  listByRole(role: Bead[&quot;role&quot;]): Bead[] {
-    return this.list().filter((b) =&gt; b.role === role);
-  }
-}
+<span class="w">  </span><span class="nx">listByRole</span><span class="p">(</span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="kt">Bead</span><span class="p">[</span><span class="s2">&quot;role&quot;</span><span class="p">])</span><span class="o">:</span><span class="w"> </span><span class="nx">Bead</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">list</span><span class="p">().</span><span class="nx">filter</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">role</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">role</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
 <p>Persistent work tracking in 40 lines.</p>
 <h2>Step 3: The Mayor</h2>
 <p>The Mayor breaks down high-level goals into specific beads. Create <code>mayor.ts</code>:</p>
-<pre><code class="language-typescript">import OpenAI from &quot;openai&quot;;
-import { BeadStore } from &quot;./bead-store&quot;;
-import type { Bead, WorkerRole } from &quot;./bead&quot;;
+<pre><code class="highlight"><span class="k">import</span><span class="w"> </span><span class="nx">OpenAI</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;openai&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BeadStore</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;./bead-store&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Bead</span><span class="p">,</span><span class="w"> </span><span class="nx">WorkerRole</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;./bead&quot;</span><span class="p">;</span>
 
-const client = new OpenAI({
-  baseURL: &quot;https://openrouter.ai/api/v1&quot;,
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
+<span class="kd">const</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenAI</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">baseURL</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;https://openrouter.ai/api/v1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">apiKey</span><span class="o">:</span><span class="w"> </span><span class="kt">process.env.OPENROUTER_API_KEY</span><span class="p">,</span>
+<span class="p">});</span>
 
-const MODEL = &quot;anthropic/claude-3.5-sonnet&quot;;
+<span class="kd">const</span><span class="w"> </span><span class="nx">MODEL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;anthropic/claude-3.5-sonnet&quot;</span><span class="p">;</span>
 
-export class Mayor {
-  private store = new BeadStore();
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Mayor</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">store</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">BeadStore</span><span class="p">();</span>
 
-  async planWork(goal: string): Promise&lt;void&gt; {
-    console.log(&quot;🏛️  Mayor: Planning work...\n&quot;);
+<span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">planWork</span><span class="p">(</span><span class="nx">goal</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="ow">void</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;🏛️  Mayor: Planning work...\n&quot;</span><span class="p">);</span>
 
-    const response = await client.chat.completions.create({
-      model: MODEL,
-      messages: [
-        {
-          role: &quot;system&quot;,
-          content: `You are the Mayor, a task coordinator. Break down user goals into specific tasks.
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">chat</span><span class="p">.</span><span class="nx">completions</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">model</span><span class="o">:</span><span class="w"> </span><span class="kt">MODEL</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">messages</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;system&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="sb">`You are the Mayor, a task coordinator. Break down user goals into specific tasks.</span>
 
-For each task, specify:
-1. A clear title
-2. Detailed description
-3. The role needed (developer, tester, or reviewer)
+<span class="sb">For each task, specify:</span>
+<span class="sb">1. A clear title</span>
+<span class="sb">2. Detailed description</span>
+<span class="sb">3. The role needed (developer, tester, or reviewer)</span>
 
-Return tasks as JSON array:
-[
-  {
-    &quot;title&quot;: &quot;Task title&quot;,
-    &quot;description&quot;: &quot;What to do&quot;,
-    &quot;role&quot;: &quot;developer&quot;
-  }
-]`,
-        },
-        { role: &quot;user&quot;, content: goal },
-      ],
-    });
+<span class="sb">Return tasks as JSON array:</span>
+<span class="sb">[</span>
+<span class="sb">  {</span>
+<span class="sb">    &quot;title&quot;: &quot;Task title&quot;,</span>
+<span class="sb">    &quot;description&quot;: &quot;What to do&quot;,</span>
+<span class="sb">    &quot;role&quot;: &quot;developer&quot;</span>
+<span class="sb">  }</span>
+<span class="sb">]`</span><span class="p">,</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;user&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="kt">goal</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">    </span><span class="p">});</span>
 
-    const content = response.choices[0].message.content || &quot;[]&quot;;
-    const tasks = JSON.parse(content);
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">content</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">choices</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">message</span><span class="p">.</span><span class="nx">content</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s2">&quot;[]&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">tasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">content</span><span class="p">);</span>
 
-    for (const task of tasks) {
-      const bead: Bead = {
-        id: `bead-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-        title: task.title,
-        description: task.description,
-        role: task.role as WorkerRole,
-        status: &quot;pending&quot;,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      };
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">task</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">tasks</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">bead</span><span class="o">:</span><span class="w"> </span><span class="kt">Bead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="sb">`bead-</span><span class="si">${</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span><span class="si">}</span><span class="sb">-</span><span class="si">${</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">().</span><span class="nx">toString</span><span class="p">(</span><span class="mf">36</span><span class="p">).</span><span class="nx">slice</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">task.title</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="kt">task.description</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="kt">task.role</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">WorkerRole</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;pending&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">createdAt</span><span class="o">:</span><span class="w"> </span><span class="kt">Date.now</span><span class="p">(),</span>
+<span class="w">        </span><span class="nx">updatedAt</span><span class="o">:</span><span class="w"> </span><span class="kt">Date.now</span><span class="p">(),</span>
+<span class="w">      </span><span class="p">};</span>
 
-      this.store.save(bead);
-      console.log(`📋 Created: [${bead.role}] ${bead.title}`);
-    }
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nx">save</span><span class="p">(</span><span class="nx">bead</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`📋 Created: [</span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">role</span><span class="si">}</span><span class="sb">] </span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    console.log(`\n✓ Created ${tasks.length} beads\n`);
-  }
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`\n✓ Created </span><span class="si">${</span><span class="nx">tasks</span><span class="p">.</span><span class="nx">length</span><span class="si">}</span><span class="sb"> beads\n`</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
 
-  listWork(): void {
-    const beads = this.store.list();
-    console.log(&quot;📊 Work Status:\n&quot;);
+<span class="w">  </span><span class="nx">listWork</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">beads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nx">list</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;📊 Work Status:\n&quot;</span><span class="p">);</span>
 
-    const byStatus = {
-      pending: beads.filter((b) =&gt; b.status === &quot;pending&quot;),
-      in_progress: beads.filter((b) =&gt; b.status === &quot;in_progress&quot;),
-      completed: beads.filter((b) =&gt; b.status === &quot;completed&quot;),
-      failed: beads.filter((b) =&gt; b.status === &quot;failed&quot;),
-    };
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">byStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">pending</span><span class="o">:</span><span class="w"> </span><span class="kt">beads.filter</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;pending&quot;</span><span class="p">),</span>
+<span class="w">      </span><span class="nx">in_progress</span><span class="o">:</span><span class="w"> </span><span class="kt">beads.filter</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;in_progress&quot;</span><span class="p">),</span>
+<span class="w">      </span><span class="nx">completed</span><span class="o">:</span><span class="w"> </span><span class="kt">beads.filter</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;completed&quot;</span><span class="p">),</span>
+<span class="w">      </span><span class="nx">failed</span><span class="o">:</span><span class="w"> </span><span class="kt">beads.filter</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;failed&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="p">};</span>
 
-    for (const [status, items] of Object.entries(byStatus)) {
-      console.log(`${status.toUpperCase()}: ${items.length}`);
-      items.forEach((b) =&gt; console.log(`  - [${b.role}] ${b.title}`));
-    }
-  }
-}
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">status</span><span class="p">,</span><span class="w"> </span><span class="nx">items</span><span class="p">]</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nb">Object</span><span class="p">.</span><span class="nx">entries</span><span class="p">(</span><span class="nx">byStatus</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">status</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">()</span><span class="si">}</span><span class="sb">: </span><span class="si">${</span><span class="nx">items</span><span class="p">.</span><span class="nx">length</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">items</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`  - [</span><span class="si">${</span><span class="nx">b</span><span class="p">.</span><span class="nx">role</span><span class="si">}</span><span class="sb">] </span><span class="si">${</span><span class="nx">b</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">`</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
 <p>The Mayor uses an LLM to intelligently break down goals into actionable beads.</p>
 <h2>Step 4: Workers</h2>
 <p>Workers pick up beads and execute them. Create <code>worker.ts</code>:</p>
-<pre><code class="language-typescript">import OpenAI from &quot;openai&quot;;
-import { BeadStore } from &quot;./bead-store&quot;;
-import { readFileSync } from &quot;fs&quot;;
-import { execSync } from &quot;child_process&quot;;
-import type { Bead, WorkerRole } from &quot;./bead&quot;;
+<pre><code class="highlight"><span class="k">import</span><span class="w"> </span><span class="nx">OpenAI</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;openai&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BeadStore</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;./bead-store&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">readFileSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;fs&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">execSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;child_process&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Bead</span><span class="p">,</span><span class="w"> </span><span class="nx">WorkerRole</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;./bead&quot;</span><span class="p">;</span>
 
-const client = new OpenAI({
-  baseURL: &quot;https://openrouter.ai/api/v1&quot;,
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
+<span class="kd">const</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenAI</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">baseURL</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;https://openrouter.ai/api/v1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">apiKey</span><span class="o">:</span><span class="w"> </span><span class="kt">process.env.OPENROUTER_API_KEY</span><span class="p">,</span>
+<span class="p">});</span>
 
-const MODEL = &quot;anthropic/claude-3.5-sonnet&quot;;
+<span class="kd">const</span><span class="w"> </span><span class="nx">MODEL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;anthropic/claude-3.5-sonnet&quot;</span><span class="p">;</span>
 
-const ROLE_PROMPTS: Record&lt;WorkerRole, string&gt; = {
-  developer: &quot;You are a Developer. Write clean, functional code. Use tools to create/modify files.&quot;,
-  tester: &quot;You are a Tester. Write comprehensive tests. Use tools to create test files and run them.&quot;,
-  reviewer: &quot;You are a Reviewer. Review code for quality, bugs, and best practices. Provide actionable feedback.&quot;,
-};
+<span class="kd">const</span><span class="w"> </span><span class="nx">ROLE_PROMPTS</span><span class="o">:</span><span class="w"> </span><span class="kt">Record</span><span class="o">&lt;</span><span class="nx">WorkerRole</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">developer</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;You are a Developer. Write clean, functional code. Use tools to create/modify files.&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">tester</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;You are a Tester. Write comprehensive tests. Use tools to create test files and run them.&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">reviewer</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;You are a Reviewer. Review code for quality, bugs, and best practices. Provide actionable feedback.&quot;</span><span class="p">,</span>
+<span class="p">};</span>
 
-const tools = [
-  {
-    type: &quot;function&quot; as const,
-    function: {
-      name: &quot;read_file&quot;,
-      description: &quot;Read contents of a file&quot;,
-      parameters: {
-        type: &quot;object&quot;,
-        properties: {
-          path: { type: &quot;string&quot;, description: &quot;File path to read&quot; },
-        },
-        required: [&quot;path&quot;],
-      },
-    },
-  },
-  {
-    type: &quot;function&quot; as const,
-    function: {
-      name: &quot;execute_command&quot;,
-      description: &quot;Execute a shell command&quot;,
-      parameters: {
-        type: &quot;object&quot;,
-        properties: {
-          command: { type: &quot;string&quot;, description: &quot;Command to execute&quot; },
-        },
-        required: [&quot;command&quot;],
-      },
-    },
-  },
-];
+<span class="kd">const</span><span class="w"> </span><span class="nx">tools</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">function</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Read contents of a file&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">parameters</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">properties</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;File path to read&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">function</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;execute_command&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Execute a shell command&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">parameters</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">properties</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nx">command</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Command to execute&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;command&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">];</span>
 
-async function executeTool(name: string, args: any): Promise&lt;string&gt; {
-  try {
-    if (name === &quot;read_file&quot;) {
-      return readFileSync(args.path, &quot;utf-8&quot;);
-    } else if (name === &quot;execute_command&quot;) {
-      return execSync(args.command, { encoding: &quot;utf-8&quot;, maxBuffer: 10 * 1024 * 1024 });
-    }
-    return &quot;Unknown tool&quot;;
-  } catch (error: any) {
-    return `Error: ${error.message}`;
-  }
-}
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">executeTool</span><span class="p">(</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">name</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;read_file&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">name</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;execute_command&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">execSync</span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">command</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">encoding</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">maxBuffer</span><span class="o">:</span><span class="w"> </span><span class="kt">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1024</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s2">&quot;Unknown tool&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="sb">`Error: </span><span class="si">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
-export class Worker {
-  private store = new BeadStore();
-  private workerId: string;
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Worker</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">store</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">BeadStore</span><span class="p">();</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">workerId</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
 
-  constructor(private role: WorkerRole) {
-    this.workerId = `${role}-${Math.random().toString(36).slice(2, 9)}`;
-  }
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="k">private</span><span class="w"> </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="kt">WorkerRole</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">workerId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">role</span><span class="si">}</span><span class="sb">-</span><span class="si">${</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">().</span><span class="nx">toString</span><span class="p">(</span><span class="mf">36</span><span class="p">).</span><span class="nx">slice</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
 
-  async work(): Promise&lt;boolean&gt; {
-    const beads = this.store.listByRole(this.role).filter((b) =&gt; b.status === &quot;pending&quot;);
+<span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">work</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">boolean</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">beads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nx">listByRole</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">role</span><span class="p">).</span><span class="nx">filter</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;pending&quot;</span><span class="p">);</span>
 
-    if (beads.length === 0) {
-      return false; // No work available
-    }
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">beads</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w"> </span><span class="c1">// No work available</span>
+<span class="w">    </span><span class="p">}</span>
 
-    const bead = beads[0]; // Take first pending bead
-    console.log(`\n👷 ${this.workerId}: Starting [${bead.title}]`);
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">bead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">beads</span><span class="p">[</span><span class="mf">0</span><span class="p">];</span><span class="w"> </span><span class="c1">// Take first pending bead</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`\n👷 </span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">workerId</span><span class="si">}</span><span class="sb">: Starting [</span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">]`</span><span class="p">);</span>
 
-    // Mark as in progress
-    bead.status = &quot;in_progress&quot;;
-    bead.assignedTo = this.workerId;
-    bead.updatedAt = Date.now();
-    this.store.save(bead);
+<span class="w">    </span><span class="c1">// Mark as in progress</span>
+<span class="w">    </span><span class="nx">bead</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;in_progress&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">bead</span><span class="p">.</span><span class="nx">assignedTo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">workerId</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">bead</span><span class="p">.</span><span class="nx">updatedAt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nx">save</span><span class="p">(</span><span class="nx">bead</span><span class="p">);</span>
 
-    try {
-      const result = await this.executeTask(bead);
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">executeTask</span><span class="p">(</span><span class="nx">bead</span><span class="p">);</span>
 
-      bead.status = &quot;completed&quot;;
-      bead.result = result;
-      bead.updatedAt = Date.now();
-      this.store.save(bead);
+<span class="w">      </span><span class="nx">bead</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;completed&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="nx">bead</span><span class="p">.</span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">result</span><span class="p">;</span>
+<span class="w">      </span><span class="nx">bead</span><span class="p">.</span><span class="nx">updatedAt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nx">save</span><span class="p">(</span><span class="nx">bead</span><span class="p">);</span>
 
-      console.log(`✓ ${this.workerId}: Completed [${bead.title}]`);
-      return true;
-    } catch (error: any) {
-      bead.status = &quot;failed&quot;;
-      bead.error = error.message;
-      bead.updatedAt = Date.now();
-      this.store.save(bead);
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`✓ </span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">workerId</span><span class="si">}</span><span class="sb">: Completed [</span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">]`</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">bead</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;failed&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="nx">bead</span><span class="p">.</span><span class="nx">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">;</span>
+<span class="w">      </span><span class="nx">bead</span><span class="p">.</span><span class="nx">updatedAt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nx">save</span><span class="p">(</span><span class="nx">bead</span><span class="p">);</span>
 
-      console.log(`✗ ${this.workerId}: Failed [${bead.title}] - ${error.message}`);
-      return true;
-    }
-  }
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`✗ </span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">workerId</span><span class="si">}</span><span class="sb">: Failed [</span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">] - </span><span class="si">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
 
-  private async executeTask(bead: Bead): Promise&lt;string&gt; {
-    const messages: any[] = [
-      {
-        role: &quot;system&quot;,
-        content: ROLE_PROMPTS[this.role],
-      },
-      {
-        role: &quot;user&quot;,
-        content: `Task: ${bead.title}\n\nDescription: ${bead.description}\n\nComplete this task using the available tools.`,
-      },
-    ];
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="nx">executeTask</span><span class="p">(</span><span class="nx">bead</span><span class="o">:</span><span class="w"> </span><span class="kt">Bead</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">messages</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;system&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="kt">ROLE_PROMPTS</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">role</span><span class="p">],</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;user&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="sb">`Task: </span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">\n\nDescription: </span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">description</span><span class="si">}</span><span class="sb">\n\nComplete this task using the available tools.`</span><span class="p">,</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">];</span>
 
-    let finalResponse = &quot;&quot;;
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nx">finalResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">;</span>
 
-    for (let i = 0; i &lt; 10; i++) {
-      // Max 10 iterations
-      const response = await client.chat.completions.create({
-        model: MODEL,
-        messages,
-        tools,
-      });
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">10</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Max 10 iterations</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">chat</span><span class="p">.</span><span class="nx">completions</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">        </span><span class="nx">model</span><span class="o">:</span><span class="w"> </span><span class="kt">MODEL</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">messages</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">tools</span><span class="p">,</span>
+<span class="w">      </span><span class="p">});</span>
 
-      const message = response.choices[0].message;
-      messages.push(message);
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">choices</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">message</span><span class="p">;</span>
+<span class="w">      </span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
 
-      if (!message.tool_calls || message.tool_calls.length === 0) {
-        finalResponse = message.content || &quot;Task completed&quot;;
-        break;
-      }
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">message</span><span class="p">.</span><span class="nx">tool_calls</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">message</span><span class="p">.</span><span class="nx">tool_calls</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">finalResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">message</span><span class="p">.</span><span class="nx">content</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s2">&quot;Task completed&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
 
-      for (const toolCall of message.tool_calls) {
-        const args = JSON.parse(toolCall.function.arguments);
-        const result = await executeTool(toolCall.function.name, args);
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">toolCall</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">message</span><span class="p">.</span><span class="nx">tool_calls</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">toolCall</span><span class="p">.</span><span class="kd">function</span><span class="p">.</span><span class="nx">arguments</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">executeTool</span><span class="p">(</span><span class="nx">toolCall</span><span class="p">.</span><span class="kd">function</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="p">);</span>
 
-        console.log(`  [${toolCall.function.name}] ${JSON.stringify(args)}`);
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`  [</span><span class="si">${</span><span class="nx">toolCall</span><span class="p">.</span><span class="kd">function</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span><span class="sb">] </span><span class="si">${</span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
 
-        messages.push({
-          role: &quot;tool&quot;,
-          tool_call_id: toolCall.id,
-          content: result,
-        });
-      }
-    }
+<span class="w">        </span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+<span class="w">          </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;tool&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nx">tool_call_id</span><span class="o">:</span><span class="w"> </span><span class="kt">toolCall.id</span><span class="p">,</span>
+<span class="w">          </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="kt">result</span><span class="p">,</span>
+<span class="w">        </span><span class="p">});</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 
-    return finalResponse;
-  }
-}
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">finalResponse</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
 <p>Workers are autonomous agents with specialized system prompts based on their role.</p>
 <h2>Step 5: The Orchestrator</h2>
 <p>Tie it all together. Create <code>gastown.ts</code>:</p>
-<pre><code class="language-typescript">import { Mayor } from &quot;./mayor&quot;;
-import { Worker } from &quot;./worker&quot;;
-import type { WorkerRole } from &quot;./bead&quot;;
+<pre><code class="highlight"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Mayor</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;./mayor&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Worker</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;./worker&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">WorkerRole</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;./bead&quot;</span><span class="p">;</span>
 
-const WORKER_POOL: WorkerRole[] = [&quot;developer&quot;, &quot;developer&quot;, &quot;tester&quot;, &quot;reviewer&quot;];
+<span class="kd">const</span><span class="w"> </span><span class="nx">WORKER_POOL</span><span class="o">:</span><span class="w"> </span><span class="kt">WorkerRole</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;developer&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;developer&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;tester&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;reviewer&quot;</span><span class="p">];</span>
 
-async function runGastown(goal: string) {
-  const mayor = new Mayor();
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">runGastown</span><span class="p">(</span><span class="nx">goal</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">mayor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Mayor</span><span class="p">();</span>
 
-  // Step 1: Mayor plans the work
-  await mayor.planWork(goal);
-  mayor.listWork();
+<span class="w">  </span><span class="c1">// Step 1: Mayor plans the work</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">mayor</span><span class="p">.</span><span class="nx">planWork</span><span class="p">(</span><span class="nx">goal</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">mayor</span><span class="p">.</span><span class="nx">listWork</span><span class="p">();</span>
 
-  // Step 2: Spawn workers
-  const workers = WORKER_POOL.map((role) =&gt; new Worker(role));
+<span class="w">  </span><span class="c1">// Step 2: Spawn workers</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">workers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">WORKER_POOL</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">role</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Worker</span><span class="p">(</span><span class="nx">role</span><span class="p">));</span>
 
-  console.log(`\n🏭 Spawned ${workers.length} workers\n`);
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`\n🏭 Spawned </span><span class="si">${</span><span class="nx">workers</span><span class="p">.</span><span class="nx">length</span><span class="si">}</span><span class="sb"> workers\n`</span><span class="p">);</span>
 
-  // Step 3: Run workers until all work is done
-  let activeWork = true;
+<span class="w">  </span><span class="c1">// Step 3: Run workers until all work is done</span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">activeWork</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
 
-  while (activeWork) {
-    const promises = workers.map((w) =&gt; w.work());
-    const results = await Promise.all(promises);
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nx">activeWork</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">promises</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">workers</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">w</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">w</span><span class="p">.</span><span class="nx">work</span><span class="p">());</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">promises</span><span class="p">);</span>
 
-    // If no worker found work, we're done
-    activeWork = results.some((r) =&gt; r === true);
+<span class="w">    </span><span class="c1">// If no worker found work, we&#39;re done</span>
+<span class="w">    </span><span class="nx">activeWork</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">results</span><span class="p">.</span><span class="nx">some</span><span class="p">((</span><span class="nx">r</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
 
-    if (activeWork) {
-      await new Promise((resolve) =&gt; setTimeout(resolve, 1000)); // Small delay between rounds
-    }
-  }
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">activeWork</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span><span class="w"> </span><span class="mf">1000</span><span class="p">));</span><span class="w"> </span><span class="c1">// Small delay between rounds</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
 
-  console.log(&quot;\n🎉 All work completed!\n&quot;);
-  mayor.listWork();
-}
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;\n🎉 All work completed!\n&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">mayor</span><span class="p">.</span><span class="nx">listWork</span><span class="p">();</span>
+<span class="p">}</span>
 
-const goal = process.argv.slice(2).join(&quot; &quot;);
+<span class="kd">const</span><span class="w"> </span><span class="nx">goal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mf">2</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">);</span>
 
-if (!goal) {
-  console.log(&quot;Usage: bun gastown.ts &lt;your goal&gt;&quot;);
-  process.exit(1);
-}
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">goal</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Usage: bun gastown.ts &lt;your goal&gt;&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mf">1</span><span class="p">);</span>
+<span class="p">}</span>
 
-runGastown(goal);
+<span class="nx">runGastown</span><span class="p">(</span><span class="nx">goal</span><span class="p">);</span>
 </code></pre>
 <h2>Step 6: Running It</h2>
-<pre><code class="language-bash">export OPENROUTER_API_KEY=&quot;your-key-here&quot;
-bun gastown.ts &quot;Build a REST API for a todo list with CRUD operations and tests&quot;
+<pre><code class="highlight"><span class="nb">export</span><span class="w"> </span><span class="nv">OPENROUTER_API_KEY</span><span class="o">=</span><span class="s2">&quot;your-key-here&quot;</span>
+bun<span class="w"> </span>gastown.ts<span class="w"> </span><span class="s2">&quot;Build a REST API for a todo list with CRUD operations and tests&quot;</span>
 </code></pre>
 <h3>What Happens:</h3>
 <ol>
@@ -427,7 +428,7 @@ bun gastown.ts &quot;Build a REST API for a todo list with CRUD operations and t
 </ol>
 <p>Workers run in parallel. Multiple developers can implement different endpoints simultaneously. The tester waits for code to exist before testing. The reviewer checks everything at the end.</p>
 <h2>The Complete Code Structure</h2>
-<pre><code>gastown/
+<pre><code class="highlight">gastown/
 ├── bead.ts           # Type definitions
 ├── bead-store.ts     # Persistent work tracking
 ├── mayor.ts          # Task coordinator
@@ -446,52 +447,52 @@ bun gastown.ts &quot;Build a REST API for a todo list with CRUD operations and t
 <h2>Extending It</h2>
 <p>Want to make it production-ready? Add:</p>
 <h3>1. Git Integration</h3>
-<pre><code class="language-typescript">function commitBead(bead: Bead) {
-  execSync(`git add .beads/${bead.id}.json`);
-  execSync(`git commit -m &quot;Completed: ${bead.title}&quot;`);
-}
+<pre><code class="highlight"><span class="kd">function</span><span class="w"> </span><span class="nx">commitBead</span><span class="p">(</span><span class="nx">bead</span><span class="o">:</span><span class="w"> </span><span class="kt">Bead</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">execSync</span><span class="p">(</span><span class="sb">`git add .beads/</span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">.json`</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">execSync</span><span class="p">(</span><span class="sb">`git commit -m &quot;Completed: </span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">&quot;`</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre>
 <h3>2. Worker Retry Logic</h3>
-<pre><code class="language-typescript">if (bead.status === &quot;failed&quot; &amp;&amp; bead.retryCount &lt; 3) {
-  bead.status = &quot;pending&quot;;
-  bead.retryCount++;
-  this.store.save(bead);
-}
+<pre><code class="highlight"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">bead</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;failed&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">bead</span><span class="p">.</span><span class="nx">retryCount</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">bead</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;pending&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">bead</span><span class="p">.</span><span class="nx">retryCount</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="k">this</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nx">save</span><span class="p">(</span><span class="nx">bead</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre>
 <h3>3. Dependencies Between Beads</h3>
-<pre><code class="language-typescript">interface Bead {
-  // ... existing fields
-  dependsOn?: string[]; // Array of bead IDs
-}
+<pre><code class="highlight"><span class="kd">interface</span><span class="w"> </span><span class="nx">Bead</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ... existing fields</span>
+<span class="w">  </span><span class="nx">dependsOn?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span><span class="w"> </span><span class="c1">// Array of bead IDs</span>
+<span class="p">}</span>
 
-// Worker checks dependencies before starting
-const canStart = bead.dependsOn?.every(id =&gt; {
-  const dep = this.store.get(id);
-  return dep?.status === &quot;completed&quot;;
-});
+<span class="c1">// Worker checks dependencies before starting</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">canStart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">bead</span><span class="p">.</span><span class="nx">dependsOn</span><span class="o">?</span><span class="p">.</span><span class="nx">every</span><span class="p">(</span><span class="nx">id</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">dep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">store</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">dep</span><span class="o">?</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;completed&quot;</span><span class="p">;</span>
+<span class="p">});</span>
 </code></pre>
 <h3>4. More Worker Roles</h3>
-<pre><code class="language-typescript">const ROLE_PROMPTS = {
-  architect: &quot;Design system architecture and data models&quot;,
-  developer: &quot;Implement features&quot;,
-  tester: &quot;Write and run tests&quot;,
-  reviewer: &quot;Review code quality&quot;,
-  debugger: &quot;Fix bugs and errors&quot;,
-  documenter: &quot;Write documentation&quot;,
-  devops: &quot;Handle deployment and infrastructure&quot;,
-};
+<pre><code class="highlight"><span class="kd">const</span><span class="w"> </span><span class="nx">ROLE_PROMPTS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">architect</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Design system architecture and data models&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">developer</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Implement features&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">tester</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Write and run tests&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">reviewer</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Review code quality&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="k">debugger</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Fix bugs and errors&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">documenter</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Write documentation&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">devops</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Handle deployment and infrastructure&quot;</span><span class="p">,</span>
+<span class="p">};</span>
 </code></pre>
 <h3>5. Streaming Progress</h3>
-<pre><code class="language-typescript">// Add WebSocket server to broadcast bead updates
-import { WebSocketServer } from &quot;ws&quot;;
+<pre><code class="highlight"><span class="c1">// Add WebSocket server to broadcast bead updates</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">WebSocketServer</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;ws&quot;</span><span class="p">;</span>
 
-const wss = new WebSocketServer({ port: 8080 });
+<span class="kd">const</span><span class="w"> </span><span class="nx">wss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">WebSocketServer</span><span class="p">({</span><span class="w"> </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="kt">8080</span><span class="w"> </span><span class="p">});</span>
 
-function broadcastUpdate(bead: Bead) {
-  wss.clients.forEach((client) =&gt; {
-    client.send(JSON.stringify({ type: &quot;bead_update&quot;, bead }));
-  });
-}
+<span class="kd">function</span><span class="w"> </span><span class="nx">broadcastUpdate</span><span class="p">(</span><span class="nx">bead</span><span class="o">:</span><span class="w"> </span><span class="kt">Bead</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">wss</span><span class="p">.</span><span class="nx">clients</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">client</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">client</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;bead_update&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">bead</span><span class="w"> </span><span class="p">}));</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">}</span>
 </code></pre>
 <h2>Real-World Gas Town</h2>
 <p>Steve Yegge's <a href="https://github.com/steveyegge/gastown">full Gas Town</a> supports:</p>
@@ -532,74 +533,74 @@ function broadcastUpdate(bead: Bead) {
 <h2>Full Example Code</h2>
 <p>Here's everything together:</p>
 <p><strong>bead.ts</strong>:</p>
-<pre><code class="language-typescript">export type BeadStatus = &quot;pending&quot; | &quot;in_progress&quot; | &quot;completed&quot; | &quot;failed&quot;;
-export type WorkerRole = &quot;developer&quot; | &quot;tester&quot; | &quot;reviewer&quot;;
+<pre><code class="highlight"><span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">BeadStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;pending&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;in_progress&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;completed&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;failed&quot;</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">WorkerRole</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;developer&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;tester&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;reviewer&quot;</span><span class="p">;</span>
 
-export interface Bead {
-  id: string;
-  title: string;
-  description: string;
-  role: WorkerRole;
-  status: BeadStatus;
-  assignedTo?: string;
-  result?: string;
-  error?: string;
-  createdAt: number;
-  updatedAt: number;
-}
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Bead</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="kt">WorkerRole</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">BeadStatus</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">assignedTo?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">result?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">error?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">createdAt</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">updatedAt</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="p">}</span>
 </code></pre>
 <p><strong>bead-store.ts</strong>:</p>
-<pre><code class="language-typescript">import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from &quot;fs&quot;;
-import { join } from &quot;path&quot;;
-import type { Bead } from &quot;./bead&quot;;
+<pre><code class="highlight"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">,</span><span class="w"> </span><span class="nx">writeFileSync</span><span class="p">,</span><span class="w"> </span><span class="nx">existsSync</span><span class="p">,</span><span class="w"> </span><span class="nx">mkdirSync</span><span class="p">,</span><span class="w"> </span><span class="nx">readdirSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;fs&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">join</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Bead</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;./bead&quot;</span><span class="p">;</span>
 
-const BEADS_DIR = &quot;.beads&quot;;
+<span class="kd">const</span><span class="w"> </span><span class="nx">BEADS_DIR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;.beads&quot;</span><span class="p">;</span>
 
-export class BeadStore {
-  constructor() {
-    if (!existsSync(BEADS_DIR)) {
-      mkdirSync(BEADS_DIR, { recursive: true });
-    }
-  }
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">BeadStore</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kr">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">mkdirSync</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">recursive</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
 
-  save(bead: Bead): void {
-    const path = join(BEADS_DIR, `${bead.id}.json`);
-    writeFileSync(path, JSON.stringify(bead, null, 2));
-  }
+<span class="w">  </span><span class="nx">save</span><span class="p">(</span><span class="nx">bead</span><span class="o">:</span><span class="w"> </span><span class="kt">Bead</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">join</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">,</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">bead</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">.json`</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">writeFileSync</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">bead</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
 
-  get(id: string): Bead | null {
-    const path = join(BEADS_DIR, `${id}.json`);
-    if (!existsSync(path)) return null;
-    return JSON.parse(readFileSync(path, &quot;utf-8&quot;));
-  }
+<span class="w">  </span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Bead</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">join</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">,</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">.json`</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">path</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
 
-  list(): Bead[] {
-    const files = readdirSync(BEADS_DIR).filter((f) =&gt; f.endsWith(&quot;.json&quot;));
-    return files.map((f) =&gt; {
-      const content = readFileSync(join(BEADS_DIR, f), &quot;utf-8&quot;);
-      return JSON.parse(content);
-    });
-  }
+<span class="w">  </span><span class="nx">list</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nx">Bead</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">readdirSync</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">).</span><span class="nx">filter</span><span class="p">((</span><span class="nx">f</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">f</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">files</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">f</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">content</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">join</span><span class="p">(</span><span class="nx">BEADS_DIR</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">content</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
 
-  listByStatus(status: Bead[&quot;status&quot;]): Bead[] {
-    return this.list().filter((b) =&gt; b.status === status);
-  }
+<span class="w">  </span><span class="nx">listByStatus</span><span class="p">(</span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">Bead</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">])</span><span class="o">:</span><span class="w"> </span><span class="nx">Bead</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">list</span><span class="p">().</span><span class="nx">filter</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">status</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
 
-  listByRole(role: Bead[&quot;role&quot;]): Bead[] {
-    return this.list().filter((b) =&gt; b.role === role);
-  }
-}
+<span class="w">  </span><span class="nx">listByRole</span><span class="p">(</span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="kt">Bead</span><span class="p">[</span><span class="s2">&quot;role&quot;</span><span class="p">])</span><span class="o">:</span><span class="w"> </span><span class="nx">Bead</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">list</span><span class="p">().</span><span class="nx">filter</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">role</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">role</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
 <p><strong>mayor.ts</strong>, <strong>worker.ts</strong>, and <strong>gastown.ts</strong> as shown above.</p>
 <h2>Try It</h2>
-<pre><code class="language-bash">mkdir mini-gastown
-cd mini-gastown
-bun init -y
-bun add openai
+<pre><code class="highlight">mkdir<span class="w"> </span>mini-gastown
+<span class="nb">cd</span><span class="w"> </span>mini-gastown
+bun<span class="w"> </span>init<span class="w"> </span>-y
+bun<span class="w"> </span>add<span class="w"> </span>openai
 
-# Create all the TypeScript files above
-# Then run:
-bun gastown.ts &quot;Your project goal here&quot;
+<span class="c1"># Create all the TypeScript files above</span>
+<span class="c1"># Then run:</span>
+bun<span class="w"> </span>gastown.ts<span class="w"> </span><span class="s2">&quot;Your project goal here&quot;</span>
 </code></pre>
 <p>Watch multiple agents work in parallel toward your goal.</p>
 <p>That's Gas Town.</p>

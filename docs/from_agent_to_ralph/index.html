@@ -9,6 +9,7 @@
       <meta name="author" content="Vilson Vieira">
       <title>Vilson Vieira</title>
       <link rel="stylesheet" href="/static/style.css">
+      <link rel="stylesheet" href="/static/syntax.css">
       <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
     </head>
     <body>
@@ -28,120 +29,120 @@
 </ol>
 <p>That's it.</p>
 <h2>Setup</h2>
-<pre><code class="language-bash">mkdir ai-agent
-cd ai-agent
-bun init -y
-bun add openai
+<pre><code class="highlight">mkdir<span class="w"> </span>ai-agent
+<span class="nb">cd</span><span class="w"> </span>ai-agent
+bun<span class="w"> </span>init<span class="w"> </span>-y
+bun<span class="w"> </span>add<span class="w"> </span>openai
 </code></pre>
 <p>We'll use the OpenAI SDK because OpenRouter is API-compatible.</p>
 <p>Create <code>agent.ts</code> and let's go.</p>
 <h2>Step 1: The Basic Client</h2>
 <p>First, configure the OpenRouter client:</p>
-<pre><code class="language-typescript">import OpenAI from &quot;openai&quot;;
+<pre><code class="highlight"><span class="k">import</span><span class="w"> </span><span class="nx">OpenAI</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;openai&quot;</span><span class="p">;</span>
 
-const client = new OpenAI({
-  baseURL: &quot;https://openrouter.ai/api/v1&quot;,
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
+<span class="kd">const</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenAI</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">baseURL</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;https://openrouter.ai/api/v1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">apiKey</span><span class="o">:</span><span class="w"> </span><span class="kt">process.env.OPENROUTER_API_KEY</span><span class="p">,</span>
+<span class="p">});</span>
 
-const MODEL = &quot;anthropic/claude-3.5-sonnet&quot;;
+<span class="kd">const</span><span class="w"> </span><span class="nx">MODEL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;anthropic/claude-3.5-sonnet&quot;</span><span class="p">;</span>
 </code></pre>
 <p>Simple. OpenRouter handles routing to any model.</p>
 <h2>Step 2: Define Tools</h2>
 <p>An agent needs tools. Let's give it two: read files and execute shell commands.</p>
-<pre><code class="language-typescript">const tools = [
-  {
-    type: &quot;function&quot; as const,
-    function: {
-      name: &quot;read_file&quot;,
-      description: &quot;Read contents of a file&quot;,
-      parameters: {
-        type: &quot;object&quot;,
-        properties: {
-          path: { type: &quot;string&quot;, description: &quot;File path to read&quot; },
-        },
-        required: [&quot;path&quot;],
-      },
-    },
-  },
-  {
-    type: &quot;function&quot; as const,
-    function: {
-      name: &quot;execute_command&quot;,
-      description: &quot;Execute a shell command&quot;,
-      parameters: {
-        type: &quot;object&quot;,
-        properties: {
-          command: { type: &quot;string&quot;, description: &quot;Command to execute&quot; },
-        },
-        required: [&quot;command&quot;],
-      },
-    },
-  },
-];
+<pre><code class="highlight"><span class="kd">const</span><span class="w"> </span><span class="nx">tools</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">function</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Read contents of a file&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">parameters</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">properties</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;File path to read&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">function</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;execute_command&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Execute a shell command&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">parameters</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">properties</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nx">command</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Command to execute&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;command&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">];</span>
 </code></pre>
 <p>These JSON schemas tell the LLM what it can do.</p>
 <h2>Step 3: Implement the Tools</h2>
 <p>Now the actual functions:</p>
-<pre><code class="language-typescript">import { readFileSync } from &quot;fs&quot;;
-import { execSync } from &quot;child_process&quot;;
+<pre><code class="highlight"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">readFileSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;fs&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">execSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;child_process&quot;</span><span class="p">;</span>
 
-async function executeTool(name: string, args: any): Promise&lt;string&gt; {
-  try {
-    if (name === &quot;read_file&quot;) {
-      return readFileSync(args.path, &quot;utf-8&quot;);
-    } else if (name === &quot;execute_command&quot;) {
-      return execSync(args.command, { encoding: &quot;utf-8&quot;, maxBuffer: 10 * 1024 * 1024 });
-    }
-    return &quot;Unknown tool&quot;;
-  } catch (error: any) {
-    return `Error: ${error.message}`;
-  }
-}
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">executeTool</span><span class="p">(</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">name</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;read_file&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">name</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;execute_command&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">execSync</span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">command</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">encoding</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">maxBuffer</span><span class="o">:</span><span class="w"> </span><span class="kt">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1024</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s2">&quot;Unknown tool&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="sb">`Error: </span><span class="si">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
 <p>Read files, run commands, catch errors. That's all we need.</p>
 <h2>Step 4: The Agentic Loop</h2>
 <p>Here's where it gets interesting:</p>
-<pre><code class="language-typescript">async function runAgent(userMessage: string) {
-  const messages: any[] = [
-    {
-      role: &quot;system&quot;,
-      content: &quot;You are a helpful coding assistant. Use tools to help the user.&quot;,
-    },
-    { role: &quot;user&quot;, content: userMessage },
-  ];
+<pre><code class="highlight"><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">runAgent</span><span class="p">(</span><span class="nx">userMessage</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">messages</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;system&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;You are a helpful coding assistant. Use tools to help the user.&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;user&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="kt">userMessage</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">];</span>
 
-  while (true) {
-    const response = await client.chat.completions.create({
-      model: MODEL,
-      messages,
-      tools,
-    });
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">chat</span><span class="p">.</span><span class="nx">completions</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">model</span><span class="o">:</span><span class="w"> </span><span class="kt">MODEL</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">messages</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">tools</span><span class="p">,</span>
+<span class="w">    </span><span class="p">});</span>
 
-    const message = response.choices[0].message;
-    messages.push(message);
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">choices</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">message</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
 
-    // If no tool calls, we're done
-    if (!message.tool_calls || message.tool_calls.length === 0) {
-      console.log(message.content);
-      break;
-    }
+<span class="w">    </span><span class="c1">// If no tool calls, we&#39;re done</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">message</span><span class="p">.</span><span class="nx">tool_calls</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">message</span><span class="p">.</span><span class="nx">tool_calls</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    // Execute each tool call
-    for (const toolCall of message.tool_calls) {
-      const args = JSON.parse(toolCall.function.arguments);
-      const result = await executeTool(toolCall.function.name, args);
+<span class="w">    </span><span class="c1">// Execute each tool call</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">toolCall</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">message</span><span class="p">.</span><span class="nx">tool_calls</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">toolCall</span><span class="p">.</span><span class="kd">function</span><span class="p">.</span><span class="nx">arguments</span><span class="p">);</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">executeTool</span><span class="p">(</span><span class="nx">toolCall</span><span class="p">.</span><span class="kd">function</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="p">);</span>
 
-      console.log(`[${toolCall.function.name}] ${JSON.stringify(args)}`);
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`[</span><span class="si">${</span><span class="nx">toolCall</span><span class="p">.</span><span class="kd">function</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span><span class="sb">] </span><span class="si">${</span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
 
-      messages.push({
-        role: &quot;tool&quot;,
-        tool_call_id: toolCall.id,
-        content: result,
-      });
-    }
-  }
-}
+<span class="w">      </span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+<span class="w">        </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;tool&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">tool_call_id</span><span class="o">:</span><span class="w"> </span><span class="kt">toolCall.id</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="kt">result</span><span class="p">,</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
 <p>This is the heart of the agent:</p>
 <ul>
@@ -153,18 +154,18 @@ async function executeTool(name: string, args: any): Promise&lt;string&gt; {
 </ul>
 <h2>Step 5: CLI Interface</h2>
 <p>Make it usable:</p>
-<pre><code class="language-typescript">const prompt = process.argv.slice(2).join(&quot; &quot;);
+<pre><code class="highlight"><span class="kd">const</span><span class="w"> </span><span class="nx">prompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mf">2</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">);</span>
 
-if (!prompt) {
-  console.log(&quot;Usage: bun agent.ts &lt;your request&gt;&quot;);
-  process.exit(1);
-}
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">prompt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Usage: bun agent.ts &lt;your request&gt;&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mf">1</span><span class="p">);</span>
+<span class="p">}</span>
 
-runAgent(prompt);
+<span class="nx">runAgent</span><span class="p">(</span><span class="nx">prompt</span><span class="p">);</span>
 </code></pre>
 <h2>Running It</h2>
-<pre><code class="language-bash">export OPENROUTER_API_KEY=&quot;your-key-here&quot;
-bun agent.ts &quot;read package.json and tell me what dependencies I have&quot;
+<pre><code class="highlight"><span class="nb">export</span><span class="w"> </span><span class="nv">OPENROUTER_API_KEY</span><span class="o">=</span><span class="s2">&quot;your-key-here&quot;</span>
+bun<span class="w"> </span>agent.ts<span class="w"> </span><span class="s2">&quot;read package.json and tell me what dependencies I have&quot;</span>
 </code></pre>
 <p>The agent will:</p>
 <ol>
@@ -175,108 +176,108 @@ bun agent.ts &quot;read package.json and tell me what dependencies I have&quot;
 <p>That's an AI agent.</p>
 <h2>The Complete Code</h2>
 <p>Here's everything together:</p>
-<pre><code class="language-typescript">import OpenAI from &quot;openai&quot;;
-import { readFileSync } from &quot;fs&quot;;
-import { execSync } from &quot;child_process&quot;;
+<pre><code class="highlight"><span class="k">import</span><span class="w"> </span><span class="nx">OpenAI</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;openai&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">readFileSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;fs&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">execSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;child_process&quot;</span><span class="p">;</span>
 
-const client = new OpenAI({
-  baseURL: &quot;https://openrouter.ai/api/v1&quot;,
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
+<span class="kd">const</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenAI</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">baseURL</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;https://openrouter.ai/api/v1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">apiKey</span><span class="o">:</span><span class="w"> </span><span class="kt">process.env.OPENROUTER_API_KEY</span><span class="p">,</span>
+<span class="p">});</span>
 
-const MODEL = &quot;anthropic/claude-3.5-sonnet&quot;;
+<span class="kd">const</span><span class="w"> </span><span class="nx">MODEL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;anthropic/claude-3.5-sonnet&quot;</span><span class="p">;</span>
 
-const tools = [
-  {
-    type: &quot;function&quot; as const,
-    function: {
-      name: &quot;read_file&quot;,
-      description: &quot;Read contents of a file&quot;,
-      parameters: {
-        type: &quot;object&quot;,
-        properties: {
-          path: { type: &quot;string&quot;, description: &quot;File path to read&quot; },
-        },
-        required: [&quot;path&quot;],
-      },
-    },
-  },
-  {
-    type: &quot;function&quot; as const,
-    function: {
-      name: &quot;execute_command&quot;,
-      description: &quot;Execute a shell command&quot;,
-      parameters: {
-        type: &quot;object&quot;,
-        properties: {
-          command: { type: &quot;string&quot;, description: &quot;Command to execute&quot; },
-        },
-        required: [&quot;command&quot;],
-      },
-    },
-  },
-];
+<span class="kd">const</span><span class="w"> </span><span class="nx">tools</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">function</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Read contents of a file&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">parameters</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">properties</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;File path to read&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">function</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;execute_command&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Execute a shell command&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">parameters</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">properties</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nx">command</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Command to execute&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;command&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">];</span>
 
-async function executeTool(name: string, args: any): Promise&lt;string&gt; {
-  try {
-    if (name === &quot;read_file&quot;) {
-      return readFileSync(args.path, &quot;utf-8&quot;);
-    } else if (name === &quot;execute_command&quot;) {
-      return execSync(args.command, { encoding: &quot;utf-8&quot;, maxBuffer: 10 * 1024 * 1024 });
-    }
-    return &quot;Unknown tool&quot;;
-  } catch (error: any) {
-    return `Error: ${error.message}`;
-  }
-}
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">executeTool</span><span class="p">(</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">name</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;read_file&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">name</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;execute_command&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">execSync</span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">command</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">encoding</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">maxBuffer</span><span class="o">:</span><span class="w"> </span><span class="kt">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1024</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s2">&quot;Unknown tool&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="sb">`Error: </span><span class="si">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
-async function runAgent(userMessage: string) {
-  const messages: any[] = [
-    {
-      role: &quot;system&quot;,
-      content: &quot;You are a helpful coding assistant. Use tools to help the user.&quot;,
-    },
-    { role: &quot;user&quot;, content: userMessage },
-  ];
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">runAgent</span><span class="p">(</span><span class="nx">userMessage</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">messages</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;system&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;You are a helpful coding assistant. Use tools to help the user.&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;user&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="kt">userMessage</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">];</span>
 
-  while (true) {
-    const response = await client.chat.completions.create({
-      model: MODEL,
-      messages,
-      tools,
-    });
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">chat</span><span class="p">.</span><span class="nx">completions</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">model</span><span class="o">:</span><span class="w"> </span><span class="kt">MODEL</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">messages</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">tools</span><span class="p">,</span>
+<span class="w">    </span><span class="p">});</span>
 
-    const message = response.choices[0].message;
-    messages.push(message);
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">choices</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">message</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
 
-    if (!message.tool_calls || message.tool_calls.length === 0) {
-      console.log(message.content);
-      break;
-    }
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">message</span><span class="p">.</span><span class="nx">tool_calls</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">message</span><span class="p">.</span><span class="nx">tool_calls</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    for (const toolCall of message.tool_calls) {
-      const args = JSON.parse(toolCall.function.arguments);
-      const result = await executeTool(toolCall.function.name, args);
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">toolCall</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">message</span><span class="p">.</span><span class="nx">tool_calls</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">toolCall</span><span class="p">.</span><span class="kd">function</span><span class="p">.</span><span class="nx">arguments</span><span class="p">);</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">executeTool</span><span class="p">(</span><span class="nx">toolCall</span><span class="p">.</span><span class="kd">function</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="p">);</span>
 
-      console.log(`[${toolCall.function.name}] ${JSON.stringify(args)}`);
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`[</span><span class="si">${</span><span class="nx">toolCall</span><span class="p">.</span><span class="kd">function</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span><span class="sb">] </span><span class="si">${</span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
 
-      messages.push({
-        role: &quot;tool&quot;,
-        tool_call_id: toolCall.id,
-        content: result,
-      });
-    }
-  }
-}
+<span class="w">      </span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+<span class="w">        </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;tool&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">tool_call_id</span><span class="o">:</span><span class="w"> </span><span class="kt">toolCall.id</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="kt">result</span><span class="p">,</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
-const prompt = process.argv.slice(2).join(&quot; &quot;);
+<span class="kd">const</span><span class="w"> </span><span class="nx">prompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mf">2</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">);</span>
 
-if (!prompt) {
-  console.log(&quot;Usage: bun agent.ts &lt;your request&gt;&quot;);
-  process.exit(1);
-}
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">prompt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Usage: bun agent.ts &lt;your request&gt;&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mf">1</span><span class="p">);</span>
+<span class="p">}</span>
 
-runAgent(prompt);
+<span class="nx">runAgent</span><span class="p">(</span><span class="nx">prompt</span><span class="p">);</span>
 </code></pre>
 <h2>What's Next?</h2>
 <p>This is minimal but functional. You could add:</p>
@@ -296,7 +297,7 @@ runAgent(prompt);
 <p>What if wrap the agent in one more loop? That's the <strong>Ralph Loop</strong>.</p>
 <h3>What is the Ralph Loop?</h3>
 <p>Named after Ralph Wiggum from The Simpsons (yes, the &quot;I'm in danger&quot; kid), the Ralph Loop is a technique that's exploded in popularity in early 2026. Originally coined by Geoffrey Huntley, it's beautifully simple:</p>
-<pre><code class="language-bash">while :; do cat PROMPT.md | &lt;ANY_CODING_AGENT&gt; ; done
+<pre><code class="highlight"><span class="k">while</span><span class="w"> </span>:<span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>cat<span class="w"> </span>PROMPT.md<span class="w"> </span><span class="p">|</span><span class="w"> </span>&lt;ANY_CODING_AGENT&gt;<span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">done</span>
 </code></pre>
 <p>That's it. Just keep running the agent until the task is actually complete.</p>
 <h3>The Philosophy</h3>
@@ -312,75 +313,75 @@ runAgent(prompt);
 <p>Think of it as <code>while (true)</code> for AI autonomy.</p>
 <h3>Implementing Ralph Loop</h3>
 <p>Let's wrap our agent. Create <code>ralph.ts</code>:</p>
-<pre><code class="language-typescript">import { readFileSync, writeFileSync } from &quot;fs&quot;;
-import { execSync } from &quot;child_process&quot;;
+<pre><code class="highlight"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">,</span><span class="w"> </span><span class="nx">writeFileSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;fs&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">execSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;child_process&quot;</span><span class="p">;</span>
 
-const MAX_ITERATIONS = 10;
-const PROMPT_FILE = &quot;PROMPT.md&quot;;
-const TASK_FILE = &quot;TASK.md&quot;;
+<span class="kd">const</span><span class="w"> </span><span class="nx">MAX_ITERATIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">10</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">PROMPT_FILE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;PROMPT.md&quot;</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">TASK_FILE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;TASK.md&quot;</span><span class="p">;</span>
 
-async function verifyCompletion(): Promise&lt;{ complete: boolean; feedback?: string }&gt; {
-  try {
-    // Example: check if tests pass
-    execSync(&quot;npm test&quot;, { stdio: &quot;pipe&quot; });
-    return { complete: true };
-  } catch (error: any) {
-    return {
-      complete: false,
-      feedback: `Tests failed:\n${error.stdout?.toString() || error.message}`,
-    };
-  }
-}
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">verifyCompletion</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span><span class="w"> </span><span class="nx">feedback?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Example: check if tests pass</span>
+<span class="w">    </span><span class="nx">execSync</span><span class="p">(</span><span class="s2">&quot;npm test&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;pipe&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">feedback</span><span class="o">:</span><span class="w"> </span><span class="sb">`Tests failed:\n</span><span class="si">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">stdout</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
-async function runRalphLoop() {
-  const originalPrompt = readFileSync(PROMPT_FILE, &quot;utf-8&quot;);
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">runRalphLoop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">originalPrompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">PROMPT_FILE</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">);</span>
 
-  for (let iteration = 1; iteration &lt;= MAX_ITERATIONS; iteration++) {
-    console.log(`\n=== Ralph Iteration ${iteration}/${MAX_ITERATIONS} ===\n`);
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">iteration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"> </span><span class="nx">iteration</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nx">MAX_ITERATIONS</span><span class="p">;</span><span class="w"> </span><span class="nx">iteration</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`\n=== Ralph Iteration </span><span class="si">${</span><span class="nx">iteration</span><span class="si">}</span><span class="sb">/</span><span class="si">${</span><span class="nx">MAX_ITERATIONS</span><span class="si">}</span><span class="sb"> ===\n`</span><span class="p">);</span>
 
-    // Run the agent we just built
-    try {
-      execSync(`bun agent.ts &quot;$(cat ${TASK_FILE})&quot;`, { stdio: &quot;inherit&quot; });
-    } catch (error) {
-      console.log(&quot;Agent execution failed, continuing...&quot;);
-    }
+<span class="w">    </span><span class="c1">// Run the agent we just built</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">execSync</span><span class="p">(</span><span class="sb">`bun agent.ts &quot;$(cat </span><span class="si">${</span><span class="nx">TASK_FILE</span><span class="si">}</span><span class="sb">)&quot;`</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;inherit&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Agent execution failed, continuing...&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    // Verify completion
-    const { complete, feedback } = await verifyCompletion();
+<span class="w">    </span><span class="c1">// Verify completion</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="p">,</span><span class="w"> </span><span class="nx">feedback</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">verifyCompletion</span><span class="p">();</span>
 
-    if (complete) {
-      console.log(&quot;\n✓ Task completed successfully!&quot;);
-      break;
-    }
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">complete</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;\n✓ Task completed successfully!&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    // Inject feedback for next iteration
-    console.log(`\n✗ Not complete yet. Feedback:\n${feedback}\n`);
+<span class="w">    </span><span class="c1">// Inject feedback for next iteration</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`\n✗ Not complete yet. Feedback:\n</span><span class="si">${</span><span class="nx">feedback</span><span class="si">}</span><span class="sb">\n`</span><span class="p">);</span>
 
-    const updatedTask = `${originalPrompt}\n\n## Previous Attempt Feedback\n${feedback}\n\nPlease fix the issues above.`;
-    writeFileSync(TASK_FILE, updatedTask);
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">updatedTask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">originalPrompt</span><span class="si">}</span><span class="sb">\n\n## Previous Attempt Feedback\n</span><span class="si">${</span><span class="nx">feedback</span><span class="si">}</span><span class="sb">\n\nPlease fix the issues above.`</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">writeFileSync</span><span class="p">(</span><span class="nx">TASK_FILE</span><span class="p">,</span><span class="w"> </span><span class="nx">updatedTask</span><span class="p">);</span>
 
-    if (iteration === MAX_ITERATIONS) {
-      console.log(&quot;\n⚠ Max iterations reached. Manual intervention needed.&quot;);
-    }
-  }
-}
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">iteration</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">MAX_ITERATIONS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;\n⚠ Max iterations reached. Manual intervention needed.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
-runRalphLoop();
+<span class="nx">runRalphLoop</span><span class="p">();</span>
 </code></pre>
 <p>Now create <code>PROMPT.md</code>:</p>
-<pre><code class="language-markdown"># Task: Implement User Authentication
+<pre><code class="highlight"><span class="gh"># Task: Implement User Authentication</span>
 
 Create a simple user authentication system with:
-- Login endpoint at POST /login
-- Registration endpoint at POST /register
-- Tests that verify both endpoints work
-- All tests must pass
+<span class="k">-</span><span class="w"> </span>Login endpoint at POST /login
+<span class="k">-</span><span class="w"> </span>Registration endpoint at POST /register
+<span class="k">-</span><span class="w"> </span>Tests that verify both endpoints work
+<span class="k">-</span><span class="w"> </span>All tests must pass
 
 Use the tools available to read existing code, write new files, and run tests.
 </code></pre>
 <p>Run it:</p>
-<pre><code class="language-bash">cp PROMPT.md TASK.md
-bun ralph.ts
+<pre><code class="highlight">cp<span class="w"> </span>PROMPT.md<span class="w"> </span>TASK.md
+bun<span class="w"> </span>ralph.ts
 </code></pre>
 <h3>What Happens</h3>
 <ol>
@@ -401,30 +402,30 @@ bun ralph.ts
 <li>Multiple verification steps in sequence</li>
 </ul>
 <p>Example with multiple checks:</p>
-<pre><code class="language-typescript">async function verifyCompletion(): Promise&lt;{ complete: boolean; feedback?: string }&gt; {
-  // Check 1: Build succeeds
-  try {
-    execSync(&quot;npm run build&quot;, { stdio: &quot;pipe&quot; });
-  } catch (error: any) {
-    return { complete: false, feedback: `Build failed:\n${error.message}` };
-  }
+<pre><code class="highlight"><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">verifyCompletion</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span><span class="w"> </span><span class="nx">feedback?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Check 1: Build succeeds</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">execSync</span><span class="p">(</span><span class="s2">&quot;npm run build&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;pipe&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">,</span><span class="w"> </span><span class="nx">feedback</span><span class="o">:</span><span class="w"> </span><span class="sb">`Build failed:\n</span><span class="si">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span>
 
-  // Check 2: Tests pass
-  try {
-    execSync(&quot;npm test&quot;, { stdio: &quot;pipe&quot; });
-  } catch (error: any) {
-    return { complete: false, feedback: `Tests failed:\n${error.message}` };
-  }
+<span class="w">  </span><span class="c1">// Check 2: Tests pass</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">execSync</span><span class="p">(</span><span class="s2">&quot;npm test&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;pipe&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">,</span><span class="w"> </span><span class="nx">feedback</span><span class="o">:</span><span class="w"> </span><span class="sb">`Tests failed:\n</span><span class="si">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span>
 
-  // Check 3: Lint passes
-  try {
-    execSync(&quot;npm run lint&quot;, { stdio: &quot;pipe&quot; });
-  } catch (error: any) {
-    return { complete: false, feedback: `Lint failed:\n${error.message}` };
-  }
+<span class="w">  </span><span class="c1">// Check 3: Lint passes</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">execSync</span><span class="p">(</span><span class="s2">&quot;npm run lint&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;pipe&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">,</span><span class="w"> </span><span class="nx">feedback</span><span class="o">:</span><span class="w"> </span><span class="sb">`Lint failed:\n</span><span class="si">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span>
 
-  return { complete: true };
-}
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">};</span>
+<span class="p">}</span>
 </code></pre>
 <h3>Why This Works</h3>
 <p>The secret is that <strong>progress lives in your files, not in the LLM's context</strong>.</p>
@@ -453,88 +454,88 @@ bun ralph.ts
 </ol>
 <h3>The Complete Ralph Pattern</h3>
 <p>Here's the full implementation with safety checks:</p>
-<pre><code class="language-typescript">import { readFileSync, writeFileSync, existsSync } from &quot;fs&quot;;
-import { execSync } from &quot;child_process&quot;;
+<pre><code class="highlight"><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">,</span><span class="w"> </span><span class="nx">writeFileSync</span><span class="p">,</span><span class="w"> </span><span class="nx">existsSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;fs&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">execSync</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;child_process&quot;</span><span class="p">;</span>
 
-const MAX_ITERATIONS = 10;
-const PROMPT_FILE = &quot;PROMPT.md&quot;;
-const TASK_FILE = &quot;TASK.md&quot;;
-const STATE_FILE = &quot;.ralph-state.json&quot;;
+<span class="kd">const</span><span class="w"> </span><span class="nx">MAX_ITERATIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">10</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">PROMPT_FILE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;PROMPT.md&quot;</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">TASK_FILE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;TASK.md&quot;</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">STATE_FILE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;.ralph-state.json&quot;</span><span class="p">;</span>
 
-interface RalphState {
-  iteration: number;
-  startTime: number;
-  totalCost: number;
-}
+<span class="kd">interface</span><span class="w"> </span><span class="nx">RalphState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">iteration</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">startTime</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">totalCost</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="p">}</span>
 
-async function verifyCompletion(): Promise&lt;{ complete: boolean; feedback?: string }&gt; {
-  try {
-    execSync(&quot;npm test&quot;, { stdio: &quot;pipe&quot; });
-    return { complete: true };
-  } catch (error: any) {
-    return {
-      complete: false,
-      feedback: `Tests failed:\n${error.stdout?.toString() || error.message}`,
-    };
-  }
-}
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">verifyCompletion</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span><span class="w"> </span><span class="nx">feedback?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">execSync</span><span class="p">(</span><span class="s2">&quot;npm test&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;pipe&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">complete</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">feedback</span><span class="o">:</span><span class="w"> </span><span class="sb">`Tests failed:\n</span><span class="si">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">stdout</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
-function loadState(): RalphState {
-  if (existsSync(STATE_FILE)) {
-    return JSON.parse(readFileSync(STATE_FILE, &quot;utf-8&quot;));
-  }
-  return { iteration: 0, startTime: Date.now(), totalCost: 0 };
-}
+<span class="kd">function</span><span class="w"> </span><span class="nx">loadState</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nx">RalphState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">STATE_FILE</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">STATE_FILE</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">iteration</span><span class="o">:</span><span class="w"> </span><span class="kt">0</span><span class="p">,</span><span class="w"> </span><span class="nx">startTime</span><span class="o">:</span><span class="w"> </span><span class="kt">Date.now</span><span class="p">(),</span><span class="w"> </span><span class="nx">totalCost</span><span class="o">:</span><span class="w"> </span><span class="kt">0</span><span class="w"> </span><span class="p">};</span>
+<span class="p">}</span>
 
-function saveState(state: RalphState) {
-  writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
-}
+<span class="kd">function</span><span class="w"> </span><span class="nx">saveState</span><span class="p">(</span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="kt">RalphState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">writeFileSync</span><span class="p">(</span><span class="nx">STATE_FILE</span><span class="p">,</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">state</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">));</span>
+<span class="p">}</span>
 
-async function runRalphLoop() {
-  const originalPrompt = readFileSync(PROMPT_FILE, &quot;utf-8&quot;);
-  const state = loadState();
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">runRalphLoop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">originalPrompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">PROMPT_FILE</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;utf-8&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">loadState</span><span class="p">();</span>
 
-  // Safety: max runtime check (4 hours)
-  const MAX_RUNTIME_MS = 4 * 60 * 60 * 1000;
-  const elapsed = Date.now() - state.startTime;
-  if (elapsed &gt; MAX_RUNTIME_MS) {
-    console.log(&quot;⚠ Max runtime exceeded. Stopping.&quot;);
-    return;
-  }
+<span class="w">  </span><span class="c1">// Safety: max runtime check (4 hours)</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">MAX_RUNTIME_MS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">60</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">60</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1000</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">elapsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">state</span><span class="p">.</span><span class="nx">startTime</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">elapsed</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nx">MAX_RUNTIME_MS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;⚠ Max runtime exceeded. Stopping.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
 
-  for (let iteration = state.iteration + 1; iteration &lt;= MAX_ITERATIONS; iteration++) {
-    console.log(`\n=== Ralph Iteration ${iteration}/${MAX_ITERATIONS} ===`);
-    console.log(`Elapsed: ${Math.round(elapsed / 1000 / 60)} minutes\n`);
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">iteration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">state</span><span class="p">.</span><span class="nx">iteration</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"> </span><span class="nx">iteration</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nx">MAX_ITERATIONS</span><span class="p">;</span><span class="w"> </span><span class="nx">iteration</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`\n=== Ralph Iteration </span><span class="si">${</span><span class="nx">iteration</span><span class="si">}</span><span class="sb">/</span><span class="si">${</span><span class="nx">MAX_ITERATIONS</span><span class="si">}</span><span class="sb"> ===`</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Elapsed: </span><span class="si">${</span><span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="nx">elapsed</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1000</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">60</span><span class="p">)</span><span class="si">}</span><span class="sb"> minutes\n`</span><span class="p">);</span>
 
-    state.iteration = iteration;
-    saveState(state);
+<span class="w">    </span><span class="nx">state</span><span class="p">.</span><span class="nx">iteration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">iteration</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">saveState</span><span class="p">(</span><span class="nx">state</span><span class="p">);</span>
 
-    try {
-      execSync(`bun agent.ts &quot;$(cat ${TASK_FILE})&quot;`, { stdio: &quot;inherit&quot; });
-    } catch (error) {
-      console.log(&quot;Agent execution failed, continuing...&quot;);
-    }
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">execSync</span><span class="p">(</span><span class="sb">`bun agent.ts &quot;$(cat </span><span class="si">${</span><span class="nx">TASK_FILE</span><span class="si">}</span><span class="sb">)&quot;`</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;inherit&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Agent execution failed, continuing...&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    const { complete, feedback } = await verifyCompletion();
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">complete</span><span class="p">,</span><span class="w"> </span><span class="nx">feedback</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">verifyCompletion</span><span class="p">();</span>
 
-    if (complete) {
-      console.log(&quot;\n✓ Task completed successfully!&quot;);
-      execSync(`rm ${STATE_FILE}`); // Clean up
-      break;
-    }
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">complete</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;\n✓ Task completed successfully!&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">execSync</span><span class="p">(</span><span class="sb">`rm </span><span class="si">${</span><span class="nx">STATE_FILE</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span><span class="w"> </span><span class="c1">// Clean up</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    console.log(`\n✗ Not complete. Feedback:\n${feedback}\n`);
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`\n✗ Not complete. Feedback:\n</span><span class="si">${</span><span class="nx">feedback</span><span class="si">}</span><span class="sb">\n`</span><span class="p">);</span>
 
-    const updatedTask = `${originalPrompt}\n\n## Iteration ${iteration} Feedback\n${feedback}\n\nFix the issues and try again.`;
-    writeFileSync(TASK_FILE, updatedTask);
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">updatedTask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">originalPrompt</span><span class="si">}</span><span class="sb">\n\n## Iteration </span><span class="si">${</span><span class="nx">iteration</span><span class="si">}</span><span class="sb"> Feedback\n</span><span class="si">${</span><span class="nx">feedback</span><span class="si">}</span><span class="sb">\n\nFix the issues and try again.`</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">writeFileSync</span><span class="p">(</span><span class="nx">TASK_FILE</span><span class="p">,</span><span class="w"> </span><span class="nx">updatedTask</span><span class="p">);</span>
 
-    if (iteration === MAX_ITERATIONS) {
-      console.log(&quot;\n⚠ Max iterations reached.&quot;);
-    }
-  }
-}
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">iteration</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">MAX_ITERATIONS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;\n⚠ Max iterations reached.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
-runRalphLoop();
+<span class="nx">runRalphLoop</span><span class="p">();</span>
 </code></pre>
 <h3>The Future</h3>
 <p>Ralph Loop represents a shift in how we think about AI coding agents:</p>

@@ -1,13 +1,21 @@
-Hi, I'm __Vilson Vieira__, a Software and Machine Learning Researcher, artist and
-open source enthusiast who has being developing for Google, Mozilla, The Grid,
-ExAI and most recently for Anything World.
+Hi, I'm __Vilson Vieira__, an AI Researcher and Engineer, artist and
+open source enthusiast who has being developing for Google, Mozilla, Ndea, The Grid,
+Extend AI and Anything World.
 I'm a BSc. in Computer Science and MSc. in Computational and Applied
 Physics by University of São Paulo (USP) advised by
 profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
-[Notion](https://aut0mata.notion.site/Digital-Garden-6d61fd49d4f04d468a466b9eaa9c4871?pvs=4) - [Mastodon](https://sigmoid.social/@automata) - [Twitter](https://twitter.com/aut0mata) - [GitHub](https://github.com/automata)
+[Substack](https://hackable.substack.com) - [Mastodon](https://sigmoid.social/@automata) - [Twitter](https://twitter.com/aut0mata) - [GitHub](https://github.com/automata)
 
 # Open Source Projects
+
+<div class="project">
+  <img class="project-thumb" src="/static/project_aicodeguide.jpg" />
+  <a href="https://aicode.guide">AI Code Guide</a>
+  <p>
+    A guide with everything you wanted to know about using AI to help you code and/or to code for you.
+  </p>
+</div>
 
 <div class="project">
   <img class="project-thumb" src="/static/project_mojograd.gif" />
@@ -17,8 +25,6 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
   library with a PyTorch-like API.
   </p>
 </div>
-
-
 
 <div class="project">
   <img class="project-thumb" src="/static/project_basquiat.jpg" />
@@ -113,17 +119,18 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 
 # Timeline
 
-- 2023 - Present: Lead ML Engineer at [Anything World](https://anything.world)
-- 2019 - 2023: Chief of AI at ExAI
-- 2020 - Present: Co-founder of [2aliens](https://2aliens.cc)
-  with Gabriela Thumé
-- 2018 - 2019: ML Engineer at ExAI
-- 2017 - Present: Co-founder of CodAI with Gabriela Thumé
+- 2025 - Present: Co-founder of a stealth AI coding startup
+- 2024 - 2025: AI Researcher at [Ndea](https://ndea.com)
+- 2023 - 2025: Lead AI Engineer at [Anything World](https://anything.world)
+- 2019 - 2023: Chief of AI at Extend AI
+- 2020 - Present: Co-founder of [2aliens](https://2aliens.cc) with Gabriela Thumé
+- 2018 - 2019: ML Engineer at Extend AI
+- 2017 - 2018: Co-founder of CodAI with Gabriela Thumé
 - 2014 - 2017: Software & ML Engineer at The Grid
-- 2014: Software Engineer at Google/Mozilla (GSoC intership/grant)
+- 2014 - 2014: Software Engineer at Google/Mozilla (GSoC intership/grant)
 - 2011 - 2013: MSc of Applied Physics at University of São Paulo (CAPES grant)
 - 2011 - 2013: Co-founder and team leader of FLOSS collective LabMacambira
-- 2012: Software Engineer at Google/Mozilla (GSoC intership/grant)
+- 2012 - 2012: Software Engineer at Google/Mozilla (GSoC intership/grant)
 - 2009 - 2012: Co-founder of art+tech collective MuSA
 - 2008 - 2010: Professor at University of Santa Catarina
 - 2008 - 2010: Professor at FCJ
@@ -133,11 +140,11 @@ profs. Gonzalo Travieso and Luciano da Fontoura Costa.
 # Main research interests
 
 - AI / Machine Learning
+- AI coding
 - Generative AI
 - Computer Vision
 - Computational Creativity
 - Game Development
-- VR / AR / XR
 - Digital / Software / Electronic / Generative / Procedural Art & Music
 - Physical Computing
 

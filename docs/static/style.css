@@ -1,9 +1,9 @@
 body {
   background: #000;
-  color: #fff;
+  color: #ddd;
   max-width: 624px;
   padding: 20px;
-  line-height: 16pt;
+  line-height: 1.7;
   font-size: 9pt;
   font-family: monospace;
 }
@@ -45,7 +45,7 @@ img.webring_icon {
 #footer {
   margin-top: 50px;
   padding-top: 20px;
-  border-top: 1px solid white;
+  border-top: 1px solid #333;
 }
 
 a.logo, a.logo:visited, a.logo:hover {
@@ -71,20 +71,132 @@ a.logo, a.logo:visited, a.logo:hover {
 
 h1 {
   margin-top: 50px;
+  color: #fff;
 }
-h2,h3 {
+h2 {
+  margin-top: 40px;
+  color: #eee;
+}
+h3 {
   margin-top: 30px;
+  color: #ccc;
 }
 
 .block {
   float: left;
 }
 
+/* ---------- code / pre blocks ---------- */
+
 pre {
-  background-color: #222;
-  color: #aaa;
-  padding: 10px;
+  background-color: #0d1117;
+  border: 1px solid #1e2a3a;
+  border-radius: 4px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 20px 0;
+  line-height: 1.5;
+  scrollbar-width: thin;
+  scrollbar-color: #2a3a4a #0d1117;
 }
+
+pre::-webkit-scrollbar {
+  height: 6px;
+}
+
+pre::-webkit-scrollbar-track {
+  background: #0d1117;
+  border-radius: 3px;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: #2a3a4a;
+  border-radius: 3px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: #3a4f66;
+}
+
+pre code {
+  font-family: monospace;
+  font-size: 8.5pt;
+  background: none;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+}
+
+/* inline code */
+code {
+  background-color: #161b22;
+  color: #e6db74;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 8.5pt;
+  border: 1px solid #1e2a3a;
+}
+
+/* ---------- posts section ---------- */
+
+.posts {
+  margin-bottom: 20px;
+}
+
+.post-entry {
+  margin-bottom: 8px;
+  line-height: 1.8;
+}
+
+.post-date {
+  color: #666;
+  margin-left: 10px;
+  font-size: 8pt;
+}
+
+/* ---------- blockquote ---------- */
+
+blockquote {
+  border-left: 3px solid #444;
+  margin-left: 0;
+  padding: 4px 16px;
+  color: #999;
+}
+
+/* ---------- hr ---------- */
+
+hr {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 40px 0;
+}
+
+/* ---------- tables ---------- */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+th, td {
+  border: 1px solid #333;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #111;
+  color: #fff;
+}
+
+/* ---------- strong / em ---------- */
+
+strong {
+  color: #fff;
+}
+
+/* ---------- responsive ---------- */
 
 @media screen and (max-width: 800px) {
   body {
@@ -99,6 +211,8 @@ pre {
     margin-left: 40px;
     margin-bottom: 30px;
   }
+  pre {
+    font-size: 7.5pt;
+    padding: 10px 12px;
+  }
 }
-
-

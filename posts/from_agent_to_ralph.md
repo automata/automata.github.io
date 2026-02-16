@@ -1,4 +1,7 @@
-# From Zero to Agent: Building a CLI AI Coding Assistant in 100 Lines
+Title: From Zero to Agent: Building a CLI AI Coding Assistant in 100 Lines
+Author: Vilson Vieira
+Date: 2026-02-10 18:25:00
+Public: True
 
 Let's build an AI coding agent from scratch. No frameworks, no abstractions—just the core loop that makes agents work.
 
