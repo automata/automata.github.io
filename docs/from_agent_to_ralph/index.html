@@ -26,7 +26,7 @@
 <li>Add the results back to the conversation</li>
 <li>Repeat until done</li>
 </ol>
-<p>That's it. Let's build it.</p>
+<p>That's it.</p>
 <h2>Setup</h2>
 <pre><code class="language-bash">mkdir ai-agent
 cd ai-agent
@@ -289,25 +289,18 @@ runAgent(prompt);
 </ul>
 <p>But you don't need any of that to understand how agents work. It's just a loop.</p>
 <p>The LLM decides what to do. You execute it. Repeat.</p>
-<p>That's the whole game.</p>
 <hr />
 <h2>Going Deeper: The Ralph Loop</h2>
 <p>But there's a problem with our agent. It stops when the LLM <em>thinks</em> it's done. Not when the work is actually complete.</p>
 <p>What if the tests fail? What if the build breaks? The agent just shrugs and exits.</p>
-<p>Enter the <strong>Ralph Loop</strong>.</p>
+<p>What if wrap the agent in one more loop? That's the <strong>Ralph Loop</strong>.</p>
 <h3>What is the Ralph Loop?</h3>
 <p>Named after Ralph Wiggum from The Simpsons (yes, the &quot;I'm in danger&quot; kid), the Ralph Loop is a technique that's exploded in popularity in early 2026. Originally coined by Geoffrey Huntley, it's beautifully simple:</p>
 <pre><code class="language-bash">while :; do cat PROMPT.md | &lt;ANY_CODING_AGENT&gt; ; done
 </code></pre>
 <p>That's it. Just keep running the agent until the task is actually complete.</p>
 <h3>The Philosophy</h3>
-<p>Traditional agents stop when the LLM says &quot;I'm done.&quot; Ralph Loop stops when <strong>external verification</strong> confirms success.</p>
-<ul>
-<li>Not when the LLM says tests pass—when <code>npm test</code> exits 0</li>
-<li>Not when the LLM says the build works—when <code>docker build</code> succeeds</li>
-<li>Not when the LLM claims the server starts—when <code>curl localhost:3000/health</code> returns 200</li>
-</ul>
-<p>The mantra: <strong>Verify, don't trust.</strong></p>
+<p>Traditional agents stop when the LLM says &quot;I'm done.&quot; Ralph Loop stops when <strong>external verification</strong> confirms success. Don't trust the LLM, verify.</p>
 <h3>How It Works</h3>
 <p>Wrap your agent in an outer loop that:</p>
 <ol>
@@ -345,7 +338,7 @@ async function runRalphLoop() {
   for (let iteration = 1; iteration &lt;= MAX_ITERATIONS; iteration++) {
     console.log(`\n=== Ralph Iteration ${iteration}/${MAX_ITERATIONS} ===\n`);
 
-    // Run the agent (using our existing agent)
+    // Run the agent we just built
     try {
       execSync(`bun agent.ts &quot;$(cat ${TASK_FILE})&quot;`, { stdio: &quot;inherit&quot; });
     } catch (error) {
@@ -449,8 +442,6 @@ bun ralph.ts
 <li>An official <a href="https://github.com/anthropics/claude-code">Anthropic Claude Code plugin</a></li>
 <li><a href="https://github.com/vercel-labs/ralph-loop-agent">Vercel's ralph-loop-agent</a> for AI SDK</li>
 <li>Implementations in Google ADK, Cursor, and more</li>
-<li>Reports of developers completing $50k contracts for $297 in API costs</li>
-<li>14-hour autonomous sessions upgrading entire codebases</li>
 </ul>
 <h3>A Word of Caution</h3>
 <p>Ralph Loop is powerful but dangerous. It gives the AI full control over your terminal. Security experts strictly advise:</p>
@@ -551,7 +542,6 @@ runRalphLoop();
 <p><strong>New way</strong>: &quot;Define success criteria, let the agent iterate until it's actually done&quot;</p>
 <p>It's autonomous in the truest sense. You write the goal, define verification, and walk away.</p>
 <p>When you come back, it's either done or you know exactly why it failed.</p>
-<p>That's the Ralph Loop.</p>
 <hr />
 <h2>Sources</h2>
 <ul>

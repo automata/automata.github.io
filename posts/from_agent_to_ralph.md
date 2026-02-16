@@ -14,7 +14,7 @@ Every AI agent follows the same pattern:
 4. Add the results back to the conversation
 5. Repeat until done
 
-That's it. Let's build it.
+That's it.
 
 ## Setup
 
@@ -314,8 +314,6 @@ But you don't need any of that to understand how agents work. It's just a loop.
 
 The LLM decides what to do. You execute it. Repeat.
 
-That's the whole game.
-
 ---
 
 ## Going Deeper: The Ralph Loop
@@ -324,7 +322,7 @@ But there's a problem with our agent. It stops when the LLM *thinks* it's done. 
 
 What if the tests fail? What if the build breaks? The agent just shrugs and exits.
 
-Enter the **Ralph Loop**.
+What if wrap the agent in one more loop? That's the **Ralph Loop**.
 
 ### What is the Ralph Loop?
 
@@ -338,13 +336,7 @@ That's it. Just keep running the agent until the task is actually complete.
 
 ### The Philosophy
 
-Traditional agents stop when the LLM says "I'm done." Ralph Loop stops when **external verification** confirms success.
-
-- Not when the LLM says tests pass—when `npm test` exits 0
-- Not when the LLM says the build works—when `docker build` succeeds
-- Not when the LLM claims the server starts—when `curl localhost:3000/health` returns 200
-
-The mantra: **Verify, don't trust.**
+Traditional agents stop when the LLM says "I'm done." Ralph Loop stops when **external verification** confirms success. Don't trust the LLM, verify.
 
 ### How It Works
 
@@ -387,7 +379,7 @@ async function runRalphLoop() {
   for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     console.log(`\n=== Ralph Iteration ${iteration}/${MAX_ITERATIONS} ===\n`);
 
-    // Run the agent (using our existing agent)
+    // Run the agent we just built
     try {
       execSync(`bun agent.ts "$(cat ${TASK_FILE})"`, { stdio: "inherit" });
     } catch (error) {
@@ -504,8 +496,6 @@ Ralph Loop has exploded in 2026. There are now:
 - An official [Anthropic Claude Code plugin](https://github.com/anthropics/claude-code)
 - [Vercel's ralph-loop-agent](https://github.com/vercel-labs/ralph-loop-agent) for AI SDK
 - Implementations in Google ADK, Cursor, and more
-- Reports of developers completing $50k contracts for $297 in API costs
-- 14-hour autonomous sessions upgrading entire codebases
 
 ### A Word of Caution
 
@@ -616,8 +606,6 @@ Ralph Loop represents a shift in how we think about AI coding agents:
 It's autonomous in the truest sense. You write the goal, define verification, and walk away.
 
 When you come back, it's either done or you know exactly why it failed.
-
-That's the Ralph Loop.
 
 ---
 
