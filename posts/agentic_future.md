@@ -1,7 +1,7 @@
 Title: Agentic Future for agents to consume.
 Author: Vilson Vieira
 Date: 2026-02-14 14:20:00
-Public: True
+Public: False
 
 Language is perhaps the most important human invention. Written one. As far as we understand, we're not the
 only ones to have a language. Orcas and almost all animals share information somehow.
