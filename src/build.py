@@ -90,7 +90,9 @@ def is_private(md_file):
     with open(md_file, "r") as f:
         content = f.read()
         meta_data, _ = mc.parse(content)
-        if "Public" not in meta_data.keys():
+        if "Public" not in meta_data:
+            return True
+        if meta_data["Public"].strip() == "False":
             return True
     return False
 
@@ -119,6 +121,7 @@ def convert_braindump(remove_output_folder=False):
     if remove_output_folder:
         shutil.rmtree(config["html_output"])
         os.mkdir(config["html_output"])
+    slugs = []
     for md_file in md_files:
         file_name, mdf = md_file
         with open(mdf, "r") as f:
@@ -129,6 +132,8 @@ def convert_braindump(remove_output_folder=False):
                     os.mkdir(output_folder)
                 output_file = os.path.join(output_folder, "index.html")
                 build_html(mdf, output_file)
+                slugs.append(name_only)
+    return slugs
 
 
 def get_post_meta(md_file):
@@ -146,7 +151,7 @@ def convert_posts():
     for md_file in md_files:
         file_name, mdf = md_file
         meta = get_post_meta(mdf)
-        if "Public" not in meta.keys():
+        if meta.get("Public", "").strip() != "True":
             continue
         name_only = file_name[:-3]
         output_folder = os.path.join(config["html_output"], name_only)
@@ -165,7 +170,9 @@ def convert_posts():
     return posts_meta
 
 
-def build_index():
+def build_index(exclude=None):
+    if exclude is None:
+        exclude = set()
     index_folder = os.path.join(config["html_output"], "index")
     if not os.path.isdir(index_folder):
         os.mkdir(index_folder)
@@ -173,7 +180,7 @@ def build_index():
     entries = sorted(os.listdir(config["html_output"]))
     for entry in entries:
         entry_path = os.path.join(config["html_output"], entry)
-        if os.path.isdir(entry_path) and entry != "index" and entry != "static":
+        if os.path.isdir(entry_path) and entry != "index" and entry != "static" and entry not in exclude:
             content += f"<a href='/{entry}'>{entry}</a>\n"
     content += "</div>"
     with open(config["index_file"], "w") as f:
@@ -194,13 +201,10 @@ def build_posts_section(posts_meta):
 
 def main():
     posts_meta = convert_posts()
-    content_index = build_index()
-    content_index = "<h1>Braindump</h1>" + content_index
     posts_section = build_posts_section(posts_meta)
     build_html("./index.md", "./docs/index.html",
                inject_before="<h1>Open Source Projects</h1>",
-               inject_content=posts_section,
-               footer=content_index)
+               inject_content=posts_section)
 
 config = load_config()
 main()
